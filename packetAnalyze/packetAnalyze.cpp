@@ -49,6 +49,12 @@ bool callback(const PDU& pdu) {
         std::stringstream ss;
         if (rawPDU.payload_size() > 23)
         {
+            // 0-4 num of commnads in packet, 
+            // 4-8 time, not 20-22, eventcandidate 36-40
+            // 8-12 location id
+            // 12-16 only 4 types exists 07000000 06000100
+            // 16-20 event code ?
+            // one byte is 2
             readPacket(rawPDU, 16, 20, ss);
 
             if (ss.str() != "0000001c")
