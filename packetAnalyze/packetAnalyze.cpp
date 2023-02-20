@@ -27,7 +27,7 @@ void printPacket(RawPDU pdu, size_t regionStart, size_t regionEnd) {
             std::cout << "\n";
     }
 }
-void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::stringstream &ss)
+void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::stringstream& ss)
 {
     for (size_t i = regionStart; i < regionEnd; i++)
     {
@@ -56,7 +56,7 @@ bool callback(const PDU& pdu) {
     IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     RawPDU rawPDU = pdu.rfind_pdu<RawPDU>();
     if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056)
-    { 
+    {
         if (rawPDU.payload_size() > 23)
         {
             // 0-4 num of commnads in packet, 
@@ -66,8 +66,8 @@ bool callback(const PDU& pdu) {
             // 07000000 06000100 01000000 01ff0000 08000100
             // 16-20 event code ?
             // one byte is 2
-            std::vector<std::string> compareStrings = 
-            {"01000000", "01ff0000", "06000100", "07000000", "08000100"};
+            std::vector<std::string> compareStrings =
+            { "01000000", "01ff0000", "06000100", "07000000", "08000100" };
             std::stringstream ss;
             std::stringstream compareString;
             std::vector<size_t> eventParts;
@@ -76,7 +76,7 @@ bool callback(const PDU& pdu) {
             {
                 size_t counter = 0;
                 for (size_t i = 12; i < (rawPDU.payload_size() - 4); i++)
-                { 
+                {
                     readPacket(rawPDU, i, i + 4, compareString);
                     for (size_t j = 0; j < compareStrings.size(); j++)
                     {
@@ -101,10 +101,10 @@ bool callback(const PDU& pdu) {
                 std::cout << "\n";*/
                 //std::cout << stoi(ss.str());
             }
-            
+
         }
     }
-    
+
     return true;
 }
 
@@ -115,5 +115,5 @@ int main() {
     albionConfig.set_filter("ip dst 192.168.1.71");
     //albionConfig.set_filter("");
     Sniffer(iface.name(), albionConfig).sniff_loop(callback);
-   
+
 }
