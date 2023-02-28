@@ -5,7 +5,7 @@ using namespace Tins;
 
 // 0-3 num of commnads in packet, 
 // 4-7 time
-// 8-11 location id/session id randomly generates each time
+// 8-11 session id randomly generates each time
 // 12-15 only 5 types exists 
 // 07000000 06000100 01000000 01ff0000 08000100
 // 16-19 event code
@@ -21,6 +21,15 @@ using namespace Tins;
 // 16-18 changes rarely
 // data
 // last 4 command connector ?
+
+// ap, disap - appearing, disappearing
+// CD - corrupt dungeon
+// SD - solo dungeon
+// GD - group dungeon
+// RM - resource mob
+// ERM - empty resource mob
+// DRM - dead resource mob
+
 
 void printPacket(RawPDU pdu) {
     for (size_t i = 0; i < pdu.payload_size(); i++)
@@ -103,21 +112,40 @@ bool callback(const PDU& pdu) {
         {
 
             std::vector<size_t> commandBorders;
-            std::vector<std::string> desiredEventCodes = {                
-                /*"00000048","0000004b"*/
-                /*"0000001b","0000002b","00000037","0000003d","00000041",
-                "00000048","0000004b","0000006f","00000082"*/
-                "00000000","00000018","0000001b","0000002b","00000037","00000039","0000003d","00000040",
-                "00000041","00000046","00000048","0000004b","0000005a","0000006f","00000082"
+            std::vector<std::string> desiredEventCodes = {               
+                // resource mob               
+                // 19 ERM, DRM disap
+                // 1b ERM, RM, DRM disap
+                // 4b ERM, DRM ap/disap
+                // 61 ERM ap
+                // 82 RM ap
+                
+                // player appearing
+                // 41, 9b, 1a2, 3e, 19 player ap
+                // 65, 6d, 3b, 1b player disap
+
+
+                //mob spawn
+                /*"-00000019","-0000001b","-0000001d","-00000025","-0000002b","-0000003b","-00000041",
+                "-00000053","-00000058","-00000006f","+-00000082","-000000c6","-00000104",
+                "-000001a6"*/
+                /*"-00000027","+0000004b","-00000051","-00000065",
+                "-0000007f","+00000080","-000000e8","-000000fc"*/
+                // 3b mob ap
+                // 80 mob spot ap
+                // 3b some disap
+                // 7e resource ap ?
+                // resource mob spawn
+                /*"00000019","0000001b","0000001d","00000025","-0000003b","+0000003c","-0000003e","+00000040",
+                "-00000058","00000082"*/
+
+                // corrupt dungeon
+                // 82, 19 CD disap
+                // 3b, 3e, 1b CD ap/disap
+                // 7e CD ap
+                
             };
-            std::vector<std::string> DesiredEventCodes = { 
-              /*"00000014","00000018","00000041","00000043","00000046","00000048","0000001c","0000001e",
-                "0000001b","000c0000","0000003b","0000003d","00000028","00000072","0000003e","000004a4",
-                "0000004e","0000005c","00000044","00000049","00000033","00000036","00000039","000000ca",
-                "0000003f","00000032","00000035","00000073","00000059","00000120","00000026","00000025",
-                "00000019","00000034","00000031","00000047","00000099","000000ab","0000004b","000000cc",
-                "0000003a","0000004d","0000002a","0000005a","00000037","00000038","0000001f","0000004c",
-                "00000114","0000012b","0000002b","00000139","00000056",*/
+            std::vector<std::string> DesiredEventCodes = {
                 // something
                 "000001e8","00000200","0000036a","00000433","00000443","00000474","00000879","0000225a",
                 "00003300","000096da","00010000","00010001","00010100","00010101","00010200","0001ff00",
@@ -189,7 +217,6 @@ bool callback(const PDU& pdu) {
                 "000001a8","000001a9","000001aa","000001ab","000001ac","000001ad","000001ae","000001af",
                 "000001b0","000001b1","000001b2","000001b5","000001b6","000001b7","000001b9","00067800",
                 "0009a500","01067800","06067800","07780000"
-
             };
 
             commandBorders = findCommandBordersInPacket(rawPDU);
@@ -208,7 +235,7 @@ bool callback(const PDU& pdu) {
                        - (commandBorders[i] + 4)*/ << "\n";
                     //std::cout << "packet:\n";
                     //std::cout << readPacket(rawPDU, 0, 4).str() << " " << commandBorders.size() - 1;
-                    //printPacket(rawPDU, commandBorders[i] + 20, commandBorders[i + 1] - 4);
+                    //printPacket(rawPDU, commandBorders[i] + 16, commandBorders[i + 1] - 4);
                     //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
                     //    std::cout << rawPDU.payload()[j];
                     //std::cout << "\n";
