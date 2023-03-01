@@ -168,8 +168,12 @@ std::vector<std::string> desiredEventCodes = {
 
     // resource node
     //"00000019","0000001b","0000002b","0000003b","0000003e","00000046","0000004b","00000062","00000065","0000006d","00000071","00000072","0000007c","00000082","0000008c","00000090","000000d0"
+    //"0000003f","00000047","00000053","00000058","00000059","0000005a","00000060","00000065","00000066","0000006d","0000006f","00000072","0000007f","00000081","00000082","0000008c","000000a6"
+    "00000060","00000063","00000066"
+    // 47, 58, 59, 60, 63, 66 ?
 
-    "00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041","00000043","000c0000"
+    //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041","00000043",
+    //"00000063","00000064","000c0000"
 };
 
 class PacketAnalyze {
@@ -183,9 +187,11 @@ public:
 
 private:
     GLFWwindow* window;
+    bool framebufferResized;
+
+    IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     NetworkInterface iface = NetworkInterface::default_interface();
     Sniffer sniffer = Sniffer(iface.name());
-    bool framebufferResized;
 
 private:
     void mainLoop() {
@@ -335,18 +341,14 @@ private:
         std::stringstream ss;
 
         readPacket(pdu, regionStart, regionEnd, ss);
-        for (size_t i = 0; i < ss.str().length() - string.length(); i++) {
+        for (size_t i = 0; i < ss.str().length() - string.length() + 1; i++) {
+            //std::cout << ss.str().length() << "\n";
+            std::cout << ss.str().substr(i, string.length()) << "\n";
             if (ss.str().substr(i, string.length()) == string) {
                 return true;
             }
         }
-        /*size_t strLenInBytes = ceil(string.length() / 2);
-
-        for (size_t i = regionStart; i < regionEnd - strLenInBytes; i++) {
-            if (readPacket(pdu, i, i + strLenInBytes).str() == string) {
-                return true;
-            }
-        }*/
+        printPacket(pdu, regionStart, regionEnd), std::cout << "\n";
 
         return false;
     }
@@ -354,9 +356,8 @@ private:
     bool analyzePacket(const PDU& pdu) {
         const IP& ip = pdu.rfind_pdu<IP>();
         const UDP& udp = pdu.rfind_pdu<UDP>();
-        IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
         RawPDU rawPDU = pdu.rfind_pdu<RawPDU>();
-        if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056 and rawPDU.payload_size() > 23) {
+        if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
 
             std::vector<size_t> commandBorders;
             commandBorders = findCommandBordersInPacket(rawPDU);
@@ -366,10 +367,11 @@ private:
                 std::string eventCode = readPacket(rawPDU, commandBorders[i] + 4, 
                     commandBorders[i] + 8).str();
 
-                if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
+                //if ((std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
                 //if (eventCode == desiredEventCodes[counter])
                 {
-                    if(findStringInPacket(rawPDU, commandBorders[i + 1] - 12, commandBorders[i + 1], "0162"))
+                    if(findStringInPacket(rawPDU, commandBorders[i + 1] - 8, commandBorders[i + 1] - 4, "6201")
+                        and findStringInPacket(rawPDU, commandBorders[i] + 16, commandBorders[i + 1] - 4, "05"))
                     {
                         std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
                         - (commandBorders[i] + 4)*/ << "\n";
