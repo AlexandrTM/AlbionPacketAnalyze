@@ -7,6 +7,7 @@
 #include <bitset>
 #include <vector>
 #include <sstream>
+#include <GLFW/glfw3.h>
 #define TINS_STATIC
 #include "tins/tins.h"
 
