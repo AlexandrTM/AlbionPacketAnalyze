@@ -60,6 +60,21 @@ std::vector<std::string> DesiredEventCodes = {
     "03646400","06067800","07780000","0c000000","1103ff01","2003ff01","2103ff01","2203ff01",
     "2a000101","2b000700","3803ff01","94060001","a1060001","a6060001","ae060001","c8060001"
 };
+std::vector<std::string> Bytes16_19 = {
+    /*0003de8e,0003e317,0003e785,0003ec13,0003f0a2,0003f511,0003f998,0003fe0e,
+    000401db,0004023d,000402a7,00040312,0004037a,000403ec,00040454,000404bf,
+    0004053d,000405a2,00040625,000406af,00040720,000407aa,00040820,00040896,
+    00040911,0004097c,000409f7,00040a63,00040aec,00040b64,00040bca,00040c40,
+    00040cb4,00040d1b,00040d81,00040de9,00040e5a,00040edf,00040f56,00040fca,
+    00041036,000410a7,0004110c,00041173,000411ec,00041258,000412c8,00041333,
+    000413a3,00041409,00041417,000415a5,00041604,00041676,000416db,000416fd,
+    0004190d,00041977,000419e3,00041a59,00041ad0,00041b44,00041bbc,00041c27,
+    00041c95,00041d1c,00041d85,0004220f,002a0002,01010401,02006900,02006b07,
+    02006b0c,02006b0d,02006b0e,02006b0f,02006b10,04006b0f,05007900,06006900,
+    06007900,08006900,09006900,09007800,0a006900,0b006900,0c006900,10006900,
+    11006900,13006900,f3040100,f3040300*/
+};
+std::vector<std::string> Bytes12_15 = {  };
 
 // 0-3 num of commnads in packet, 
 // 4-7 time
@@ -96,21 +111,21 @@ std::vector<std::string> desiredEventCodes = {
     // resource mob  
     // 61 ERM ap
     // 80, 82 RM ap  
-    // 64 DRM ap, RM hitting, last 4 bytes determine difference           
+    // 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference           
     // 19 ERM, DRM disap
     // 1b ERM, DRM, RM disap
     // 4b ERM, DRM ap/disap
-    //"0000001f","00000020","00000025","00000027","0000003b","0000003e"
-    "00000064"
+    //"00000063","00000064"
+
 
     // player appearing
-    // 41, 9b, 1a2, 3e, 19 player ap
+    // 41, 9b, 1a2, 3e, 19(not clean) player ap
     // 65, 6d, 3b, 1b player disap
 
     //mob spawn
-    // 81, 82 mob ap
-    // 19 mob disap
-    // 1b, 3b(not clean) mob ap/disap
+    // 7a, 80, 81, 82 mob ap
+    // 19, 6f mob disap
+    // 1b, 3b(not clean), 3e mob ap/disap
 
     // solo dungeon 
     // 73, 71(with butts) SD ap
@@ -128,8 +143,8 @@ std::vector<std::string> desiredEventCodes = {
     // 61(with butts), 63(box), 65, 67, 7a, 7f GD ap
     // 1b, 72(clean), 4b(box), 60, 61, 3e, 18 GD disap
     // 19, 3b GD ap/disap
-    //"0000001f","00000020","00000025","0000002b"
-    //"0000003a"
+    //"0000001f","00000020","00000025","0000002b","0000003a"
+    //"00000061","00000063","00000065","00000067"
 
     // crystal group dungeon
     //"00000019","0000001b","00000020","00000025","0000002b","0000003b","0000004b"
@@ -143,7 +158,7 @@ std::vector<std::string> desiredEventCodes = {
     // 3b(not clean),19(not clean) HG ap/disap
 
     // mist
-    //"00000019","0000001b","0000001f","00000024","0000002b","00000034","00000035","0000003b","00000041","00000048","0000004b","00000059","00000065","0000006f","00000082","00000096","000000f0","00000103"
+    //"0000001f","00000024","0000002b","00000034","00000035","0000003b","00000041","00000048","0000004b","00000059","00000065","0000006f","00000082","00000096","000000f0","00000103"
     // 96 mist portal ap
 
     // fish node
@@ -151,7 +166,10 @@ std::vector<std::string> desiredEventCodes = {
     // 3c fish node ap
     // 3e fish node ap/disap
 
-    //"00000014", "00000043", "000c0000"
+    // resource node
+    //"00000019","0000001b","0000002b","0000003b","0000003e","00000046","0000004b","00000062","00000065","0000006d","00000071","00000072","0000007c","00000082","0000008c","00000090","000000d0"
+
+    "00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041","00000043","000c0000"
 };
 
 class PacketAnalyze {
@@ -170,6 +188,12 @@ private:
     bool framebufferResized;
 
 private:
+    void mainLoop() {
+        while (!glfwWindowShouldClose(window)) {
+            glfwPollEvents();
+            sniffPacket();
+        }
+    }
 
     void cleanup() {
         glfwDestroyWindow(window);
@@ -183,7 +207,7 @@ private:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
+        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
 
         window = glfwCreateWindow(100, 100, "Packet Analyze", nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
@@ -196,7 +220,6 @@ private:
         auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(window));
         app->framebufferResized = true;
     }
-
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
@@ -213,7 +236,7 @@ private:
             }
             else if (counter == 0) {
                 counter = desiredEventCodes.size() - 1;
-            }                
+            }
         }
     }
 
@@ -228,17 +251,10 @@ private:
             PDU* packet = sniffer.next_packet();
             if (packet)
             {
-                callback(*packet);
+                analyzePacket(*packet);
             }
         }
         catch (std::exception& e) {
-        }
-    }
-
-    void mainLoop() {
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            sniffPacket();
         }
     }
 
@@ -314,51 +330,60 @@ private:
 
         return commandBorders;
     }
+    bool findStringInPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string string)
+    {
+        std::stringstream ss;
 
-    bool callback(const PDU& pdu) {
-        const IP& ip = pdu.rfind_pdu<IP>();// Find the IP layer
-        const UDP& udp = pdu.rfind_pdu<UDP>();// Find the UDP layer
-        IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
-        RawPDU rawPDU = pdu.rfind_pdu<RawPDU>();
-        if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
-            if (rawPDU.payload_size() > 23) {
-                std::vector<size_t> commandBorders;
-
-                commandBorders = findCommandBordersInPacket(rawPDU);
-                for (size_t i = 0; i < commandBorders.size() - 1; i++)
-                {
-                    std::string eventCode = readPacket(rawPDU, commandBorders[i] + 4,
-                        commandBorders[i] + 8).str();
-                    //std::string timeOfCommand = readPacket(rawPDU, commandBorders[i] + 8,
-                    //    commandBorders[i] + 12).str();
-                    //std::string someIds = readPacket(rawPDU, commandBorders[i] + 12,
-                    //    commandBorders[i] + 16).str();
-                    //if ((std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes),
-                    //    eventCode) != std::end(desiredEventCodes)))
-                    if (eventCode == desiredEventCodes[counter])
-                    {
-                        //std::cout << "packet:\n";
-                        //std::cout << readPacket(rawPDU, 0, 4).str() << " " << commandBorders.size() - 1;
-                        //if (readPacket(rawPDU, commandBorders[i + 1] - 7, commandBorders[i + 1] - 5).str() == "0b62")
-                        //{
-                        std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
-                        - (commandBorders[i] + 4)*/ << "\n";
-                        printPacket(rawPDU, commandBorders[i + 1] - 8, commandBorders[i + 1] - 4), std::cout << "\n";
-                        
-                        //}
-
-                        //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
-                        //    std::cout << rawPDU.payload()[j];
-                    }
-                }
+        readPacket(pdu, regionStart, regionEnd, ss);
+        for (size_t i = 0; i < ss.str().length() - string.length(); i++) {
+            if (ss.str().substr(i, string.length()) == string) {
+                return true;
             }
         }
+        /*size_t strLenInBytes = ceil(string.length() / 2);
 
+        for (size_t i = regionStart; i < regionEnd - strLenInBytes; i++) {
+            if (readPacket(pdu, i, i + strLenInBytes).str() == string) {
+                return true;
+            }
+        }*/
+
+        return false;
+    }
+
+    bool analyzePacket(const PDU& pdu) {
+        const IP& ip = pdu.rfind_pdu<IP>();
+        const UDP& udp = pdu.rfind_pdu<UDP>();
+        IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
+        RawPDU rawPDU = pdu.rfind_pdu<RawPDU>();
+        if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056 and rawPDU.payload_size() > 23) {
+
+            std::vector<size_t> commandBorders;
+            commandBorders = findCommandBordersInPacket(rawPDU);
+
+            for (size_t i = 0; i < commandBorders.size() - 1; i++) {
+
+                std::string eventCode = readPacket(rawPDU, commandBorders[i] + 4, 
+                    commandBorders[i] + 8).str();
+
+                if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
+                //if (eventCode == desiredEventCodes[counter])
+                {
+                    if(findStringInPacket(rawPDU, commandBorders[i + 1] - 12, commandBorders[i + 1], "0162"))
+                    {
+                        std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
+                        - (commandBorders[i] + 4)*/ << "\n";
+                        printPacket(rawPDU, commandBorders[i] + 16, commandBorders[i + 1] - 4), std::cout << "\n";                    
+                    }
+
+                    //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
+                    //    std::cout << rawPDU.payload()[j];
+                }                
+            }
+        }
         return true;
     }
 };
-
-
 
 int main() {
     PacketAnalyze packetAnalyze;
