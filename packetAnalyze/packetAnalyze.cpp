@@ -25,10 +25,13 @@ using namespace Tins;
 // ap, disap - appearing, disappearing
 // CD - corrupt dungeon
 // SD - solo dungeon
-// GD - group dungeon
+// GD, CGD - group dungeon, crystal group dungeon
 // RM - resource mob
+// HG - hell gate
 // ERM - empty resource mob
 // DRM - dead resource mob
+
+// pen garn, brons hill - high mountain for testing
 
 
 void printPacket(RawPDU pdu) {
@@ -124,26 +127,50 @@ bool callback(const PDU& pdu) {
                 // 41, 9b, 1a2, 3e, 19 player ap
                 // 65, 6d, 3b, 1b player disap
 
-
                 //mob spawn
-                /*"-00000019","-0000001b","-0000001d","-00000025","-0000002b","-0000003b","-00000041",
-                "-00000053","-00000058","-00000006f","+-00000082","-000000c6","-00000104",
-                "-000001a6"*/
-                /*"-00000027","+0000004b","-00000051","-00000065",
-                "-0000007f","+00000080","-000000e8","-000000fc"*/
-                // 3b mob ap
-                // 80 mob spot ap
-                // 3b some disap
-                // 7e resource ap ?
-                // resource mob spawn
-                /*"00000019","0000001b","0000001d","00000025","-0000003b","+0000003c","-0000003e","+00000040",
-                "-00000058","00000082"*/
+                // 81, 82 mob ap
+                // 19 mob disap
+                // 1b, 3b(not clean) mob ap/disap
+
+                // solo dungeon 
+                // 73, 71(with butts) SD ap
+                // 19 SD disap
+                // 1b, 3b(not clean), 82, 58(with butts) SD ap/disap
+                //"00000017","00000020","00000025","0000003e","00000040","0000004b","0000006d","0000006f","0000007c"
+                
 
                 // corrupt dungeon
-                // 82, 19 CD disap
+                // 7e, 76 CD ap
+                // 19, 58, 82 CD disap
                 // 3b, 3e, 1b CD ap/disap
-                // 7e CD ap
-                
+                //"00000020","00000024","00000025","0000002b","00000034","00000035"
+                "00000035"
+
+
+                // group dungeon
+                // 61(with butts), 63(box), 65, 67, 7a, 7f GD ap
+                // 1b, 72(clean), 4b(box), 60, 61, 3e, 18 GD disap
+                // 19, 3b GD ap/disap
+                //"0000001f","00000020","00000025","0000002b"
+                //"0000003a"
+
+                // crystal group dungeon
+                //"00000019","0000001b","00000020","00000025","0000002b","0000003b","0000004b"
+                // 64, 66, 72, 82(entered players ?) CGD ap
+                // 71, d5 disap
+                // 58 CGD ap/disap
+
+                // hell gate
+                // 6c, 58 HG ap
+                // 6d, 1b(not clean) HG disap
+                // 3b(not clean),19(not clean) HG ap/disap
+            
+                // fish node
+                //"00000019","00000020"
+                // 3c fish node ap
+                // 3e fish node ap/disap
+
+                //"00000014", "00000043", "000c0000"
             };
             std::vector<std::string> DesiredEventCodes = {
                 // something
@@ -231,7 +258,7 @@ bool callback(const PDU& pdu) {
                 if ((std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes),
                     eventCode) != std::end(desiredEventCodes)))
                 {
-                    std::cout << "\"" << eventCode << "\"" << " " /*<< commandBorders[i + 1]
+                    std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
                        - (commandBorders[i] + 4)*/ << "\n";
                     //std::cout << "packet:\n";
                     //std::cout << readPacket(rawPDU, 0, 4).str() << " " << commandBorders.size() - 1;
