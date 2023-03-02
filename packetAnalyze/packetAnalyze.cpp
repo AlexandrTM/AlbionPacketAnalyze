@@ -2,7 +2,7 @@
 
 using namespace Tins;
 
-std::vector<std::string> DesiredEventCodes = {
+std::vector<std::string> ListOfEventCodes = {
     "00000000","00000001","00000013","00000014","00000018","00000019","0000001b","0000001c",
     "0000001e","00000020","00000021","00000024","00000025","00000027","00000028","0000002a",
     "0000002b","0000002d","0000002e","0000002f","00000030","00000031","00000032","00000033",
@@ -112,7 +112,7 @@ std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","0700
 std::vector<std::string> desiredEventCodes = {
     // resource mob  
     // 80, 82 RM ap 
-    // 58(resources), 60(resources), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
+    // 58(resources), 60(resources), 61(Tier < 4), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
     // 60(leather), 61 ERM ap          
     // 19, 6b ERM, DRM disap
     // 1b ERM, DRM, RM disap
@@ -177,8 +177,11 @@ std::vector<std::string> desiredEventCodes = {
 
     //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
     //"00000043","00000060","000c0000"
-    "00000060"
+    "00000043","00000014","00000043"
+    //"0000002b","00000040","00000043","00000046","00000052","00000060","00000063","00000068","0000006d","0000006f","00000071","00000081","00000082"
 };
+
+std::vector<std::vector<std::string>> text(desiredEventCodes.size());
 
 class PacketAnalyze {
 public:
@@ -239,6 +242,7 @@ private:
             else if (counter == desiredEventCodes.size() - 1) {
                 counter = 0;
             }
+            std::cout << "\n" << "<<" << desiredEventCodes[counter] << ">>" << "\n";
         }
         if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
             if (counter > 0) {
@@ -247,6 +251,10 @@ private:
             else if (counter == 0) {
                 counter = desiredEventCodes.size() - 1;
             }
+            std::cout << "\n" << "<<" << desiredEventCodes[counter] << ">>" << "\n";
+        }
+        if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
 
@@ -280,9 +288,9 @@ private:
         for (size_t i = 0; i < packet.length(); i++)
         {
             std::cout << std::hex << packet[i];
-            if (i % 4 == 3)
+            if (i % 8 == 7)
                 std::cout << " ";
-            if (i % 16 == 15 and i != packet.length())
+            if (i % 32 == 31 and i != packet.length())
                 std::cout << "\n";
         }
     }
@@ -293,8 +301,14 @@ private:
             std::cout << std::hex << packet[i];
             if ((i - regionStart) % 8 == 7)
                 std::cout << " ";
-            if ((i - regionStart) % 32 == 31 and i != packet.length())
+            if ((i - regionStart) % 32 == 31 and i != (packet.length() - 1))
                 std::cout << "\n";
+        }
+    }
+    void printPacketInOneString(std::string packet, size_t regionStart, size_t regionEnd)
+    {
+        for (size_t i = regionStart; i < regionEnd; i++) {
+            std::cout << std::hex << packet[i];
         }
     }
     void readPacket(RawPDU pdu, std::stringstream& ss)
@@ -350,8 +364,8 @@ private:
     bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
         std::string packetString = packet.substr(regionStart, regionEnd - regionStart);
+
         for (size_t i = 0; i < packetString.length() - string.length() + 1; i += 2) {
-            //std::cout << packetString.substr(i, string.length()) << "\n";
             if (packetString.substr(i, string.length()) == string) {
                 return true;
             }
@@ -362,37 +376,100 @@ private:
 
     bool analyzePacket(std::string packet) 
     {
-        std::vector<size_t> commandBorders;
-        commandBorders = findCommandBordersInPacket(packet, borderStrings);
+        if (packet.length() > 32) 
+        {
+            std::vector<size_t> commandBorders;
+            commandBorders = findCommandBordersInPacket(packet, borderStrings);
 
-        std::cout << commandBorders.size() << " " << packet.substr(0, 8) << "\n";
-
-        for (size_t i = 0; i < commandBorders.size() - 1; i++) {
-
-            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
-            //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
-            //if (eventCode == desiredEventCodes[counter])
+            for (size_t i = 0; i < commandBorders.size() - 1; i++) 
             {
-                if(findStringInPacket(packet, commandBorders[i + 1] - 20, commandBorders[i + 1] - 8, "6201")
-                    and findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8, "0508"))
-                {
-                    std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
-                    - (commandBorders[i] + 4)*/ << "\n";
-                    printPacket(packet, commandBorders[i] + 64, commandBorders[i + 1] - 8), std::cout << "\n";
-                }
 
-                //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
-                //    std::cout << rawPDU.payload()[j];
-            }                
+                std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
+
+                //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
+                if (eventCode == desiredEventCodes[counter]) 
+                {
+                    //if (findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8, "6200"))
+                    {
+                        //std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
+                        //- (commandBorders[i] + 4)*/ << "\n";
+                        if ((commandBorders[i] + 32, commandBorders[i + 1] - commandBorders[i] - 40) > 0) 
+                        {
+                            printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
+                            text[counter].push_back(packet.substr(commandBorders[i] + 32,
+                                commandBorders[i + 1] - commandBorders[i] - 40));
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
-        
-        return true;
     }
 };
+
+std::vector<bool> findSimilarSymbolsInText(std::vector<std::string> text)
+{
+    std::vector<bool> similarSymbols = {};
+
+    for (size_t i = 0; i < text[0].length(); i++) {
+        int symbolSimilarity = 1;
+
+        for (size_t j = 1; j < text.size(); j++) {
+            if (text[j][i] == text[0][i]) {
+                symbolSimilarity += 1;
+            }
+        }
+        if (symbolSimilarity == text.size()) {
+            similarSymbols.push_back(1);
+        }
+        else {
+            similarSymbols.push_back(0);
+        }
+        std::cout << similarSymbols[i];
+    }
+
+    return similarSymbols;
+}
+
+void colorizeSimilarText(std::vector<std::string> text, HANDLE consoleHandle)
+{
+    std::vector<bool> similarSymbols = findSimilarSymbolsInText(text);
+
+    for (size_t i = 0; i < text.size(); i++) {
+        for (size_t j = 0; j < text[i].length(); j++) {
+            if (similarSymbols[j] == 1) {
+                SetConsoleTextAttribute(consoleHandle, 2);
+            }
+            std::cout << text[i][j];
+            SetConsoleTextAttribute(consoleHandle, 7);
+        }
+        std::cout << "\n";
+    }
+}
+
+void colorizePackets() {
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    for (size_t i = 0; i < text.size(); i++) {
+        SetConsoleTextAttribute(consoleHandle, 6);
+        std::cout << "\"" << desiredEventCodes[i] << "\"\n";
+        SetConsoleTextAttribute(consoleHandle, 7);
+
+        if (text[i].size() > 1) {
+            colorizeSimilarText(text[i], consoleHandle);
+        }
+        else if (text[i].size() == 1) {
+            std::cout << text[i][0] << "\n";
+        }
+    }
+}
 
 int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
+
+    colorizePackets();
 
     return 0;
 }
