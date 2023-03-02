@@ -165,20 +165,20 @@ std::vector<std::string> desiredEventCodes = {
     // 3e fish node ap/disap
 
     // resource node
-    //"00000066","0000006d","0000006f","00000072","00000081","000000e6"
-    // 40, 46(resources T4+ enchanted), 47, 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
+    //"00000066","0000006d","00000072","000000e6"
+    // 40, 46(resources T4+ enchanted), 47(mob hitting), 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
+    // 6d,6f,81,82 empty resources
     //"00000066"
-    //"00000046"
-    /*"00000051","00000058","00000065","0000006a","0000006d","00000072","00000073","0000007f","0000008c",
-    "000000a2","000000c8","000000e3","0000014e"*/
+    /*"00000051",*/"00000058","00000065","0000006a","00000072","00000073","0000007f","0000008c",
+    /*"000000a2","000000c8","000000e3","0000014e"*/
     //"0000005c","0000005f"
     //"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",
-    //"00000046","00000047","00000048","0000004b","0000005a","00000061","0000006c","0000006f","00000082"
+    //"00000047","00000048","0000004b","0000005a","00000061","0000006c"
+    //"0000002b","00000040","00000043","00000052","00000068","0000006d","00000071"
+    /*"0000005c","0000005f","00000061","00000066"*/
 
     //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
     //"00000043","00000060","000c0000"
-    "00000043","00000014","00000043"
-    //"0000002b","00000040","00000043","00000046","00000052","00000060","00000063","00000068","0000006d","0000006f","00000071","00000081","00000082"
 };
 
 std::vector<std::vector<std::string>> text(desiredEventCodes.size());
@@ -268,14 +268,17 @@ private:
         try {
             PDU* sniffedPacket = sniffer.next_packet();
             if (sniffedPacket) {
-                RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
                 const IP& ip = sniffedPacket->rfind_pdu<IP>();
                 const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
                 if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
-                    std::stringstream packet;
+                    RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
+                    std::string packet;
                     readPacket(rawPacket, packet);
-                    analyzePacket(packet.str());
+
+                    if (packet.length() > 32) {
+                        analyzePacket(packet);
+                    }
                 }
             }
         }
@@ -311,17 +314,23 @@ private:
             std::cout << std::hex << packet[i];
         }
     }
-    void readPacket(RawPDU pdu, std::stringstream& ss)
+    void readPacket(RawPDU pdu, std::string& string)
     {
+        std::stringstream ss;
+
         for (size_t i = 0; i < pdu.payload_size(); i++) {
             uint8_t x = pdu.payload()[i];
             if (x < 16)
                 ss << 0;
             ss << std::hex << (int)x;
         }
+
+        string = ss.str();
     }
-    void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::stringstream& ss)
+    void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string string)
     {
+        std::stringstream ss;
+
         for (size_t i = regionStart; i < regionEnd; i++) {
             uint8_t x = pdu.payload()[i];
             if (x < 16) {
@@ -329,10 +338,13 @@ private:
             }
             ss << std::hex << (int)x;
         }
+
+        string = ss.str();
     }
-    std::stringstream readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
+    std::string readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
     {
         std::stringstream ss;
+
         for (size_t i = regionStart; i < regionEnd; i++)
         {
             uint8_t x = pdu.payload()[i];
@@ -340,7 +352,8 @@ private:
                 ss << 0;
             ss << std::hex << (int)x;
         }
-        return ss;
+
+        return ss.str();
     }
     std::vector<size_t> findCommandBordersInPacket(std::string packet, std::vector<std::string> borderStrings)
     {
@@ -376,41 +389,37 @@ private:
 
     bool analyzePacket(std::string packet) 
     {
-        if (packet.length() > 32) 
+        std::vector<size_t> commandBorders;
+        commandBorders = findCommandBordersInPacket(packet, borderStrings);
+
+        for (size_t i = 0; i < commandBorders.size() - 1; i++) 
         {
-            std::vector<size_t> commandBorders;
-            commandBorders = findCommandBordersInPacket(packet, borderStrings);
+            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
 
-            for (size_t i = 0; i < commandBorders.size() - 1; i++) 
+            //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
+            //if (eventCode == desiredEventCodes[counter]) 
             {
-
-                std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
-
-                //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
-                if (eventCode == desiredEventCodes[counter]) 
+                //if (findStringInPacket(packet, commandBorders[i + 1] - 24, commandBorders[i + 1] - 8, "62"))
                 {
-                    //if (findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8, "6200"))
+                    std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
+                    - (commandBorders[i] + 4)*/ << "\n";
+                    if ((commandBorders[i] + 32, commandBorders[i + 1] - commandBorders[i]) > 0) 
                     {
-                        //std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
-                        //- (commandBorders[i] + 4)*/ << "\n";
-                        if ((commandBorders[i] + 32, commandBorders[i + 1] - commandBorders[i] - 40) > 0) 
-                        {
-                            printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
-                            text[counter].push_back(packet.substr(commandBorders[i] + 32,
-                                commandBorders[i + 1] - commandBorders[i] - 40));
-                        }
+                        printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
+                        //text[counter].push_back(packet.substr(commandBorders[i] + 32,
+                        //    commandBorders[i + 1] - commandBorders[i] - 40));
                     }
                 }
             }
 
-            return true;
+        return true;
         }
     }
 };
 
-std::vector<bool> findSimilarSymbolsInText(std::vector<std::string> text)
+std::vector<bool> findSameSymbolsInText(std::vector<std::string> text)
 {
-    std::vector<bool> similarSymbols = {};
+    std::vector<bool> sameSymbols = {};
 
     for (size_t i = 0; i < text[0].length(); i++) {
         int symbolSimilarity = 1;
@@ -421,24 +430,28 @@ std::vector<bool> findSimilarSymbolsInText(std::vector<std::string> text)
             }
         }
         if (symbolSimilarity == text.size()) {
-            similarSymbols.push_back(1);
+            sameSymbols.push_back(1);
         }
         else {
-            similarSymbols.push_back(0);
+            sameSymbols.push_back(0);
         }
-        std::cout << similarSymbols[i];
     }
 
-    return similarSymbols;
+    return sameSymbols;
 }
 
-void colorizeSimilarText(std::vector<std::string> text, HANDLE consoleHandle)
+void colorizeSameText(std::vector<std::string> text, HANDLE consoleHandle)
 {
-    std::vector<bool> similarSymbols = findSimilarSymbolsInText(text);
+    std::vector<bool> sameSymbols = findSameSymbolsInText(text);
+
+    for (size_t i = 0; i < sameSymbols.size(); i++) {
+        std::cout << sameSymbols[i];
+    }
+    std::cout << "\n";
 
     for (size_t i = 0; i < text.size(); i++) {
         for (size_t j = 0; j < text[i].length(); j++) {
-            if (similarSymbols[j] == 1) {
+            if (sameSymbols[j] == 1) {
                 SetConsoleTextAttribute(consoleHandle, 2);
             }
             std::cout << text[i][j];
@@ -448,7 +461,7 @@ void colorizeSimilarText(std::vector<std::string> text, HANDLE consoleHandle)
     }
 }
 
-void colorizePackets() {
+void outputColorizedPackets() {
     HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
     for (size_t i = 0; i < text.size(); i++) {
@@ -457,7 +470,7 @@ void colorizePackets() {
         SetConsoleTextAttribute(consoleHandle, 7);
 
         if (text[i].size() > 1) {
-            colorizeSimilarText(text[i], consoleHandle);
+            colorizeSameText(text[i], consoleHandle);
         }
         else if (text[i].size() == 1) {
             std::cout << text[i][0] << "\n";
@@ -469,7 +482,7 @@ int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
 
-    colorizePackets();
+    outputColorizedPackets();
 
     return 0;
 }
