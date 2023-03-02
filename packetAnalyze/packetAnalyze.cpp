@@ -332,14 +332,14 @@ private:
     {
         std::vector<size_t> commandBorders;
 
-        for (size_t i = 24; i < (packet.length() - 16); i ++)
+        for (size_t i = 24; i < (packet.length() - 16); i += 2)
         {
             for (size_t j = 0; j < borderStrings.size(); j++)
             {
                 if (packet.substr(i, 8) == borderStrings[j])
                 {
                     commandBorders.push_back(i);
-                    i += 15;
+                    i += 14;
                 }
             }
         }
@@ -351,6 +351,7 @@ private:
     {
         std::string packetString = packet.substr(regionStart, regionEnd - regionStart);
         for (size_t i = 0; i < packetString.length() - string.length() + 1; i += 2) {
+            //std::cout << packetString.substr(i, string.length()) << "\n";
             if (packetString.substr(i, string.length()) == string) {
                 return true;
             }
@@ -364,21 +365,20 @@ private:
         std::vector<size_t> commandBorders;
         commandBorders = findCommandBordersInPacket(packet, borderStrings);
 
-        std::cout << commandBorders.size() << " ";
+        std::cout << commandBorders.size() << " " << packet.substr(0, 8) << "\n";
 
         for (size_t i = 0; i < commandBorders.size() - 1; i++) {
 
             std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
-            printPacket(packet, 0, 8);
             //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
             //if (eventCode == desiredEventCodes[counter])
             {
-                //if(findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 4, "62")
-                //    and findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 4, "05"))
+                if(findStringInPacket(packet, commandBorders[i + 1] - 20, commandBorders[i + 1] - 8, "6201")
+                    and findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8, "0508"))
                 {
                     std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
                     - (commandBorders[i] + 4)*/ << "\n";
-                    //printPacket(packet, commandBorders[i] + 64, commandBorders[i + 1] - 8), std::cout << "\n";
+                    printPacket(packet, commandBorders[i] + 64, commandBorders[i + 1] - 8), std::cout << "\n";
                 }
 
                 //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
