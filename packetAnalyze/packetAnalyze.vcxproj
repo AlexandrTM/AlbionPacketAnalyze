@@ -124,6 +124,7 @@
       <AdditionalIncludeDirectories>O:\SDKforeverything\glfw-3.3.4.bin.WIN64\include;O:\SDKforeverything\libtins-4.4\include;O:\SDKforeverything\WpdPack_4_1_2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -103,20 +103,22 @@ std::vector<std::string> Bytes12_15 = {  };
 // HG - hell gate
 // ERM - empty resource mob
 // DRM - dead resource mob
+// distance of resource view is ~45-46.75 meters
 
 // pen garn, brons hill - high mountain for testing
 int counter;
+std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","07000000","08000100"};
 
 std::vector<std::string> desiredEventCodes = {
     // resource mob  
-    // 61 ERM ap
-    // 80, 82 RM ap  
-    // 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference           
-    // 19 ERM, DRM disap
+    // 80, 82 RM ap 
+    // 58(resources), 60(resources), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
+    // 60(leather), 61 ERM ap          
+    // 19, 6b ERM, DRM disap
     // 1b ERM, DRM, RM disap
     // 4b ERM, DRM ap/disap
     //"00000063","00000064"
-
+    //"00000080","00000082"
 
     // player appearing
     // 41, 9b, 1a2, 3e, 19(not clean) player ap
@@ -131,23 +133,20 @@ std::vector<std::string> desiredEventCodes = {
     // 73, 71(with butts) SD ap
     // 19 SD disap
     // 1b, 3b(not clean), 82, 58(with butts) SD ap/disap
-    //"00000017","00000020","00000025","0000003e","00000040","0000004b","0000006d","0000006f","0000007c"
+    //"0000003e","00000040","0000004b","0000006d","0000006f","0000007c"
 
     // corrupt dungeon
     // 7e, 76 CD ap
     // 19, 58, 82 CD disap
-    // 3b, 3e, 1b CD ap/disap
-    //"00000020","00000024","00000025","0000002b","00000034"               
+    // 3b, 3e, 1b CD ap/disap             
 
     // group dungeon
     // 61(with butts), 63(box), 65, 67, 7a, 7f GD ap
     // 1b, 72(clean), 4b(box), 60, 61, 3e, 18 GD disap
     // 19, 3b GD ap/disap
-    //"0000001f","00000020","00000025","0000002b","0000003a"
     //"00000061","00000063","00000065","00000067"
 
     // crystal group dungeon
-    //"00000019","0000001b","00000020","00000025","0000002b","0000003b","0000004b"
     // 64, 66, 72, 82(entered players ?) CGD ap
     // 71, d5 disap
     // 58 CGD ap/disap
@@ -162,18 +161,23 @@ std::vector<std::string> desiredEventCodes = {
     // 96 mist portal ap
 
     // fish node
-    //"00000019","00000020"
     // 3c fish node ap
     // 3e fish node ap/disap
 
     // resource node
-    //"00000019","0000001b","0000002b","0000003b","0000003e","00000046","0000004b","00000062","00000065","0000006d","00000071","00000072","0000007c","00000082","0000008c","00000090","000000d0"
-    //"0000003f","00000047","00000053","00000058","00000059","0000005a","00000060","00000065","00000066","0000006d","0000006f","00000072","0000007f","00000081","00000082","0000008c","000000a6"
-    "00000060","00000063","00000066"
-    // 47, 58, 59, 60, 63, 66 ?
+    //"00000066","0000006d","0000006f","00000072","00000081","000000e6"
+    // 40, 46(resources T4+ enchanted), 47, 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
+    //"00000066"
+    //"00000046"
+    /*"00000051","00000058","00000065","0000006a","0000006d","00000072","00000073","0000007f","0000008c",
+    "000000a2","000000c8","000000e3","0000014e"*/
+    //"0000005c","0000005f"
+    //"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",
+    //"00000046","00000047","00000048","0000004b","0000005a","00000061","0000006c","0000006f","00000082"
 
-    //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041","00000043",
-    //"00000063","00000064","000c0000"
+    //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
+    //"00000043","00000060","000c0000"
+    "00000060"
 };
 
 class PacketAnalyze {
@@ -254,49 +258,61 @@ private:
     void sniffPacket()
     {
         try {
-            PDU* packet = sniffer.next_packet();
-            if (packet)
-            {
-                analyzePacket(*packet);
+            PDU* sniffedPacket = sniffer.next_packet();
+            if (sniffedPacket) {
+                RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
+                const IP& ip = sniffedPacket->rfind_pdu<IP>();
+                const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
+
+                if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
+                    std::stringstream packet;
+                    readPacket(rawPacket, packet);
+                    analyzePacket(packet.str());
+                }
             }
         }
         catch (std::exception& e) {
         }
     }
 
-    void printPacket(RawPDU pdu)
+    void printPacket(std::string packet)
     {
-        for (size_t i = 0; i < pdu.payload_size(); i++)
+        for (size_t i = 0; i < packet.length(); i++)
         {
-            if ((int)pdu.payload()[i] < 16)
-                std::cout << 0;
-            std::cout << std::hex << (int)pdu.payload()[i];
+            std::cout << std::hex << packet[i];
             if (i % 4 == 3)
                 std::cout << " ";
-            if (i % 16 == 15 and i != pdu.payload_size())
+            if (i % 16 == 15 and i != packet.length())
                 std::cout << "\n";
         }
     }
-    void printPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
+    void printPacket(std::string packet, size_t regionStart, size_t regionEnd)
     {
         for (size_t i = regionStart; i < regionEnd; i++)
         {
-            if ((int)pdu.payload()[i] < 16)
-                std::cout << 0;
-            std::cout << std::hex << (int)pdu.payload()[i];
-            if ((i - regionStart) % 4 == 3)
+            std::cout << std::hex << packet[i];
+            if ((i - regionStart) % 8 == 7)
                 std::cout << " ";
-            if ((i - regionStart) % 16 == 15 and i != pdu.payload_size())
+            if ((i - regionStart) % 32 == 31 and i != packet.length())
                 std::cout << "\n";
+        }
+    }
+    void readPacket(RawPDU pdu, std::stringstream& ss)
+    {
+        for (size_t i = 0; i < pdu.payload_size(); i++) {
+            uint8_t x = pdu.payload()[i];
+            if (x < 16)
+                ss << 0;
+            ss << std::hex << (int)x;
         }
     }
     void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::stringstream& ss)
     {
-        for (size_t i = regionStart; i < regionEnd; i++)
-        {
+        for (size_t i = regionStart; i < regionEnd; i++) {
             uint8_t x = pdu.payload()[i];
-            if (x < 16)
+            if (x < 16) {
                 ss << 0;
+            }
             ss << std::hex << (int)x;
         }
     }
@@ -312,77 +328,64 @@ private:
         }
         return ss;
     }
-    std::vector<size_t> findCommandBordersInPacket(RawPDU pdu)
+    std::vector<size_t> findCommandBordersInPacket(std::string packet, std::vector<std::string> borderStrings)
     {
-        std::vector<std::string> compareStrings =
-        { "01000000", "01ff0000", "06000100", "07000000", "08000100" };
         std::vector<size_t> commandBorders;
-        std::stringstream compareString;
 
-        for (size_t i = 12; i < (pdu.payload_size() - 8); i++)
+        for (size_t i = 24; i < (packet.length() - 16); i ++)
         {
-            readPacket(pdu, i, i + 4, compareString);
-            for (size_t j = 0; j < compareStrings.size(); j++)
+            for (size_t j = 0; j < borderStrings.size(); j++)
             {
-                if (compareString.str() == compareStrings[j])
+                if (packet.substr(i, 8) == borderStrings[j])
                 {
                     commandBorders.push_back(i);
-                    i += 7;
+                    i += 15;
                 }
             }
-            compareString.str(std::string());
         }
-        commandBorders.push_back(pdu.payload_size());
+        commandBorders.push_back(packet.length());
 
         return commandBorders;
     }
-    bool findStringInPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string string)
+    bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
-        std::stringstream ss;
-
-        readPacket(pdu, regionStart, regionEnd, ss);
-        for (size_t i = 0; i < ss.str().length() - string.length() + 1; i++) {
-            //std::cout << ss.str().length() << "\n";
-            std::cout << ss.str().substr(i, string.length()) << "\n";
-            if (ss.str().substr(i, string.length()) == string) {
+        std::string packetString = packet.substr(regionStart, regionEnd - regionStart);
+        for (size_t i = 0; i < packetString.length() - string.length() + 1; i += 2) {
+            if (packetString.substr(i, string.length()) == string) {
                 return true;
             }
         }
-        printPacket(pdu, regionStart, regionEnd), std::cout << "\n";
 
         return false;
     }
 
-    bool analyzePacket(const PDU& pdu) {
-        const IP& ip = pdu.rfind_pdu<IP>();
-        const UDP& udp = pdu.rfind_pdu<UDP>();
-        RawPDU rawPDU = pdu.rfind_pdu<RawPDU>();
-        if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
+    bool analyzePacket(std::string packet) 
+    {
+        std::vector<size_t> commandBorders;
+        commandBorders = findCommandBordersInPacket(packet, borderStrings);
 
-            std::vector<size_t> commandBorders;
-            commandBorders = findCommandBordersInPacket(rawPDU);
+        std::cout << commandBorders.size() << " ";
 
-            for (size_t i = 0; i < commandBorders.size() - 1; i++) {
+        for (size_t i = 0; i < commandBorders.size() - 1; i++) {
 
-                std::string eventCode = readPacket(rawPDU, commandBorders[i] + 4, 
-                    commandBorders[i] + 8).str();
-
-                //if ((std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
-                //if (eventCode == desiredEventCodes[counter])
+            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
+            printPacket(packet, 0, 8);
+            //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
+            //if (eventCode == desiredEventCodes[counter])
+            {
+                //if(findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 4, "62")
+                //    and findStringInPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 4, "05"))
                 {
-                    if(findStringInPacket(rawPDU, commandBorders[i + 1] - 8, commandBorders[i + 1] - 4, "6201")
-                        and findStringInPacket(rawPDU, commandBorders[i] + 16, commandBorders[i + 1] - 4, "05"))
-                    {
-                        std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
-                        - (commandBorders[i] + 4)*/ << "\n";
-                        printPacket(rawPDU, commandBorders[i] + 16, commandBorders[i + 1] - 4), std::cout << "\n";                    
-                    }
+                    std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
+                    - (commandBorders[i] + 4)*/ << "\n";
+                    //printPacket(packet, commandBorders[i] + 64, commandBorders[i + 1] - 8), std::cout << "\n";
+                }
 
-                    //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
-                    //    std::cout << rawPDU.payload()[j];
-                }                
-            }
+                //for (size_t j = commandBorders[i] + 16; j < commandBorders[i + 1]; j++)
+                //    std::cout << rawPDU.payload()[j];
+            }                
         }
+        
         return true;
     }
 };
