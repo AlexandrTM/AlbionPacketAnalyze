@@ -88,7 +88,7 @@ std::vector<std::string> Bytes12_15 = {  };
 // 
 // command structure 
 // 0-3 command category ?
-// 4-7 event code
+// 4-7 command lenght
 // 8-11 time since launch/location change ?
 // 12-15 some id
 // 16-18 changes rarely
@@ -107,9 +107,11 @@ std::vector<std::string> Bytes12_15 = {  };
 
 // pen garn, brons hill - high mountain for testing
 int counter;
+size_t packetsNum;
+size_t packetsFilteredNum;
 std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","07000000","08000100"};
 
-std::vector<std::string> desiredEventCodes = {
+std::vector<std::string> eventCodes = {
     // resource mob  
     // 80, 82 RM ap 
     // 58(resources), 60(resources), 61(Tier < 4), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
@@ -169,10 +171,11 @@ std::vector<std::string> desiredEventCodes = {
     // 40, 46(resources T4+ enchanted), 47(mob hitting), 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
     // 6d,6f,81,82 empty resources
     //"00000066"
-    /*"00000051",*/"00000058","00000065","0000006a","00000072","00000073","0000007f","0000008c",
+    //"00000025","00000034","00000037","00000039","0000003b","0000003f","00000043","00000047","00000054","00000059","0000005a","00000069","00000072","00000082","000000e6"
+    /*"00000051","00000046","00000058","00000060","00000065","0000006a","00000072","00000073","0000007f","0000008c",
     /*"000000a2","000000c8","000000e3","0000014e"*/
     //"0000005c","0000005f"
-    //"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",
+    //"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",*/
     //"00000047","00000048","0000004b","0000005a","00000061","0000006c"
     //"0000002b","00000040","00000043","00000052","00000068","0000006d","00000071"
     /*"0000005c","0000005f","00000061","00000066"*/
@@ -180,12 +183,14 @@ std::vector<std::string> desiredEventCodes = {
     //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
     //"00000043","00000060","000c0000"
 };
-
-std::vector<std::vector<std::string>> text(desiredEventCodes.size());
+std::vector<std::vector<std::size_t>> commandLenghts;
+std::vector<std::size_t> amountOfSameCommands;
+std::vector<std::vector<std::string>> text;
 
 class PacketAnalyze {
 public:
-    void run() {
+    void run() 
+    {
         initWindow();
         initSniffer();
         mainLoop();
@@ -201,14 +206,16 @@ private:
     Sniffer sniffer = Sniffer(iface.name());
 
 private:
-    void mainLoop() {
+    void mainLoop() 
+    {
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             sniffPacket();
         }
     }
 
-    void cleanup() {
+    void cleanup() 
+    {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -236,29 +243,30 @@ private:
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-            if (counter < desiredEventCodes.size() - 1) {
+            if (counter < eventCodes.size() - 1) {
                 counter += 1;
             }
-            else if (counter == desiredEventCodes.size() - 1) {
+            else if (counter == eventCodes.size() - 1) {
                 counter = 0;
             }
-            std::cout << "\n" << "<<" << desiredEventCodes[counter] << ">>" << "\n";
+            std::cout << "\n" << "<<" << eventCodes[counter] << ">>" << "\n";
         }
         if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
             if (counter > 0) {
                 counter -= 1;
             }
             else if (counter == 0) {
-                counter = desiredEventCodes.size() - 1;
+                counter = eventCodes.size() - 1;
             }
-            std::cout << "\n" << "<<" << desiredEventCodes[counter] << ">>" << "\n";
+            std::cout << "\n" << "<<" << eventCodes[counter] << ">>" << "\n";
         }
         if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
 
-    void initSniffer() {
+    void initSniffer() 
+    {
         SnifferConfiguration albionConfig;
         albionConfig.set_filter("ip dst 192.168.1.71");
         sniffer = Sniffer(iface.name(), albionConfig);
@@ -276,7 +284,7 @@ private:
                     std::string packet;
                     readPacket(rawPacket, packet);
 
-                    if (packet.length() > 32) {
+                    if (packet.length() > 0) {
                         analyzePacket(packet);
                     }
                 }
@@ -376,10 +384,20 @@ private:
     }
     bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
-        std::string packetString = packet.substr(regionStart, regionEnd - regionStart);
+        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                return true;
+            }
+        }
 
-        for (size_t i = 0; i < packetString.length() - string.length() + 1; i += 2) {
-            if (packetString.substr(i, string.length()) == string) {
+        return false;
+    }
+    bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string, 
+        size_t &stringPosition)
+    {
+        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                stringPosition = i;
                 return true;
             }
         }
@@ -387,30 +405,62 @@ private:
         return false;
     }
 
+    std::vector<size_t> commandBorders;
+    size_t stringPos = 0;
     bool analyzePacket(std::string packet) 
     {
-        std::vector<size_t> commandBorders;
         commandBorders = findCommandBordersInPacket(packet, borderStrings);
 
         for (size_t i = 0; i < commandBorders.size() - 1; i++) 
         {
-            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
+            packetsNum += 1;
+            //std::string eventCode = packet.substr(commandBorders[i] + 16, 8);
+            //size_t commandLenght = commandBorders[i + 1] - commandBorders[i];
 
-            //if (!(std::find(std::begin(desiredEventCodes), std::end(desiredEventCodes), eventCode) != std::end(desiredEventCodes)))
-            //if (eventCode == desiredEventCodes[counter]) 
+            //if (eventCode == eventCodes[counter]) 
             {
-                //if (findStringInPacket(packet, commandBorders[i + 1] - 24, commandBorders[i + 1] - 8, "62"))
+                //if ((commandBorders[i + 1] - commandBorders[i]) > 72) 
                 {
-                    std::cout << "\"" << eventCode << "\"" /*<< " " << commandBorders[i + 1]
-                    - (commandBorders[i] + 4)*/ << "\n";
-                    if ((commandBorders[i] + 32, commandBorders[i + 1] - commandBorders[i]) > 0) 
+                    if(findStringInPacket(packet, commandBorders[i], commandBorders[i + 1], "f3040300"))
                     {
-                        printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
-                        //text[counter].push_back(packet.substr(commandBorders[i] + 32,
-                        //    commandBorders[i + 1] - commandBorders[i] - 40));
+                        packetsFilteredNum += 1;
+                        ////std::string eventCode = packet.substr(commandBorders[i] + stringPos / 2 + 28, 8);
+
+                        //if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                        //eventCode) != std::end(eventCodes)))
+                        //{
+                        //    eventCodes.push_back(eventCode);
+                        //    text.push_back({});
+                        //    amountOfSameCommands.push_back({});
+                        //}
+                        ////printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
+                        //ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                        //    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
+                        //amountOfSameCommands[eventCodeIndex] += 1;
+                        ////if (text[eventCodeIndex].size() < 10)
+                        //{
+                        //    text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
+                        //        commandBorders[i + 1] - commandBorders[i]));
+                        //}
                     }
                 }
             }
+
+            /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                eventCode) != std::end(eventCodes)))
+            {   
+                eventCodes.push_back(eventCode);
+                commandLenghts.push_back({});
+            }
+
+            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
+
+            if (!(std::find(commandLenghts[eventCodeIndex].begin(), commandLenghts[eventCodeIndex].end(),
+                commandLenght) != commandLenghts[eventCodeIndex].end()))
+            {
+                commandLenghts[eventCodeIndex].push_back(commandLenght);
+            }*/
 
         return true;
         }
@@ -429,12 +479,7 @@ std::vector<bool> findSameSymbolsInText(std::vector<std::string> text)
                 symbolSimilarity += 1;
             }
         }
-        if (symbolSimilarity == text.size()) {
-            sameSymbols.push_back(1);
-        }
-        else {
-            sameSymbols.push_back(0);
-        }
+        sameSymbols.push_back(floor((float)symbolSimilarity / text.size()));
     }
 
     return sameSymbols;
@@ -445,7 +490,18 @@ void colorizeSameText(std::vector<std::string> text, HANDLE consoleHandle)
     std::vector<bool> sameSymbols = findSameSymbolsInText(text);
 
     for (size_t i = 0; i < sameSymbols.size(); i++) {
+        if (sameSymbols[i] == 1) {
+            SetConsoleTextAttribute(consoleHandle, 2);
+        }
+
         std::cout << sameSymbols[i];
+        SetConsoleTextAttribute(consoleHandle, 7);
+        if (i % 8 == 7) {
+            std::cout << " ";
+        }
+        if (i % 32 == 31 and i != (sameSymbols.size() - 1)) {
+            std::cout << "\n";
+        }
     }
     std::cout << "\n";
 
@@ -454,27 +510,33 @@ void colorizeSameText(std::vector<std::string> text, HANDLE consoleHandle)
             if (sameSymbols[j] == 1) {
                 SetConsoleTextAttribute(consoleHandle, 2);
             }
+
             std::cout << text[i][j];
             SetConsoleTextAttribute(consoleHandle, 7);
+            if (j % 8 == 7) {
+                std::cout << " ";
+            }
+            if (j % 32 == 31 and j != (text[i].length() - 1)) {
+                std::cout << "\n";
+            }
         }
         std::cout << "\n";
     }
 }
 
-void outputColorizedPackets() {
+void outputColorizedPackets() 
+{
     HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
     for (size_t i = 0; i < text.size(); i++) {
         SetConsoleTextAttribute(consoleHandle, 6);
-        std::cout << "\"" << desiredEventCodes[i] << "\"\n";
+        std::cout << "\"" << eventCodes[i] << "\"" << " " << amountOfSameCommands[i] << "\n";
         SetConsoleTextAttribute(consoleHandle, 7);
 
         if (text[i].size() > 1) {
             colorizeSameText(text[i], consoleHandle);
         }
-        else if (text[i].size() == 1) {
-            std::cout << text[i][0] << "\n";
-        }
+        
     }
 }
 
@@ -482,7 +544,17 @@ int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
 
-    outputColorizedPackets();
+    std::cout << (float)packetsNum / packetsFilteredNum;
+    //outputColorizedPackets();
+
+    /*for (size_t i = 0; i < commandLenghts.size(); i++) {
+        std::cout << eventCodes[i] << " ";
+        for (size_t j = 0; j < commandLenghts[i].size(); j++){
+            std::cout << std::dec << commandLenghts[i][j] / 2 << " ";
+        }
+        std::cout << "\n";
+    }*/
+
 
     return 0;
 }
