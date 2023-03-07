@@ -2,7 +2,7 @@
 
 using namespace Tins;
 
-std::vector<std::string> ListOfEventCodes = {
+std::vector<std::string> ListOfCommandLenghts = {
     "00000000","00000001","00000013","00000014","00000018","00000019","0000001b","0000001c",
     "0000001e","00000020","00000021","00000024","00000025","00000027","00000028","0000002a",
     "0000002b","0000002d","0000002e","0000002f","00000030","00000031","00000032","00000033",
@@ -60,7 +60,7 @@ std::vector<std::string> ListOfEventCodes = {
     "03646400","06067800","07780000","0c000000","1103ff01","2003ff01","2103ff01","2203ff01",
     "2a000101","2b000700","3803ff01","94060001","a1060001","a6060001","ae060001","c8060001"
 };
-std::vector<std::string> Bytes16_19 = {
+std::vector<std::string> Bytes16_20 = {
     /*0003de8e,0003e317,0003e785,0003ec13,0003f0a2,0003f511,0003f998,0003fe0e,
     000401db,0004023d,000402a7,00040312,0004037a,000403ec,00040454,000404bf,
     0004053d,000405a2,00040625,000406af,00040720,000407aa,00040820,00040896,
@@ -74,26 +74,7 @@ std::vector<std::string> Bytes16_19 = {
     06007900,08006900,09006900,09007800,0a006900,0b006900,0c006900,10006900,
     11006900,13006900,f3040100,f3040300*/
 };
-std::vector<std::string> Bytes12_15 = {  };
-
-// 0-3 num of commnads in packet, 
-// 4-7 time
-// 8-11 session id randomly generates each time
-// 12-15 only 5 types exists 
-// 07000000 06000100 01000000 01ff0000 08000100
-// 16-19 event code
-// one byte is 2
-// word width is 4
-// wisperingmarch locaiton with low players
-// 
-// command structure 
-// 0-3 command category ?
-// 4-7 command lenght
-// 8-11 time since launch/location change ?
-// 12-15 some id
-// 16-18 changes rarely
-// data
-// last 4 command connector ?
+std::vector<std::string> Bytes12_16 = {  };
 
 // ap, disap - appearing, disappearing
 // CD - corrupt dungeon
@@ -106,9 +87,11 @@ std::vector<std::string> Bytes12_15 = {  };
 // distance of resource view is ~45-46.75 meters
 
 // pen garn, brons hill - high mountain for testing
+// wisperingmarch locaiton with low players
+
 int counter;
-size_t packetsNum;
-size_t packetsFilteredNum;
+int commands;
+int filteredCommands;
 std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","07000000","08000100"};
 
 std::vector<std::string> eventCodes = {
@@ -282,7 +265,7 @@ private:
                 if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
                     RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
                     std::string packet;
-                    readPacket(rawPacket, packet);
+                    readPacketAsHex(rawPacket, packet);
 
                     if (packet.length() > 0) {
                         analyzePacket(packet);
@@ -296,69 +279,78 @@ private:
 
     void printPacket(std::string packet)
     {
+        std::ios::hex;
         for (size_t i = 0; i < packet.length(); i++)
         {
-            std::cout << std::hex << packet[i];
+            std::cout << packet[i];
             if (i % 8 == 7)
                 std::cout << " ";
-            if (i % 32 == 31 and i != packet.length())
+            if (i % 64 == 63 and i != packet.length())
                 std::cout << "\n";
         }
+        std::ios::dec;
     }
     void printPacket(std::string packet, size_t regionStart, size_t regionEnd)
     {
+        std::ios::hex;
         for (size_t i = regionStart; i < regionEnd; i++)
         {
-            std::cout << std::hex << packet[i];
+            std::cout << packet[i];
             if ((i - regionStart) % 8 == 7)
                 std::cout << " ";
-            if ((i - regionStart) % 32 == 31 and i != (packet.length() - 1))
+            if ((i - regionStart) % 64 == 63 and i != (packet.length() - 1))
                 std::cout << "\n";
         }
+        std::ios::dec;
     }
     void printPacketInOneString(std::string packet, size_t regionStart, size_t regionEnd)
     {
+        std::ios::hex;
         for (size_t i = regionStart; i < regionEnd; i++) {
-            std::cout << std::hex << packet[i];
+            std::cout << packet[i];
         }
+        std::ios::dec;
     }
-    void readPacket(RawPDU pdu, std::string& string)
+    void readPacketAsHex(RawPDU pdu, std::string& string)
     {
         std::stringstream ss;
+        ss << std::hex;
 
         for (size_t i = 0; i < pdu.payload_size(); i++) {
             uint8_t x = pdu.payload()[i];
             if (x < 16)
                 ss << 0;
-            ss << std::hex << (int)x;
+            ss << (int)x;
         }
 
         string = ss.str();
     }
-    void readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string string)
+    void readPacketAsHex(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string &string)
     {
         std::stringstream ss;
+        ss << std::hex;
 
         for (size_t i = regionStart; i < regionEnd; i++) {
             uint8_t x = pdu.payload()[i];
             if (x < 16) {
                 ss << 0;
             }
-            ss << std::hex << (int)x;
+            ss << (int)x;
         }
 
         string = ss.str();
     }
-    std::string readPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
+    std::string readPacketAsHex(RawPDU pdu, size_t regionStart, size_t regionEnd)
     {
         std::stringstream ss;
+        ss << std::hex;
 
         for (size_t i = regionStart; i < regionEnd; i++)
         {
             uint8_t x = pdu.payload()[i];
             if (x < 16)
                 ss << 0;
-            ss << std::hex << (int)x;
+            ss << (int)x;
         }
 
         return ss.str();
@@ -382,7 +374,7 @@ private:
 
         return commandBorders;
     }
-    bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
+    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
         for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
             if (packet.substr(i, string.length()) == string) {
@@ -392,12 +384,12 @@ private:
 
         return false;
     }
-    bool findStringInPacket(std::string packet, size_t regionStart, size_t regionEnd, std::string string, 
+    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string, 
         size_t &stringPosition)
     {
         for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
             if (packet.substr(i, string.length()) == string) {
-                stringPosition = i;
+                stringPosition = i - regionStart;
                 return true;
             }
         }
@@ -413,35 +405,53 @@ private:
 
         for (size_t i = 0; i < commandBorders.size() - 1; i++) 
         {
-            packetsNum += 1;
-            //std::string eventCode = packet.substr(commandBorders[i] + 16, 8);
-            //size_t commandLenght = commandBorders[i + 1] - commandBorders[i];
+            size_t commandLenght = commandBorders[i + 1] - commandBorders[i];
 
             //if (eventCode == eventCodes[counter]) 
             {
-                //if ((commandBorders[i + 1] - commandBorders[i]) > 72) 
+                if ((commandBorders[i + 1] - commandBorders[i]) > 40) 
                 {
-                    if(findStringInPacket(packet, commandBorders[i], commandBorders[i + 1], "f3040300"))
+                    
+                    //if (!findStringInString(packet, commandBorders[i], commandBorders[i + 1], "00000043", stringPos))
+                    //{
+                    //    //std::cout << stringPos << "\n";
+                    //    printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
+                    //}
+                    if (findStringInString(packet, commandBorders[i], commandBorders[i + 1], "f3040300", stringPos))
                     {
-                        packetsFilteredNum += 1;
-                        ////std::string eventCode = packet.substr(commandBorders[i] + stringPos / 2 + 28, 8);
+                        //printPacket(packet, 24, packet.length()), std::cout << "\n";
+                        //filteredCommands += 1;
+                        //if ((commandBorders[i + 1] - commandBorders[i]) >= 32)
+                        {
+                            printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
 
-                        //if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
-                        //eventCode) != std::end(eventCodes)))
-                        //{
-                        //    eventCodes.push_back(eventCode);
-                        //    text.push_back({});
-                        //    amountOfSameCommands.push_back({});
-                        //}
-                        ////printPacket(packet, commandBorders[i] + 32, commandBorders[i + 1] - 8), std::cout << "\n";
-                        //ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
-                        //    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
-                        //amountOfSameCommands[eventCodeIndex] += 1;
-                        ////if (text[eventCodeIndex].size() < 10)
-                        //{
-                        //    text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
-                        //        commandBorders[i + 1] - commandBorders[i]));
-                        //}
+                            //std::string eventCode = packet.substr(stringPos + 24, 8);
+                            std::string eventCode = packet.substr(commandBorders[i], 8);
+                            std::cout << stringPos << " " << commandBorders[i] << "\n";
+                            /*if (eventCode == "039e4001") 
+                            {
+                                printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
+                            }*/
+                            
+                            if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                                eventCode) != std::end(eventCodes)))
+                            {
+                                eventCodes.push_back(eventCode);
+                                text.push_back({});
+                                amountOfSameCommands.push_back({});
+                            }
+
+                            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                                std::find(eventCodes.begin(), eventCodes.end(), eventCode));
+                            amountOfSameCommands[eventCodeIndex] += 1;
+
+                            //if (text[eventCodeIndex].size() < 10)
+                            {
+                                //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
+                                //    commandBorders[i + 1] - commandBorders[i]));
+                            }
+                        }
+
                     }
                 }
             }
@@ -499,7 +509,7 @@ void colorizeSameText(std::vector<std::string> text, HANDLE consoleHandle)
         if (i % 8 == 7) {
             std::cout << " ";
         }
-        if (i % 32 == 31 and i != (sameSymbols.size() - 1)) {
+        if (i % 64 == 63 and i != (sameSymbols.size() - 1)) {
             std::cout << "\n";
         }
     }
@@ -516,7 +526,7 @@ void colorizeSameText(std::vector<std::string> text, HANDLE consoleHandle)
             if (j % 8 == 7) {
                 std::cout << " ";
             }
-            if (j % 32 == 31 and j != (text[i].length() - 1)) {
+            if (j % 64 == 63 and j != (text[i].length() - 1)) {
                 std::cout << "\n";
             }
         }
@@ -544,8 +554,9 @@ int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
 
-    std::cout << (float)packetsNum / packetsFilteredNum;
-    //outputColorizedPackets();
+    outputColorizedPackets();
+    
+    //std::cout << (float)filteredCommands / commands;
 
     /*for (size_t i = 0; i < commandLenghts.size(); i++) {
         std::cout << eventCodes[i] << " ";
