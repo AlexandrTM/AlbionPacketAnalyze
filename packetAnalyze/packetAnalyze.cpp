@@ -365,29 +365,35 @@ private:
         return ss.str();
     }
 
-    std::vector<size_t> findCommandBordersInPacket(std::string packet, std::vector<std::string> borderStrings)
+    std::vector<size_t> findCommandBordersInPacket(std::string packet)
     {
         std::vector<size_t> commandBorders;
+        size_t packetHeaderSize = 24;
+        size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
 
-        for (size_t i = 24; i < (packet.length() - 16); i += 2) {
-            for (size_t j = 0; j < borderStrings.size(); j++) {
-                if (packet.substr(i, 8) == borderStrings[j]) {
-                    commandBorders.push_back(i);
-                    i += 14;
-                }
-            }
+        commandBorders.push_back(packetHeaderSize);
+        for (size_t i = 0; i < commandsNumInPacket; i++) {
+            size_t commandWidth = strtoul(packet.substr(commandBorders[i] + 12, 4).c_str(), nullptr, 16);
+            commandBorders.push_back(commandBorders[i] + commandWidth * 2);
         }
-        commandBorders.push_back(packet.length());
 
         return commandBorders;
     }
     std::vector<std::string> findCommandsInPacket(std::string packet)
     {
-        std::stringstream ss;
-        std::string i = packet.substr(0, 8);
-        //size_t commandsInPacket = strtoul(,);
+        std::vector<std::string> commandsInPacket;
+        size_t packetHeaderSize = 24;
+        size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
 
-
+        ptrdiff_t stringPosition = packetHeaderSize;
+        for (size_t i = 0; i < commandsNumInPacket; i++) {
+            size_t commandWidth = strtoul(packet.substr(stringPosition + 12, 4).c_str(), nullptr, 16) * 2;// besauce hex
+            commandsInPacket.push_back(packet.substr(stringPosition, commandWidth));
+            stringPosition += commandWidth;
+            std::cout << commandWidth << " ";
+        }
+        std::cout << "\n";
+        return commandsInPacket;
     }
     bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
@@ -416,7 +422,7 @@ private:
     size_t stringPos = 0;
     bool analyzePacket(std::string packet) 
     {
-        commandBorders = findCommandBordersInPacket(packet, borderStrings);
+        commandBorders = findCommandBordersInPacket(packet);
 
         for (size_t i = 0; i < commandBorders.size() - 1; i++) 
         {
@@ -424,47 +430,33 @@ private:
 
             //if (eventCode == eventCodes[counter]) 
             {
-                if (commandLenght > 0)
+                //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
+                std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
+                //std::cout << eventCode << " " << commandLenght / 2 << "\n";
+                std::vector<std::string> commands;
+                commands = findCommandsInPacket(packet);
+                //std::cout << stringPos << " " << commandBorders[i] << "\n";
+                for (size_t i = 0; i < commands.size(); i++) {
+                    std::cout << commands[i] << "\n";
+                }
+                            
+                /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                    eventCode) != std::end(eventCodes)))
                 {
-                    //if (!findStringInString(packet, commandBorders[i], commandBorders[i + 1], "00000043", stringPos))
-                    //{
-                    //    //std::cout << stringPos << "\n";
-                    //    printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
-                    //}
-                    //if (findStringInString(packet, commandBorders[i], commandBorders[i + 1], "3e7", stringPos))
-                    {
-                        //printPacket(packet, 24, packet.length()), std::cout << "\n";
-                        //filteredCommands += 1;
-                        {
-                            //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
-                            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
-                            std::cout << eventCode << " " << commandLenght / 2 << "\n";
-                            //std::cout << stringPos << " " << commandBorders[i] << "\n";
-                            /*if (eventCode == "039e4001") 
-                            {
-                                printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
-                            }*/
-                            
-                            if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
-                                eventCode) != std::end(eventCodes)))
-                            {
-                                eventCodes.push_back(eventCode);
-                                text.push_back({});
-                                amountOfSameCommands.push_back({});
-                            }
+                    eventCodes.push_back(eventCode);
+                    text.push_back({});
+                    amountOfSameCommands.push_back({});
+                }
 
-                            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
-                                std::find(eventCodes.begin(), eventCodes.end(), eventCode));
-                            amountOfSameCommands[eventCodeIndex] += 1;
+                ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
+                amountOfSameCommands[eventCodeIndex] += 1;*/
                             
-                            //if (eventCode != "00000043" and eventCode != "000004a4")
-                            //if (text[eventCodeIndex].size() < 10)
-                            {
-                                //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
-                                //    commandBorders[i + 1] - commandBorders[i]));
-                            }
-                        }
-                    }
+                //if (eventCode != "00000043" and eventCode != "000004a4")
+                //if (text[eventCodeIndex].size() < 10)
+                {
+                    //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
+                    //    commandBorders[i + 1] - commandBorders[i]));
                 }
             }
 
