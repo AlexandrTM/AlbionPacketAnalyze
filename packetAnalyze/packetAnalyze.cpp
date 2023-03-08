@@ -93,6 +93,7 @@ int counter;
 int commands;
 int filteredCommands;
 std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","07000000","08000100"};
+std::vector<std::string> eventStartStrings = {"f3030100","f3040100","f3040300"};
 
 std::vector<std::string> eventCodes = {
     // resource mob  
@@ -306,9 +307,7 @@ private:
     void printPacketInOneString(std::string packet, size_t regionStart, size_t regionEnd)
     {
         std::ios::hex;
-        for (size_t i = regionStart; i < regionEnd; i++) {
-            std::cout << packet[i];
-        }
+        std::cout << packet.substr(regionStart, regionEnd - regionStart);
         std::ios::dec;
     }
     void readPacketAsHex(RawPDU pdu, std::string& string)
@@ -359,12 +358,9 @@ private:
     {
         std::vector<size_t> commandBorders;
 
-        for (size_t i = 24; i < (packet.length() - 16); i += 2)
-        {
-            for (size_t j = 0; j < borderStrings.size(); j++)
-            {
-                if (packet.substr(i, 8) == borderStrings[j])
-                {
+        for (size_t i = 24; i < (packet.length() - 16); i += 2) {
+            for (size_t j = 0; j < borderStrings.size(); j++) {
+                if (packet.substr(i, 8) == borderStrings[j]) {
                     commandBorders.push_back(i);
                     i += 14;
                 }
@@ -409,25 +405,22 @@ private:
 
             //if (eventCode == eventCodes[counter]) 
             {
-                if ((commandBorders[i + 1] - commandBorders[i]) > 40) 
+                if (commandLenght > 0)
                 {
-                    
                     //if (!findStringInString(packet, commandBorders[i], commandBorders[i + 1], "00000043", stringPos))
                     //{
                     //    //std::cout << stringPos << "\n";
                     //    printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
                     //}
-                    if (findStringInString(packet, commandBorders[i], commandBorders[i + 1], "f3040300", stringPos))
+                    //if (findStringInString(packet, commandBorders[i], commandBorders[i + 1], "3e7", stringPos))
                     {
                         //printPacket(packet, 24, packet.length()), std::cout << "\n";
                         //filteredCommands += 1;
-                        //if ((commandBorders[i + 1] - commandBorders[i]) >= 32)
                         {
-                            printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
-
-                            //std::string eventCode = packet.substr(stringPos + 24, 8);
-                            std::string eventCode = packet.substr(commandBorders[i], 8);
-                            std::cout << stringPos << " " << commandBorders[i] << "\n";
+                            //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
+                            std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
+                            std::cout << eventCode << " " << commandLenght / 2 << "\n";
+                            //std::cout << stringPos << " " << commandBorders[i] << "\n";
                             /*if (eventCode == "039e4001") 
                             {
                                 printPacket(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n";
@@ -444,33 +437,17 @@ private:
                             ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
                                 std::find(eventCodes.begin(), eventCodes.end(), eventCode));
                             amountOfSameCommands[eventCodeIndex] += 1;
-
+                            
+                            //if (eventCode != "00000043" and eventCode != "000004a4")
                             //if (text[eventCodeIndex].size() < 10)
                             {
                                 //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
                                 //    commandBorders[i + 1] - commandBorders[i]));
                             }
                         }
-
                     }
                 }
             }
-
-            /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
-                eventCode) != std::end(eventCodes)))
-            {   
-                eventCodes.push_back(eventCode);
-                commandLenghts.push_back({});
-            }
-
-            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
-                    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
-
-            if (!(std::find(commandLenghts[eventCodeIndex].begin(), commandLenghts[eventCodeIndex].end(),
-                commandLenght) != commandLenghts[eventCodeIndex].end()))
-            {
-                commandLenghts[eventCodeIndex].push_back(commandLenght);
-            }*/
 
         return true;
         }
@@ -566,6 +543,20 @@ int main() {
         std::cout << "\n";
     }*/
 
+    //for (size_t j = 0; j < 10; j++) {
+    //    auto start = std::chrono::high_resolution_clock::now();
+    //    LARGE_INTEGER count;
+    //    size_t iterations = 20000000;
+    //    for (size_t i = 0; i < iterations; ++i) {
+    //        std::hex;
+    //        std::cout << "";
+    //        //QueryPerformanceCounter(&count);
+    //        std::dec;
+    //    }
+    //    auto stop = std::chrono::high_resolution_clock::now();
+    //    std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() / iterations 
+    //        << "\n";
+    //}
 
     return 0;
 }

@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <GLFW/glfw3.h>
+#include <chrono>
 #define TINS_STATIC
 #include "tins/tins.h"
 
