@@ -255,23 +255,33 @@ private:
         albionConfig.set_filter("ip dst 192.168.1.71");
         sniffer = Sniffer(iface.name(), albionConfig);
     }
+    bool filterPacket(std::string &filteredPacket)
+    {
+        PDU* sniffedPacket = sniffer.next_packet();
+
+        if (sniffedPacket) {
+            const IP& ip = sniffedPacket->rfind_pdu<IP>();
+            const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
+
+            if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
+                RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
+                std::string packet;
+                readPacketAsHex(rawPacket, packet);
+
+                if (packet.length() > 0) {
+                    filteredPacket = packet;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     void sniffPacket()
     {
         try {
-            PDU* sniffedPacket = sniffer.next_packet();
-            if (sniffedPacket) {
-                const IP& ip = sniffedPacket->rfind_pdu<IP>();
-                const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
-
-                if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
-                    RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
-                    std::string packet;
-                    readPacketAsHex(rawPacket, packet);
-
-                    if (packet.length() > 0) {
-                        analyzePacket(packet);
-                    }
-                }
+            std::string packet;
+            if (filterPacket(packet)) {
+                analyzePacket(packet); 
             }
         }
         catch (std::exception& e) {
@@ -354,6 +364,7 @@ private:
 
         return ss.str();
     }
+
     std::vector<size_t> findCommandBordersInPacket(std::string packet, std::vector<std::string> borderStrings)
     {
         std::vector<size_t> commandBorders;
@@ -369,6 +380,14 @@ private:
         commandBorders.push_back(packet.length());
 
         return commandBorders;
+    }
+    std::vector<std::string> findCommandsInPacket(std::string packet)
+    {
+        std::stringstream ss;
+        std::string i = packet.substr(0, 8);
+        //size_t commandsInPacket = strtoul(,);
+
+
     }
     bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
