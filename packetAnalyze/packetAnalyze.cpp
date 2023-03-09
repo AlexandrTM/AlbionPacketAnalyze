@@ -293,17 +293,25 @@ private:
     }
     void readPacketAsHex(RawPDU pdu, std::string& string)
     {
-        std::stringstream ss;
+        /*std::stringstream ss;
         ss << std::hex;
-
+        
         for (size_t i = 0; i < pdu.payload_size(); i++) {
             uint8_t x = pdu.payload()[i];
+            std::cout << std::hex << unsigned(x);
             if (x < 16)
                 ss << 0;
             ss << (int)x;
         }
 
-        string = ss.str();
+        string = ss.str();*/
+
+        std::vector<uint8_t> payload = pdu.payload();
+
+        for (size_t i = 0; i < payload.size(); i++) {
+            std::cout << std::setfill('0') << std::setw(2) << std::hex << unsigned(payload[i]) << " ";
+        }
+        std::cout << "\n";
     }
     void readPacketAsHex(RawPDU pdu, size_t regionStart, size_t regionEnd, std::string &string)
     {
@@ -363,28 +371,38 @@ private:
         }
         return commandsInPacket;
     }
+
     size_t findCommandType(std::string command)
     {
         return strtoul(command.substr(0, 2).c_str(), nullptr, 16);
     }
     size_t findOperationType(std::string command, size_t commandType)
     {
-        if (commandType == 6) {
+        switch (commandType)
+        {
+        case 6:
             return strtoul(command.substr(26, 2).c_str(), nullptr, 16);
-        }
-        if (commandType == 7) {
+        case 7:
             return strtoul(command.substr(34, 2).c_str(), nullptr, 16);
-        }
-        if (commandType == 8) {
-            return strtoul(command.substr(66, 2).c_str(), nullptr, 16);
-        }
-        else {
+        case 8:
+            //return strtoul(command.substr(66, 2).c_str(), nullptr, 16); // fix needed
+        default:
             return 0;
         }
     }
-    size_t findEventCode(std::string command)
+    size_t findEventCode(std::string command, size_t commandType)
     {
-        return strtoul(command.substr(command.length() - 2, 2).c_str(), nullptr, 16);
+        switch (commandType) 
+        {
+        case 6:
+            return strtoul(command.substr(command.length() - 2, 2).c_str(), nullptr, 16);
+        case 7:
+            return strtoul(command.substr(command.length() - 2, 2).c_str(), nullptr, 16);
+        case 8:
+            //return strtoul(command.substr(command.length() - 2, 2).c_str(), nullptr, 16); // fix needed
+        default:
+            return 0;
+        }
     }
 
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
@@ -435,17 +453,11 @@ private:
         {
             commandType = findCommandType(commands[i]);
             commandLenght = commands[i].length();
+            eventCode = findEventCode(commands[i], commandType);
             operationType = findOperationType(commands[i], commandType);
-
-            if (packet.length() < 2400) {
-                eventCode = findEventCode(commands[i]);
-            }
-            else {
-                eventCode = 0;
-            }
             //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
             
-            std::cout << commandLenght << " " << commandType << " " << operationType << "\n";
+            std::cout << commandLenght << " " << eventCode << "\n";
             printPacket(commands[i]), std::cout << "\n";
                             
             if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
