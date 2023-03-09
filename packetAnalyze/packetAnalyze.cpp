@@ -142,6 +142,20 @@ std::vector<std::vector<std::size_t>> commandLenghts;
 std::vector<std::size_t> amountOfSameCommands;
 std::vector<std::vector<std::string>> text;
 
+enum operationType
+{
+    operationRequest = 2,
+    operationResponse = 3,
+    event = 4
+};
+
+enum commandType
+{
+    reliable = 6,
+    unreliable = 7,
+    fragmented = 8
+};
+
 class PacketAnalyze {
 public:
     void run() 
@@ -204,7 +218,7 @@ private:
             else if (counter == eventCodes.size() - 1) {
                 counter = 0;
             }
-            std::cout << "\n" << "<<" << eventCodes[counter] << ">>" << "\n";
+            std::cout << "\n" << "<<" << counter << ">>" << "\n";
         }
         if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
             if (counter > 0) {
@@ -213,7 +227,7 @@ private:
             else if (counter == 0) {
                 counter = eventCodes.size() - 1;
             }
-            std::cout << "\n" << "<<" << eventCodes[counter] << ">>" << "\n";
+            std::cout << "\n" << "<<" << counter << ">>" << "\n";
         }
         if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -269,7 +283,7 @@ private:
             std::cout << unsigned(packet[i]);
             if (i % 4 == 3)
                 std::cout << " ";
-            if (i % 32 == 31 and i != packet.size())
+            if (i % 16 == 15 and i != packet.size())
                 std::cout << "\n";
         }
         std::cout.unsetf(std::ios::hex);
@@ -284,7 +298,7 @@ private:
             std::cout << unsigned(packet[i]);
             if ((i - regionStart) % 4 == 3)
                 std::cout << " ";
-            if ((i - regionStart) % 32 == 31 and i != (packet.size() - 1))
+            if ((i - regionStart) % 16 == 15 and i != (packet.size() - 1))
                 std::cout << "\n";
         }
         std::cout.unsetf(std::ios::hex);
@@ -299,7 +313,7 @@ private:
             std::cout << unsigned(packet[i]);
             if ((i - regionStart) % 4 == 3)
                 std::cout << " ";
-            if ((i - regionStart) % 32 == 31 and i != (packet.size() - 1))
+            if ((i - regionStart) % 16 == 15 and i != (packet.size() - 1))
                 std::cout << "\n";
         }
         std::cout.unsetf(std::ios::hex);
@@ -342,11 +356,10 @@ private:
     std::vector<std::vector<uint8_t>> findCommandsInPacket(std::vector<uint8_t> packet)
     {
         std::vector<std::vector<uint8_t>> commandsInPacket;
-        size_t commandsNumInPacket = packet[3];
+        uint8_t commandsNumInPacket = packet[3];
 
         ptrdiff_t stringPosition = packetHeaderSize;
-        for (size_t i = 0; i < commandsNumInPacket; i++) {
-            
+        for (uint8_t i = 0; i < commandsNumInPacket; i++) {
             short commandLength = (packet[stringPosition + 6] << 8) + packet[stringPosition + 7];
             commandsInPacket.push_back({packet.begin() + stringPosition,    
                                         packet.begin() + stringPosition + commandLength});
@@ -355,7 +368,7 @@ private:
         return commandsInPacket;
     }
 
-    size_t findCommandType(std::vector<uint8_t> command)
+    uint8_t findCommandType(std::vector<uint8_t> command)
     {
         if (command.size() > 0) {
             return command[0];
@@ -364,7 +377,7 @@ private:
             return 0;
         }
     }
-    size_t findOperationType(std::vector<uint8_t> command, size_t commandType)
+    uint8_t findOperationType(std::vector<uint8_t> command, size_t commandType)
     {
         switch (commandType)
         {
@@ -373,25 +386,22 @@ private:
         case 7:
             return command[17];
         case 8:
-            //return command[33];
+            return command[33];
         default:
             return 0;
         }
     }
-    size_t findEventCode(std::vector<uint8_t> command, size_t commandType)
+    uint16_t findEventCode(std::vector<uint8_t> command, size_t commandType)
     {
-        std::stringstream ss;
         switch (commandType) 
         {
-        case 6:
-            /*ss << stoi(std::to_string(command[command.size() - 2])) << stoi(std::to_string(command[command.size() - 1]));
-            std::cout << stoi(ss.str()) << "\n";*/
+        case commandType::reliable:
+            //return ((command[command.size() - 2] << 8) + command[command.size() - 1]) & 0x0fff;
             return command[command.size() - 1];
-        case 7:
+        case commandType::unreliable:
             return command[command.size() - 1];
-        case 8:
-            //ss << std::to_string(command[command.size() - 2]) << std::to_string(command[command.size() - 1]);
-            //return stoi(ss.str());
+        case commandType::fragmented:
+            //return (command[command.size() - 2] << 8) + command[command.size() - 1];
         default:
             return 0;
         }
@@ -435,23 +445,26 @@ private:
     {
         commands = findCommandsInPacket(packet);
 
-        size_t commandType;
-        size_t eventCode;
-        size_t operationType;
-        size_t commandLenght;
+        uint8_t commandType;
+        uint16_t eventCode;
+        uint8_t operationType;
+        uint16_t commandLenght;
 
         //if (eventCode == eventCodes[counter]) 
         for (size_t i = 0; i < commands.size(); i++)
         {
             commandType = findCommandType(commands[i]);
             commandLenght = commands[i].size();
-            eventCode = findEventCode(commands[i], commandType);
             operationType = findOperationType(commands[i], commandType);
+            eventCode = findEventCode(commands[i], commandType);
             
-            std::cout << commandLenght << " " << eventCode << " " << commandType << " " << operationType << "\n";
-            printPacket(commands[i]), std::cout << "\n";
+            if (commandType == commandType::reliable)
+            {
+                std::cout << commandLenght << " " << eventCode << " " << (unsigned)commandType << " " << (unsigned)operationType << "\n";
+                printPacket(commands[i]), std::cout << "\n";
+            }
                             
-            /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+            if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
                 eventCode) != std::end(eventCodes)))
             {
                 eventCodes.push_back(eventCode);
@@ -461,7 +474,7 @@ private:
 
             ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
                 std::find(eventCodes.begin(), eventCodes.end(), eventCode));
-            amountOfSameCommands[eventCodeIndex] += 1;*/
+            amountOfSameCommands[eventCodeIndex] += 1;
             
             //if (text[eventCodeIndex].size() < 10)
             {
