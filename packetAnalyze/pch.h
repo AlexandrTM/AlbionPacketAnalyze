@@ -12,5 +12,6 @@
 #include <chrono>
 #define TINS_STATIC
 #include "tins/tins.h"
+#include "NetworkCommand.h"
 
 #endif // PCH_H
