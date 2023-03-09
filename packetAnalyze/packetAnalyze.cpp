@@ -60,42 +60,13 @@ std::vector<std::string> ListOfCommandLenghts = {
     "03646400","06067800","07780000","0c000000","1103ff01","2003ff01","2103ff01","2203ff01",
     "2a000101","2b000700","3803ff01","94060001","a1060001","a6060001","ae060001","c8060001"
 };
-std::vector<std::string> Bytes16_20 = {
-    /*0003de8e,0003e317,0003e785,0003ec13,0003f0a2,0003f511,0003f998,0003fe0e,
-    000401db,0004023d,000402a7,00040312,0004037a,000403ec,00040454,000404bf,
-    0004053d,000405a2,00040625,000406af,00040720,000407aa,00040820,00040896,
-    00040911,0004097c,000409f7,00040a63,00040aec,00040b64,00040bca,00040c40,
-    00040cb4,00040d1b,00040d81,00040de9,00040e5a,00040edf,00040f56,00040fca,
-    00041036,000410a7,0004110c,00041173,000411ec,00041258,000412c8,00041333,
-    000413a3,00041409,00041417,000415a5,00041604,00041676,000416db,000416fd,
-    0004190d,00041977,000419e3,00041a59,00041ad0,00041b44,00041bbc,00041c27,
-    00041c95,00041d1c,00041d85,0004220f,002a0002,01010401,02006900,02006b07,
-    02006b0c,02006b0d,02006b0e,02006b0f,02006b10,04006b0f,05007900,06006900,
-    06007900,08006900,09006900,09007800,0a006900,0b006900,0c006900,10006900,
-    11006900,13006900,f3040100,f3040300*/
-};
-std::vector<std::string> Bytes12_16 = {  };
-
-// ap, disap - appearing, disappearing
-// CD - corrupt dungeon
-// SD - solo dungeon
-// GD, CGD - group dungeon, crystal group dungeon
-// RM - resource mob
-// HG - hell gate
-// ERM - empty resource mob
-// DRM - dead resource mob
-// distance of resource view is ~45-46.75 meters
-
-// pen garn, brons hill - high mountain for testing
-// wisperingmarch locaiton with low players
 
 int counter;
-int commands;
+//int commands;
 int filteredCommands;
-std::vector<std::string> borderStrings = {"01000000","01ff0000","06000100","07000000","08000100"};
-std::vector<std::string> eventStartStrings = {"f3030100","f3040100","f3040300"};
+size_t packetHeaderSize = 24;
 
-std::vector<std::string> eventCodes = {
+std::vector<size_t> eventCodes = {
     // resource mob  
     // 80, 82 RM ap 
     // 58(resources), 60(resources), 61(Tier < 4), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
@@ -382,7 +353,6 @@ private:
     std::vector<std::string> findCommandsInPacket(std::string packet)
     {
         std::vector<std::string> commandsInPacket;
-        size_t packetHeaderSize = 24;
         size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
 
         ptrdiff_t stringPosition = packetHeaderSize;
@@ -390,10 +360,25 @@ private:
             size_t commandWidth = strtoul(packet.substr(stringPosition + 12, 4).c_str(), nullptr, 16) * 2;// besauce hex
             commandsInPacket.push_back(packet.substr(stringPosition, commandWidth));
             stringPosition += commandWidth;
-            std::cout << commandWidth << " ";
         }
-        std::cout << "\n";
         return commandsInPacket;
+    }
+    size_t findCommandType(std::string command)
+    {
+        size_t stringPosition;
+        findStringInString(command, 24, command.length(), "f30", stringPosition);
+        std::cout << stringPosition << "\n";
+        return strtoul(command.substr(stringPosition + 2, 2).c_str(), nullptr, 16);
+    }
+    bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
+    {
+        for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                return true;
+            }
+        }
+
+        return false;
     }
     bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
     {
@@ -410,7 +395,7 @@ private:
     {
         for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
             if (packet.substr(i, string.length()) == string) {
-                stringPosition = i - regionStart;
+                stringPosition = i;
                 return true;
             }
         }
@@ -418,46 +403,49 @@ private:
         return false;
     }
 
-    std::vector<size_t> commandBorders;
-    size_t stringPos = 0;
+    std::vector<std::string> commands;
     bool analyzePacket(std::string packet) 
     {
-        commandBorders = findCommandBordersInPacket(packet);
+        commands = findCommandsInPacket(packet);
 
-        for (size_t i = 0; i < commandBorders.size() - 1; i++) 
+        size_t packetType = strtoul(packet.substr(packetHeaderSize, 2).c_str(), nullptr, 16);
+        size_t eventCode;
+        size_t commandType;
+        size_t commandLenght;
+
+        //if (eventCode == eventCodes[counter]) 
+        for (size_t i = 0; i < commands.size(); i++)
         {
-            size_t commandLenght = commandBorders[i + 1] - commandBorders[i];
-
-            //if (eventCode == eventCodes[counter]) 
+            commandLenght = commands[i].length();
+            eventCode;
+            commandType = findCommandType(commands[i]);
+            //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
+                
+            /*if (packet.length() < 2400) {
+                eventCode = commands[i].substr(commands[i].length() - 4, 4);
+            }
+            else {
+                eventCode = "";
+            }*/
+            std::cout << commandLenght << " " << commandType << "\n";
+            printPacket(commands[i]), std::cout << "\n";
+                            
+            if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                eventCode) != std::end(eventCodes)))
             {
-                //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
-                std::string eventCode = packet.substr(commandBorders[i] + 8, 8);
-                //std::cout << eventCode << " " << commandLenght / 2 << "\n";
-                std::vector<std::string> commands;
-                commands = findCommandsInPacket(packet);
-                //std::cout << stringPos << " " << commandBorders[i] << "\n";
-                for (size_t i = 0; i < commands.size(); i++) {
-                    std::cout << commands[i] << "\n";
-                }
-                            
-                /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
-                    eventCode) != std::end(eventCodes)))
-                {
-                    eventCodes.push_back(eventCode);
-                    text.push_back({});
-                    amountOfSameCommands.push_back({});
-                }
+                eventCodes.push_back(eventCode);
+                text.push_back({});
+                amountOfSameCommands.push_back({});
+            }
 
-                ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
-                    std::find(eventCodes.begin(), eventCodes.end(), eventCode));
-                amountOfSameCommands[eventCodeIndex] += 1;*/
-                            
-                //if (eventCode != "00000043" and eventCode != "000004a4")
-                //if (text[eventCodeIndex].size() < 10)
-                {
-                    //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
-                    //    commandBorders[i + 1] - commandBorders[i]));
-                }
+            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                std::find(eventCodes.begin(), eventCodes.end(), eventCode));
+            amountOfSameCommands[eventCodeIndex] += 1;
+            
+            //if (text[eventCodeIndex].size() < 10)
+            {
+                //text[eventCodeIndex].push_back(packet.substr(commandBorders[i],
+                //    commandBorders[i + 1] - commandBorders[i]));
             }
 
         return true;
