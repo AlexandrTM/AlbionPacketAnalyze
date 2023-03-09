@@ -365,11 +365,28 @@ private:
     }
     size_t findCommandType(std::string command)
     {
-        size_t stringPosition;
-        findStringInString(command, 24, command.length(), "f30", stringPosition);
-        std::cout << stringPosition << "\n";
-        return strtoul(command.substr(stringPosition + 2, 2).c_str(), nullptr, 16);
+        return strtoul(command.substr(0, 2).c_str(), nullptr, 16);
     }
+    size_t findOperationType(std::string command, size_t commandType)
+    {
+        if (commandType == 6) {
+            return strtoul(command.substr(26, 2).c_str(), nullptr, 16);
+        }
+        if (commandType == 7) {
+            return strtoul(command.substr(34, 2).c_str(), nullptr, 16);
+        }
+        if (commandType == 8) {
+            return strtoul(command.substr(66, 2).c_str(), nullptr, 16);
+        }
+        else {
+            return 0;
+        }
+    }
+    size_t findEventCode(std::string command)
+    {
+        return strtoul(command.substr(command.length() - 2, 2).c_str(), nullptr, 16);
+    }
+
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
     {
         for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
@@ -408,26 +425,27 @@ private:
     {
         commands = findCommandsInPacket(packet);
 
-        size_t packetType = strtoul(packet.substr(packetHeaderSize, 2).c_str(), nullptr, 16);
-        size_t eventCode;
         size_t commandType;
+        size_t eventCode;
+        size_t operationType;
         size_t commandLenght;
 
         //if (eventCode == eventCodes[counter]) 
         for (size_t i = 0; i < commands.size(); i++)
         {
-            commandLenght = commands[i].length();
-            eventCode;
             commandType = findCommandType(commands[i]);
-            //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
-                
-            /*if (packet.length() < 2400) {
-                eventCode = commands[i].substr(commands[i].length() - 4, 4);
+            commandLenght = commands[i].length();
+            operationType = findOperationType(commands[i], commandType);
+
+            if (packet.length() < 2400) {
+                eventCode = findEventCode(commands[i]);
             }
             else {
-                eventCode = "";
-            }*/
-            std::cout << commandLenght << " " << commandType << "\n";
+                eventCode = 0;
+            }
+            //printPacketInOneString(packet, commandBorders[i], commandBorders[i + 1]), std::cout << "\n"; 
+            
+            std::cout << commandLenght << " " << commandType << " " << operationType << "\n";
             printPacket(commands[i]), std::cout << "\n";
                             
             if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
