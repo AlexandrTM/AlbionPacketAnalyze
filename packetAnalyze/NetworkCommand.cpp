@@ -17,10 +17,31 @@ enum commandType
 NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
 {
     _networkCommand = command;
-    _commandLenght = _networkCommand.size();
     _commandType = findCommandType();
     _operationType = findOperationType();
     _eventCode = findEventCode();
+}
+
+NetworkCommand::NetworkCommand() 
+{
+    _networkCommand = {};
+    _commandType = 0;
+    _operationType = 0;
+    _eventCode = 0;
+}
+
+bool NetworkCommand::isLastCommandInChain()
+{
+    uint8_t _commandsNumInChain = _networkCommand[19];
+    uint8_t _commandIndexInChain = _networkCommand[23];
+    //std::cout << (unsigned)_commandsNumInChain << " " << (unsigned)_commandIndexInChain << "\n";
+    if (_commandsNumInChain == _commandIndexInChain + 1) {
+        _eventCode = _networkCommand[_networkCommand.size() - 1];
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 uint8_t NetworkCommand::getCommandType() 
@@ -36,14 +57,39 @@ uint16_t NetworkCommand::getEventCode()
     return _eventCode;
 }
 
-size_t NetworkCommand::size()
+void NetworkCommand::setEventCode(uint16_t eventCode)
 {
-    return _commandLenght;
+    _eventCode = eventCode;
 }
 
-uint8_t& NetworkCommand::operator[](size_t elementNumber)
+void NetworkCommand::push_back(uint8_t element)
 {
-    return _networkCommand[elementNumber];
+    _networkCommand.push_back(element);
+}
+
+uint16_t NetworkCommand::size()
+{
+    return _networkCommand.size();
+}
+
+void NetworkCommand::clear()
+{
+    _networkCommand.clear();
+}
+
+uint8_t& NetworkCommand::operator[](size_t elementIndex)
+{
+    return _networkCommand[elementIndex];
+}
+const uint8_t& NetworkCommand::operator[](size_t elementIndex) const
+{
+    return _networkCommand[elementIndex];
+}
+NetworkCommand& NetworkCommand::operator+=(NetworkCommand command)
+{
+    for (size_t i = 0; i < command.size(); i++) {
+        _networkCommand.push_back(command[i]);
+    }
 }
 
 uint8_t NetworkCommand::findCommandType()
@@ -74,12 +120,14 @@ uint16_t NetworkCommand::findEventCode()
     switch (_commandType)
     {
     case commandType::reliable:
-        //return ((_networkCommand[_commandLenght - 2] << 8) + _networkCommand[_commandLenght - 1]) & 0x0fff;
-        return _networkCommand[_commandLenght - 1];
+        //return ((_networkCommand[_networkCommand.size() - 2] << 8) + _networkCommand[_networkCommand.size() - 1]) & 0x0fff;
+        return _networkCommand[_networkCommand.size() - 1];
     case commandType::unreliable:
-        return _networkCommand[_commandLenght - 1];
+        return _networkCommand[_networkCommand.size() - 1];
     case commandType::fragmented:
-        //return (_networkCommand[_commandLenght - 2] << 8) + _networkCommand[_commandLenght - 1];
+        if (isLastCommandInChain()) {
+            return _networkCommand[_networkCommand.size() - 1];
+        }
     default:
         return 0;
     }
