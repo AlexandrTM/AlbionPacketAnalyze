@@ -236,7 +236,7 @@ private:
     void initSniffer() 
     {
         SnifferConfiguration albionConfig;
-        albionConfig.set_filter("ip dst 192.168.1.71");
+        albionConfig.set_filter("ip dst 192.168.1.70");
         sniffer = Sniffer(iface.name(), albionConfig);
     }
     bool filterPacket(std::vector<uint8_t> &filteredPacket)
@@ -307,6 +307,17 @@ private:
         }
         std::cout.unsetf(std::ios::hex);
     }
+    void printPacketInOneString(NetworkCommand& packet)
+    {
+        std::cout.setf(std::ios::hex, std::ios::basefield);
+        for (size_t i = 0; i < packet.size(); i++)
+        {
+            if (packet[i] < 16)
+                std::cout << "0";
+            std::cout << unsigned(packet[i]);
+        }
+        std::cout.unsetf(std::ios::hex);
+    }
     void printPacketInOneString(NetworkCommand &packet, size_t regionStart, size_t regionEnd)
     {
         std::cout.setf(std::ios::hex, std::ios::basefield);
@@ -315,10 +326,6 @@ private:
             if (packet[i] < 16)
                 std::cout << "0";
             std::cout << unsigned(packet[i]);
-            if ((i - regionStart) % 4 == 3)
-                std::cout << " ";
-            if ((i - regionStart) % 16 == 15 and i != (packet.size() - 1))
-                std::cout << "\n";
         }
         std::cout.unsetf(std::ios::hex);
     }
@@ -377,20 +384,6 @@ private:
     {
         return (packet[4] << 24) + (packet[5] << 16) + (packet[6] << 8) + packet[7];
     }
-    
-    void fillFragmentedCommand(NetworkCommand command)
-    {
-        if (command.isLastCommandInChain()) {
-            _fragmentedCommandBuffer.setEventCode(command.getEventCode());
-            std::cout << _fragmentedCommandBuffer.getEventCode() << "\n";
-            std::cout << _fragmentedCommandBuffer.size() << "\n";
-            //printPacket(_fragmentedCommandBuffer);
-            _fragmentedCommandBuffer.clear();
-        }
-        else {
-            _fragmentedCommandBuffer += command;
-        }
-    }
 
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
     {
@@ -426,26 +419,20 @@ private:
     }
 
     std::vector<NetworkCommand> _commands;
+    uint32_t _packetTime;
     NetworkCommand _fragmentedCommandBuffer;
     void catchPacket(std::vector<uint8_t> packet)
     {
         _commands = findCommandsInPacket(packet);
-
-        uint32_t packetTime = findPacketTime(packet);
+        _packetTime = findPacketTime(packet);
 
         //if (eventCode == eventCodes[counter]) 
         for (size_t i = 0; i < _commands.size(); i++)
         {
-            if (_commands[i].getCommandType() == commandType::fragmented)
-            {
-                fillFragmentedCommand(_commands[i]);
-                //fragmentedCommandBuffer.push_back(_commands[i]);
-                //std::cout << commandLenght << " " << eventCode << " " << (unsigned)commandType << " " << (unsigned)operationType << "\n";
-                //printPacket(_fragmentedCommandBuffer, 0 ,10), _fragmentedCommandBuffer.clear(), std::cout << "\n";
-            }
-            //printPacket(_commands[i]);
+            _fragmentedCommandBuffer.fillFragmentedCommand(_commands[i]);
+            
 
-            if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+            /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
                 _commands[i].getEventCode()) != std::end(eventCodes)))
             {
                 eventCodes.push_back(_commands[i].getEventCode());
@@ -454,7 +441,7 @@ private:
 
             ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
                 std::find(eventCodes.begin(), eventCodes.end(), _commands[i].getEventCode()));
-            amountOfSameCommands[eventCodeIndex] += 1;
+            amountOfSameCommands[eventCodeIndex] += 1;*/
         }
     }
 };
@@ -536,8 +523,6 @@ int main() {
 
     std::vector<std::vector<std::string>> text;
     outputColorizedPackets(text);
-    
-    //std::cout << (float)filteredCommands / _commands;
 
     //for (size_t j = 0; j < 10; j++) {
     //    auto start = std::chrono::high_resolution_clock::now();

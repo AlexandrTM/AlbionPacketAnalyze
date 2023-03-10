@@ -30,13 +30,30 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
+void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
+{
+    if (command.getCommandType() == commandType::fragmented)
+    {
+        ///std::cout << (unsigned)command._commandType;
+        if (command.isLastCommandInChain()) {
+            _commandType = commandType::fragmented;
+            _operationType = findOperationType();
+            _eventCode = command._eventCode;
+
+            std::cout << (unsigned)_commandType << "\n";
+            this->clear();
+        }
+        else {
+            *this += command;
+        }
+    }
+}
+
 bool NetworkCommand::isLastCommandInChain()
 {
     uint8_t _commandsNumInChain = _networkCommand[19];
     uint8_t _commandIndexInChain = _networkCommand[23];
-    //std::cout << (unsigned)_commandsNumInChain << " " << (unsigned)_commandIndexInChain << "\n";
     if (_commandsNumInChain == _commandIndexInChain + 1) {
-        _eventCode = _networkCommand[_networkCommand.size() - 1];
         return true;
     }
     else {
@@ -56,7 +73,6 @@ uint16_t NetworkCommand::getEventCode()
 { 
     return _eventCode;
 }
-
 void NetworkCommand::setEventCode(uint16_t eventCode)
 {
     _eventCode = eventCode;
@@ -66,12 +82,10 @@ void NetworkCommand::push_back(uint8_t element)
 {
     _networkCommand.push_back(element);
 }
-
 uint16_t NetworkCommand::size()
 {
     return _networkCommand.size();
 }
-
 void NetworkCommand::clear()
 {
     _networkCommand.clear();

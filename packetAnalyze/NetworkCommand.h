@@ -8,6 +8,8 @@ public:
     NetworkCommand(std::vector<uint8_t> command);
     NetworkCommand();
 
+    void fillFragmentedCommand(NetworkCommand command);
+
     bool isLastCommandInChain();
 
     uint8_t getCommandType();
@@ -23,9 +25,10 @@ public:
     const uint8_t& operator[](size_t elementIndex) const;
     NetworkCommand& operator+=(NetworkCommand command);
 private:
-    uint16_t findEventCode();
     uint8_t findCommandType();
     uint8_t findOperationType();
+    uint16_t findEventCode();
+
     uint8_t _commandType;
     uint8_t _operationType;
     uint16_t _eventCode;
