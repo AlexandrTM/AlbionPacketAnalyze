@@ -38,7 +38,7 @@ public:
 
     uint16_t size();
     void push_back(uint8_t element);
-    void clearCommand();
+    void clear();
 
     uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;

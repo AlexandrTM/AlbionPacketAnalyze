@@ -7,12 +7,13 @@ private:
     std::vector<NetworkCommand> _networkPacket;
     uint32_t _packetTime;
 
-    size_t _packetHeaderSize = 12;
+    static const size_t _packetHeaderSize = 12;
 
 public:
     NetworkPacket();
 
-    NetworkPacket findCommandsInPacket(NetworkCommand rawPacket);
+    void addCommandsFromPacket(std::vector<uint8_t> rawPacket);
+    static NetworkPacket findCommandsInPacket(std::vector<uint8_t> rawPacket);
     uint32_t findPacketTime();
 
     NetworkCommand& operator[](size_t elementIndex);
@@ -20,6 +21,7 @@ public:
 
     uint16_t size();
     void push_back(NetworkCommand command);
+    void clear();
 };
 
 #endif

@@ -26,16 +26,18 @@ enum eventCodes {
     HarvestStart = 55,
     HarvestFinished = 57,
     EquipmentChanged = 85,
+    MobSpawn = 117,
 };
 
 std::vector<size_t> nnCodes = { 1,10,35,36,55,57,66,67,85,195 };
-std::vector<size_t> nCodes = { 36 };
+std::vector<size_t> nCodes = { 117 };
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
 {
     _networkCommand = command;
     _commandType = findCommandType();
     _operationType = findOperationType();
+    _isCommandFull = isCommandFull();
     _eventCode = findEventCode();
 }
 
@@ -44,8 +46,8 @@ NetworkCommand::NetworkCommand()
     _networkCommand = {};
     _commandType = 0;
     _operationType = 0;
-    _eventCode = 0;
     _isCommandFull = false;
+    _eventCode = 0;
 }
 
 void NetworkCommand::analyzeCommand()
@@ -53,7 +55,7 @@ void NetworkCommand::analyzeCommand()
     if (isItemInVector(nCodes, _eventCode) and _operationType == operationType::event) {
         //std::cout << _eventCode << " " << _networkCommand.size() << "\n";
         //this->printCommand(), std::cout << "\n";
-        this->printCommandInOneString(), std::cout << "\n";
+        //this->printCommandInOneString(), std::cout << "\n";
     }
 }
 bool NetworkCommand::isItemInVector(std::vector<size_t>& vector, size_t item)
@@ -124,10 +126,11 @@ void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
     if (command.getCommandType() == commandType::fragmented)
     {
         if (command.isLastCommandInChain()) {
+            *this += command;
             _commandType = commandType::fragmented;
             _operationType = findOperationType();
-            _eventCode = command._eventCode;
             _isCommandFull = true;
+            _eventCode = findEventCode();
         }
         else {
             *this += command;
@@ -144,10 +147,6 @@ bool NetworkCommand::isLastCommandInChain()
     else {
         return false;
     }
-}
-bool NetworkCommand::isCommandFull()
-{
-    return _isCommandFull;
 }
 
 uint8_t NetworkCommand::getCommandType() 
@@ -171,7 +170,7 @@ uint16_t NetworkCommand::size()
 {
     return _networkCommand.size();
 }
-void NetworkCommand::clearCommand()
+void NetworkCommand::clear()
 {
     _networkCommand.clear();
     _commandType = 0;
@@ -218,20 +217,23 @@ uint8_t NetworkCommand::findOperationType()
         return 0;
     }
 }
-uint16_t NetworkCommand::findEventCode()
+bool NetworkCommand::isCommandFull()
 {
     switch (_commandType)
     {
     case commandType::reliable:
-        //return ((_networkCommand[_networkCommand.size() - 2] << 8) + _networkCommand[_networkCommand.size() - 1]) & 0x0fff;
-        return _networkCommand[_networkCommand.size() - 1];
+        return true;
     case commandType::unreliable:
-        return _networkCommand[_networkCommand.size() - 1];
+        return true;
     case commandType::fragmented:
-        if (isLastCommandInChain()) {
-            return _networkCommand[_networkCommand.size() - 1];
-        }
+        return _isCommandFull;
     default:
-        return 0;
+        return false;
+    }
+}
+uint16_t NetworkCommand::findEventCode()
+{
+    if (_isCommandFull == true) {
+        return _networkCommand[_networkCommand.size() - 1];
     }
 };
