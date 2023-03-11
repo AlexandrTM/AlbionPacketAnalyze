@@ -13,5 +13,6 @@
 #define TINS_STATIC
 #include "tins/tins.h"
 #include "NetworkCommand.h"
+#include "NetworkPacket.h"
 
 #endif // PCH_H

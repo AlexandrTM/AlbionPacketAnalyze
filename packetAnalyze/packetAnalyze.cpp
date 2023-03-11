@@ -2,6 +2,8 @@
 
 using namespace Tins;
 
+typedef NetworkCommand RawNetworkPacket;
+
 std::vector<std::string> ListOfCommandLenghts = {
     "00000000","00000001","00000013","00000014","00000018","00000019","0000001b","0000001c",
     "0000001e","00000020","00000021","00000024","00000025","00000027","00000028","0000002a",
@@ -64,7 +66,6 @@ std::vector<std::string> ListOfCommandLenghts = {
 int counter;
 //int _commands;
 int filteredCommands;
-size_t packetHeaderSize = 12;
 
 std::vector<size_t> eventCodes = {
     // resource mob  
@@ -140,6 +141,7 @@ std::vector<size_t> eventCodes = {
 };
 std::vector<std::vector<uint16_t>> commandLenghts;
 std::vector<std::size_t> amountOfSameCommands;
+std::vector<std::vector<std::string>> text;
 
 enum operationType
 {
@@ -174,6 +176,39 @@ private:
     Sniffer sniffer = Sniffer(iface.name());
 
 private:
+    bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
+    {
+        for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
+    {
+        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string,
+        size_t& stringPosition)
+    {
+        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+            if (packet.substr(i, string.length()) == string) {
+                stringPosition = i;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void mainLoop() 
     {
         while (!glfwWindowShouldClose(window)) {
@@ -239,7 +274,7 @@ private:
         albionConfig.set_filter("ip dst 192.168.1.70");
         sniffer = Sniffer(iface.name(), albionConfig);
     }
-    bool filterPacket(std::vector<uint8_t> &filteredPacket)
+    bool filterPacket(RawNetworkPacket& filteredPacket)
     {
         PDU* sniffedPacket = sniffer.next_packet();
 
@@ -249,7 +284,7 @@ private:
 
             if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
                 RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
-                std::vector<uint8_t> packet;
+                RawNetworkPacket packet;
                 readRawPacket(rawPacket, packet);
 
                 if (packet.size() > 0) {
@@ -263,7 +298,7 @@ private:
     void sniffPacket()
     {
         try {
-            std::vector<uint8_t> packet;
+            RawNetworkPacket packet;
             if (filterPacket(packet)) {
                 //auto start = std::chrono::high_resolution_clock::now();
 
@@ -277,78 +312,25 @@ private:
         }
     }
 
-    void printPacket(NetworkCommand &packet)
+    void readRawPacket(RawPDU pdu, RawNetworkPacket& rawPacketPayload)
     {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-        for (size_t i = 0; i < packet.size(); i++)
-        {
-            if (packet[i] < 16)
-                std::cout << "0";
-            std::cout << unsigned(packet[i]);
-            if (i % 4 == 3)
-                std::cout << " ";
-            if (i % 16 == 15 and i != packet.size())
-                std::cout << "\n";
-        }
-        std::cout.unsetf(std::ios::hex);
+        rawPacketPayload = pdu.payload();
     }
-    void printPacket(NetworkCommand &packet, size_t regionStart, size_t regionEnd)
-    {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-        for (size_t i = regionStart; i < regionEnd; i++)
-        {
-            if (packet[i] < 16)
-                std::cout << "0";
-            std::cout << unsigned(packet[i]);
-            if ((i - regionStart) % 4 == 3)
-                std::cout << " ";
-            if ((i - regionStart) % 16 == 15 and i != (packet.size() - 1))
-                std::cout << "\n";
-        }
-        std::cout.unsetf(std::ios::hex);
-    }
-    void printPacketInOneString(NetworkCommand& packet)
-    {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-        for (size_t i = 0; i < packet.size(); i++)
-        {
-            if (packet[i] < 16)
-                std::cout << "0";
-            std::cout << unsigned(packet[i]);
-        }
-        std::cout.unsetf(std::ios::hex);
-    }
-    void printPacketInOneString(NetworkCommand &packet, size_t regionStart, size_t regionEnd)
-    {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-        for (size_t i = regionStart; i < regionEnd; i++)
-        {
-            if (packet[i] < 16)
-                std::cout << "0";
-            std::cout << unsigned(packet[i]);
-        }
-        std::cout.unsetf(std::ios::hex);
-    }
-
-    void readRawPacket(RawPDU pdu, std::vector<uint8_t> &packetPayload)
-    {
-        packetPayload = pdu.payload();
-    }
-    void readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, std::vector<uint8_t> &packetPayload)
+    void readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, RawNetworkPacket& rawPacketPayload)
     {
         for (size_t i = regionStart; i < regionEnd; i++) {
-            packetPayload.push_back(pdu.payload()[i]);
+            rawPacketPayload.push_back(pdu.payload()[i]);
         }
     }
-    std::vector<uint8_t> readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
+    RawNetworkPacket readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
     {
-        std::vector<uint8_t> packetPayload;
+        RawNetworkPacket rawPacketPayload;
 
         for (size_t i = regionStart; i < regionEnd; i++) {
-            packetPayload.push_back(pdu.payload()[i]);
+            rawPacketPayload.push_back(pdu.payload()[i]);
         }
 
-        return packetPayload;
+        return rawPacketPayload;
     }
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet)
@@ -365,83 +347,38 @@ private:
 
         return commandBorders;
     }
-    std::vector<NetworkCommand> findCommandsInPacket(std::vector<uint8_t> packet)
-    {
-        std::vector<NetworkCommand> commandsInPacket;
-        uint8_t commandsNumInPacket = packet[3];
 
-        ptrdiff_t stringPosition = packetHeaderSize;
-        for (uint8_t i = 0; i < commandsNumInPacket; i++) {
-            uint16_t commandLength = (packet[stringPosition + 6] << 8) + packet[stringPosition + 7];
-            commandsInPacket.push_back(NetworkCommand({packet.begin() + stringPosition,    
-                                        packet.begin() + stringPosition + commandLength}));
-            stringPosition += commandLength;
-        }
-        return commandsInPacket;
-    }
 
-    uint32_t findPacketTime(std::vector<uint8_t> packet)
-    {
-        return (packet[4] << 24) + (packet[5] << 16) + (packet[6] << 8) + packet[7];
-    }
-
-    bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
-    {
-        for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
-    {
-        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string, 
-        size_t &stringPosition)
-    {
-        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                stringPosition = i;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    std::vector<NetworkCommand> _commands;
-    uint32_t _packetTime;
+    NetworkPacket _command;
     NetworkCommand _fragmentedCommandBuffer;
-    void catchPacket(std::vector<uint8_t> packet)
+    void catchPacket(RawNetworkPacket rawPacket)
     {
-        _commands = findCommandsInPacket(packet);
-        _packetTime = findPacketTime(packet);
+        _command.findCommandsInPacket(rawPacket);
 
         //if (eventCode == eventCodes[counter]) 
-        for (size_t i = 0; i < _commands.size(); i++)
+        for (size_t i = 0; i < _command.size(); i++)
         {
-            _fragmentedCommandBuffer.fillFragmentedCommand(_commands[i]);
-            
-
-            /*if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
-                _commands[i].getEventCode()) != std::end(eventCodes)))
-            {
-                eventCodes.push_back(_commands[i].getEventCode());
-                amountOfSameCommands.push_back({});
+            _fragmentedCommandBuffer.fillFragmentedCommand(_command[i]);
+            if (_fragmentedCommandBuffer.isCommandFull()) {
+                _fragmentedCommandBuffer.analyzeCommand();
+                _fragmentedCommandBuffer.clearCommand();
             }
+            if (_command[i].getCommandType() == commandType::reliable
+                or _command[i].getCommandType() == commandType::unreliable) {
+                _command[i].analyzeCommand();
 
-            ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
-                std::find(eventCodes.begin(), eventCodes.end(), _commands[i].getEventCode()));
-            amountOfSameCommands[eventCodeIndex] += 1;*/
+                if (!(std::find(std::begin(eventCodes), std::end(eventCodes),
+                    _command[i].getEventCode()) != std::end(eventCodes)))
+                {
+                    eventCodes.push_back(_command[i].getEventCode());
+                    amountOfSameCommands.push_back({});
+                    text.push_back({});
+                }
+
+                ptrdiff_t eventCodeIndex = std::distance(eventCodes.begin(),
+                    std::find(eventCodes.begin(), eventCodes.end(), _command[i].getEventCode()));
+                amountOfSameCommands[eventCodeIndex] += 1;
+            }
         }
     }
 };
@@ -521,7 +458,6 @@ int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
 
-    std::vector<std::vector<std::string>> text;
     outputColorizedPackets(text);
 
     //for (size_t j = 0; j < 10; j++) {
