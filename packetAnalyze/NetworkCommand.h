@@ -22,6 +22,9 @@ public:
     NetworkCommand();
 
     void analyzeCommand();
+    void findDataFragments();
+    ptrdiff_t findFragmentsNumOffset();
+
     bool isItemInVector(std::vector<size_t>& vector, size_t item);
 
     void printCommand();
@@ -44,6 +47,19 @@ public:
     uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;
     NetworkCommand& operator+=(NetworkCommand command);
+};
+
+struct DataTypeInfo
+{
+    uint8_t _dataTypeSize;
+    uint8_t _dataHeaderSize;
+    uint16_t _numOfEntries;
+
+    DataTypeInfo(uint8_t dataTypeSize, uint8_t dataHeaderSize, uint16_t numOfEntries);
+
+    void printInfo();
+    static uint8_t findDataTypeSize(uint8_t dataType);
+    static DataTypeInfo findDataTypeInfo(uint8_t dataType, NetworkCommand& command, ptrdiff_t offset);
 };
 
 #endif 

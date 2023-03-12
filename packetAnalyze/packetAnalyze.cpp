@@ -440,7 +440,7 @@ private:
                 _packet[i].analyzeCommand();
                 //findUniqueEventCodes(_packet[i]);
             }
-            _packet[i].printCommand(), std::cout << "\n";
+            //_packet[i].printCommand(), std::cout << "\n";
         }
     }
 };

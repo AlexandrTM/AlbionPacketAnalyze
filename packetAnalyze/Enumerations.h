@@ -33,6 +33,7 @@ enum eventCode: uint16_t
     newRandomDungeonExit = 307,
 
 };
+
 enum resourceType : uint8_t
 {
     WOOD = 0,
@@ -40,6 +41,18 @@ enum resourceType : uint8_t
     FIBER = 11,
     HIDE = 15,
     ORE = 23,
+};
+
+enum dataType : uint16_t
+{
+    byteInt = 98,
+    float32 = 102,
+    int32 = 105,
+    shortInt = 107,
+    int64 = 108,
+    byteIntList = 120,
+    dictionary = 121,
+
 };
 
 #endif
