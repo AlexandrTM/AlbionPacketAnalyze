@@ -8,8 +8,8 @@
 //"64" 1
 //"67" 3
 
-std::vector<size_t> nnCodes = { 1,10,35,36,55,57,66,67,85,195 };
-std::vector<size_t> nCodes = { 35 };
+std::vector<size_t> nnCodes = {};
+std::vector<size_t> nCodes = {};
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
 {
@@ -30,14 +30,20 @@ NetworkCommand::NetworkCommand()
 
 void NetworkCommand::analyzeCommand()
 {
+    HarvestableList _harvestableList{};
     if (_operationType == operationType::event) {
         if (_eventCode == eventCode::harvestableObjectList) {
-            HarvestableList(*this);
+            _harvestableList += HarvestableList(*this);
         }
-        //std::cout << _eventCode << " " << _networkCommand.size() << "\n";
+        if (_eventCode == eventCode::harvestableObject) {
+            _harvestableList.push_back(Harvestable(*this));
+            _harvestableList.printInfo();
+            //this->printCommandInOneString();
+        }
         //this->printCommand(), std::cout << "\n";
         //this->printCommandInOneString(), std::cout << "\n";
     }
+    //_harvestableList.clear();
 }
 bool NetworkCommand::isItemInVector(std::vector<size_t>& vector, size_t item)
 {
@@ -88,6 +94,7 @@ void NetworkCommand::printCommandInOneString()
             std::cout << "0";
         std::cout << unsigned(_networkCommand[i]);
     }
+    std::cout << "\n";
     std::cout.unsetf(std::ios::hex);
 }
 void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd)
@@ -99,23 +106,35 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
             std::cout << "0";
         std::cout << unsigned(_networkCommand[i]);
     }
+    std::cout << "\n";
     std::cout.unsetf(std::ios::hex);
 }
 
+bool NetworkCommand::isCommandFull()
+{
+    switch (_commandType)
+    {
+    case commandType::reliable:
+        return true;
+    case commandType::unreliable:
+        return true;
+    case commandType::fragmented:
+        return _isCommandFull;
+    default:
+        return false;
+    }
+}
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
-    if (command.getCommandType() == commandType::fragmented)
-    {
-        if (command.isLastCommandInChain()) {
-            *this += command;
-            _commandType = commandType::fragmented;
-            _operationType = findOperationType();
-            _isCommandFull = true;
-            _eventCode = findEventCode();
-        }
-        else {
-            *this += command;
-        }
+    if (command.isLastCommandInChain()) {
+        *this += command;
+        _commandType = commandType::fragmented;
+        _operationType = findOperationType();
+        _isCommandFull = true;
+        _eventCode = findEventCode();
+    }
+    else {
+        *this += command;
     }
 }
 bool NetworkCommand::isLastCommandInChain()
@@ -173,6 +192,7 @@ NetworkCommand& NetworkCommand::operator+=(NetworkCommand command)
     for (size_t i = 0; i < command.size(); i++) {
         _networkCommand.push_back(command[i]);
     }
+    return *this;
 }
 
 uint8_t NetworkCommand::findCommandType()
@@ -198,28 +218,16 @@ uint8_t NetworkCommand::findOperationType()
         return 0;
     }
 }
-bool NetworkCommand::isCommandFull()
-{
-    switch (_commandType)
-    {
-    case commandType::reliable:
-        return true;
-    case commandType::unreliable:
-        return true;
-    case commandType::fragmented:
-        return _isCommandFull;
-    default:
-        return false;
-    }
-}
 uint16_t NetworkCommand::findEventCode()
 {
     if (_isCommandFull == true) {
-        /*if (_commandType = commandType::reliable) {
-            return ((_networkCommand[_networkCommand.size() - 2] << 8) + 
-                     _networkCommand[_networkCommand.size() - 1]) & 0x01ff;
-        }*/
-        return _networkCommand[_networkCommand.size() - 1];
+        if (_networkCommand[_networkCommand.size() - 3] == 107) {
+            return ((_networkCommand[_networkCommand.size() - 2] << 8) +
+                        _networkCommand[_networkCommand.size() - 1]) & 0x0fff;
+        }
+        else {
+            return _networkCommand[_networkCommand.size() - 1];
+        }
     }
     else {
         return 0;

@@ -1,7 +1,6 @@
 #ifndef ENUMERATIONS_H
 #define ENUMERATIONS_H
 
-
 enum operationType: uint8_t
 {
     operationRequest = 2,
@@ -36,11 +35,11 @@ enum eventCode: uint16_t
 };
 enum resourceType : uint8_t
 {
-    wood = 0,
-    rock = 6,
-    fiber = 11,
-    hide = 15,
-    ore = 23,
+    WOOD = 0,
+    ROCK = 6,
+    FIBER = 11,
+    HIDE = 15,
+    ORE = 23,
 };
 
 #endif

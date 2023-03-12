@@ -37,7 +37,8 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
 uint32_t NetworkPacket::findPacketTime()
 {
     if (_networkPacket[0].size() >= 8) {
-        return (_networkPacket[0][4] << 24) + (_networkPacket[0][5] << 16) + (_networkPacket[0][6] << 8) + _networkPacket[0][7];
+        return (_networkPacket[0][4] << 24) + (_networkPacket[0][5] << 16) + 
+               (_networkPacket[0][6] << 8 ) +  _networkPacket[0][7];
     }
     else {
         return 0;
@@ -53,15 +54,16 @@ NetworkPacket& NetworkPacket::operator+=(NetworkPacket packet)
     for (size_t i = 0; i < packet.size(); i++) {
         _networkPacket.push_back(packet[i]);
     }
+    return *this;
 }
 
-uint16_t NetworkPacket::size()
-{
-    return _networkPacket.size();
-}
 void NetworkPacket::push_back(NetworkCommand command)
 {
     _networkPacket.push_back(command);
+}
+uint16_t NetworkPacket::size()
+{
+    return _networkPacket.size();
 }
 void NetworkPacket::clear()
 {

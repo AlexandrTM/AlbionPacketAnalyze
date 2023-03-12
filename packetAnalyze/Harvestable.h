@@ -7,6 +7,7 @@ private:
 	uint16_t _id;
 	uint8_t _type;
 	uint8_t _tier;
+	uint8_t _enchantment;
 	float_t _positionX;
 	float_t _positionY;
 	uint8_t _charges;
@@ -14,7 +15,9 @@ private:
 public:
 	Harvestable();
 	Harvestable(uint16_t id, uint8_t type, uint8_t tier,
-				float_t positionX, float_t positionY, uint8_t charges);
+				float_t positionX, float_t positionY, 
+				uint8_t charges, uint8_t enchantment);
+	Harvestable(NetworkCommand& harvestableRaw);
 
 	void printInfo();
 };
@@ -26,12 +29,16 @@ private:
 
 public:
 	HarvestableList();
-	HarvestableList(NetworkCommand& harvestableList);
+	HarvestableList(NetworkCommand& harvestableRawList);
+
+	void printInfo();
 
 	void clear();
 	size_t size();
+	void push_back(Harvestable harvestable);
+
 	Harvestable& operator[](size_t elementIndex);
-	HarvestableList& operator+=(Harvestable harvestable);
+	HarvestableList& operator+=(HarvestableList harvestableList);
 
 };
 

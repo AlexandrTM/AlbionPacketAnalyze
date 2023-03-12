@@ -9,34 +9,83 @@ float binToFloat(uint32_t x) {
 	return temp.f;
 }
 
+// ============================== Harvestable ==================================
+
+struct HarvestableOffsets
+{
+	ptrdiff_t _idOffset = 22;
+	ptrdiff_t _typeOffset = 28;
+	ptrdiff_t _tierOffset = 34;
+	ptrdiff_t _positionXOffset = 39;
+	ptrdiff_t _positionYOffset = 43;
+	ptrdiff_t _chargesOffset = 45;
+} _harvestableOffsets;
+
 Harvestable::Harvestable()
 {
 	_id = 0;
 	_type = 0;
 	_tier = 0;
+	_enchantment = 0;
 	_positionX = 0;
 	_positionY = 0;
 	_charges = 0;
 }
-
 Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier, 
-						 float_t positionX, float_t positionY, uint8_t charges)
+						 float_t positionX, float_t positionY, 
+						 uint8_t charges, uint8_t enchantment)
 {
 	_id = id;
 	_type = type;
 	_tier = tier;
+	_enchantment = enchantment;
 	_positionX = positionX;
 	_positionY = positionY;
 	_charges = charges;
 }
 
-void Harvestable::printInfo()
+Harvestable::Harvestable(NetworkCommand& harvestableRaw)
 {
-	std::cout << (unsigned)_id << " " << (unsigned)_type << " " << (unsigned)_tier << " "
-		<< binToFloat(_positionX) << " " << binToFloat(_positionY) << " " << (unsigned)_charges << "\n";
+	uint16_t _id = 0;
+	uint8_t _type = 0;
+	uint8_t _tier = 0;
+	float_t _positionX = 0;
+	float_t _positionY = 0;
+	uint8_t _charges = 0;
+	uint8_t _enchantment = 0;
+
+	ptrdiff_t _idOffset = _harvestableOffsets._idOffset;
+	ptrdiff_t _typeOffset = _harvestableOffsets._typeOffset;
+	ptrdiff_t _tierOffset = _harvestableOffsets._tierOffset;
+	ptrdiff_t _positionXOffset = _harvestableOffsets._positionXOffset;
+	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset;
+	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset;
+
+	_id = (harvestableRaw[_idOffset     * 2] << 8) +
+		   harvestableRaw[_idOffset + 1 * 2];
+	_type = harvestableRaw[_typeOffset];
+	_tier = harvestableRaw[_tierOffset];
+	_positionX = binToFloat((harvestableRaw[_positionXOffset     * 8] << 24) |
+							(harvestableRaw[_positionXOffset + 1 * 8] << 16) |
+							(harvestableRaw[_positionXOffset + 2 * 8] << 8) |
+							 harvestableRaw[_positionXOffset + 3 * 8]);
+	_positionY = binToFloat((harvestableRaw[_positionYOffset     * 8] << 24) |
+							(harvestableRaw[_positionYOffset + 1 * 8] << 16) |
+							(harvestableRaw[_positionYOffset + 2 * 8] << 8) |
+							 harvestableRaw[_positionYOffset + 3 * 8]);
+	_charges = harvestableRaw[_chargesOffset];
+
+	Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment);
 }
 
-// ================== HarvestableList ==================
+void Harvestable::printInfo()
+{
+	std::cout << (unsigned)_id << " " << (unsigned)_type << " " << 
+				 (unsigned)_tier << " " << (unsigned)_enchantment << " "
+				 << _positionX << " " << _positionY << " " << (unsigned)_charges << "\n";
+}
+
+// ============================== HarvestableList ==============================
 
 HarvestableList::HarvestableList()
 {
@@ -46,39 +95,46 @@ HarvestableList::HarvestableList()
 HarvestableList::HarvestableList(NetworkCommand& harvestableRawList)
 {
 	uint8_t _harvestablesNum = harvestableRawList[20];
-	ptrdiff_t _idOffset = 22;
-	ptrdiff_t _typeOffset = 22 + 6 + _harvestablesNum * 2;
-	ptrdiff_t _tierOffset = 22 + 12 + _harvestablesNum * 3;
-	ptrdiff_t _positionXOffset = 22 + 17 + _harvestablesNum * 4;
-	ptrdiff_t _positionYOffset = 22 + 21 + _harvestablesNum * 4;
-	ptrdiff_t _chargesOffset = 22 + 23 + _harvestablesNum * 12;
+
+	ptrdiff_t _idOffset = _harvestableOffsets._idOffset;
+	ptrdiff_t _typeOffset = _harvestableOffsets._typeOffset + _harvestablesNum * 2;
+	ptrdiff_t _tierOffset = _harvestableOffsets._tierOffset + _harvestablesNum * 3;
+	ptrdiff_t _positionXOffset = _harvestableOffsets._positionXOffset + _harvestablesNum * 4;
+	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset + _harvestablesNum * 4;
+	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset + _harvestablesNum * 12;
+
+	uint16_t _id = 0;
+	uint8_t _type = 0;
+	uint8_t _tier = 0;
+	float_t _positionX = 0;
+	float_t _positionY = 0;
+	uint8_t _charges = 0;
+	uint8_t _enchantment = 0;
 
 	for (size_t i = 0; i < _harvestablesNum; i++) {
-		uint16_t _id = 0; 
-		uint8_t _type = 0; 
-		uint8_t _tier = 0; 
-		float_t _positionX = 0; 
-		float_t _positionY = 0; 
-		uint8_t _charges = 0; 
-
 		_id = (harvestableRawList[_idOffset +     i * 2] << 8) + 
 			   harvestableRawList[_idOffset + 1 + i * 2];
 		_type = harvestableRawList[_typeOffset + i];
 		_tier = harvestableRawList[_tierOffset + i];
-		_positionX = (harvestableRawList[_positionXOffset     + i * 8] << 24) + 
-					 (harvestableRawList[_positionXOffset + 1 + i * 8] << 16) +
-					 (harvestableRawList[_positionXOffset + 2 + i * 8] << 8 ) +  
-					  harvestableRawList[_positionXOffset + 3 + i * 8];
-		_positionY = (harvestableRawList[_positionYOffset     + i * 8] << 24) + 
-					 (harvestableRawList[_positionYOffset + 1 + i * 8] << 16) +
-					 (harvestableRawList[_positionYOffset + 2 + i * 8] << 8 ) +  
-					  harvestableRawList[_positionYOffset + 3 + i * 8];
+		_positionX = binToFloat((harvestableRawList[_positionXOffset     + i * 8] << 24) |
+								(harvestableRawList[_positionXOffset + 1 + i * 8] << 16) |
+								(harvestableRawList[_positionXOffset + 2 + i * 8] << 8 ) |
+								 harvestableRawList[_positionXOffset + 3 + i * 8]);
+		_positionY = binToFloat((harvestableRawList[_positionYOffset     + i * 8] << 24) |
+								(harvestableRawList[_positionYOffset + 1 + i * 8] << 16) |
+								(harvestableRawList[_positionYOffset + 2 + i * 8] << 8 ) |
+								 harvestableRawList[_positionYOffset + 3 + i * 8]);
 		_charges = harvestableRawList[_chargesOffset + i];
 
-		*this += Harvestable(_id, _type, _tier, _positionX, _positionY, _charges);
+		_harvestableList.push_back(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
+	}
+}     
+
+void HarvestableList::printInfo()
+{
+	for (size_t i = 0; i < _harvestableList.size(); i++) {
 		_harvestableList[i].printInfo();
 	}
-	harvestableRawList.printCommandInOneString();
 }
 
 void HarvestableList::clear()
@@ -89,13 +145,19 @@ size_t HarvestableList::size()
 {
 	return _harvestableList.size();
 }
+void HarvestableList::push_back(Harvestable harvestable)
+{
+	_harvestableList.push_back(harvestable);
+}
 
 Harvestable& HarvestableList::operator[](size_t elementIndex)
 {
 	return _harvestableList[elementIndex];
 }
-HarvestableList& HarvestableList::operator+=(Harvestable harvestable)
+HarvestableList& HarvestableList::operator+=(HarvestableList harvestableList)
 {
-	_harvestableList.push_back(harvestable);
+	for (size_t i = 0; i < harvestableList.size(); i++) {
+		_harvestableList.push_back(harvestableList[i]);
+	}
 	return *this;
 }

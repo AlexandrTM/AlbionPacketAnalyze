@@ -319,7 +319,7 @@ private:
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
         glfwSetKeyCallback(window, keyCallback);
-        glfwSetWindowPos(window, 0, 40);
+        glfwSetWindowPos(window, 0, 30);
     }
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
@@ -427,18 +427,20 @@ private:
         for (size_t i = 0; i < _packet.size(); i++)
         {
             //_packet[i].printCommandInOneString(), std::cout << "\n";
-            _fragmentedCommandBuffer.fillFragmentedCommand(_packet[i]);
-            if (_fragmentedCommandBuffer.isCommandFull()) {
-                _fragmentedCommandBuffer.analyzeCommand();
-                _fragmentedCommandBuffer.clear();
+            if (_packet[i].getCommandType() == commandType::fragmented) {
+                _fragmentedCommandBuffer.fillFragmentedCommand(_packet[i]);
+                if (_fragmentedCommandBuffer.isCommandFull()) {
+                    _fragmentedCommandBuffer.analyzeCommand();
+                    _fragmentedCommandBuffer.clear();
+                }
             }
             if (_packet[i].getCommandType() == commandType::reliable
-                or _packet[i].getCommandType() == commandType::unreliable) {
+             or _packet[i].getCommandType() == commandType::unreliable) {
 
                 _packet[i].analyzeCommand();
-
-                findUniqueEventCodes(_packet[i]);
+                //findUniqueEventCodes(_packet[i]);
             }
+            _packet[i].printCommand(), std::cout << "\n";
         }
     }
 };
