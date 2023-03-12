@@ -12,7 +12,10 @@
 #include <chrono>
 #define TINS_STATIC
 #include "tins/tins.h"
+
+#include "Enumerations.h"
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
+#include "Harvestable.h"
 
 #endif // PCH_H

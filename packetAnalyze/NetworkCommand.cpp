@@ -1,34 +1,12 @@
 #include "pch.h"
 
-enum operationType
-{
-    operationRequest = 2,
-    operationResponse = 3,
-    event = 4
-};
-enum commandType
-{
-    reliable = 6,
-    unreliable = 7,
-    fragmented = 8
-};
-enum operationCodes {
-    uctionSellOrders = 76,
-    AuctionBuyOrders = 77,
-    AuctionAverageValues = 90,
-    GetCharacterEquipment = 137
-
-};
-enum eventCodes {
-    ActiveSpellEffectsUpdate = 10,
-    HarvestableObjectList = 35,
-    HarvestableObject = 36,
-    HarvestStart = 55,
-    HarvestFinished = 57,
-    EquipmentChanged = 85,
-    MobSpawn = 117,
-    NewRandomDungeonExit = 307,
-};
+// lenghts for event code 36
+//"100" 2
+//"106" 3
+//"99" 1
+//"70" 10
+//"64" 1
+//"67" 3
 
 std::vector<size_t> nnCodes = { 1,10,35,36,55,57,66,67,85,195 };
 std::vector<size_t> nCodes = { 35 };
@@ -50,17 +28,12 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
-// lenghts for event code 36
-//"100" 2
-//"106" 3
-//"99" 1
-//"70" 10
-//"64" 1
-//"67" 3
-
 void NetworkCommand::analyzeCommand()
 {
-    if (isItemInVector(nCodes, _eventCode) and _operationType == operationType::event) {
+    if (_operationType == operationType::event) {
+        if (_eventCode == eventCode::harvestableObjectList) {
+            HarvestableList(*this);
+        }
         //std::cout << _eventCode << " " << _networkCommand.size() << "\n";
         //this->printCommand(), std::cout << "\n";
         //this->printCommandInOneString(), std::cout << "\n";

@@ -141,20 +141,6 @@ int filteredCommands;
 std::vector<std::vector<uint16_t>> commandLenghts;
 std::vector <NetworkPacket> text;
 
-enum operationType
-{
-    operationRequest = 2,
-    operationResponse = 3,
-    event = 4
-};
-
-enum commandType
-{
-    reliable = 6,
-    unreliable = 7,
-    fragmented = 8
-};
-
 class PacketAnalyze {
 public:
     void run() 
@@ -254,12 +240,11 @@ private:
     GLFWwindow* window;
     bool framebufferResized;
     std::vector<std::size_t> _amountOfSameCommands;
-
     IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     NetworkInterface iface = NetworkInterface::default_interface();
     Sniffer sniffer = Sniffer(iface.name());
 
-private:
+
     std::vector<size_t> findCommandBordersInPacket(std::string packet)
     {
         std::vector<size_t> commandBorders;
@@ -372,7 +357,7 @@ private:
         albionConfig.set_filter("ip dst 192.168.1.70");
         sniffer = Sniffer(iface.name(), albionConfig);
     }
-    bool filterPacket(RawNetworkPacket& filteredPacket)
+    bool isPacketFiltered(RawNetworkPacket& filteredPacket)
     {
         PDU* sniffedPacket = sniffer.next_packet();
 
@@ -397,7 +382,7 @@ private:
     {
         try {
             RawNetworkPacket packet;
-            if (filterPacket(packet)) {
+            if (isPacketFiltered(packet)) {
                 //auto start = std::chrono::high_resolution_clock::now();
 
                 catchPacket(packet); 
