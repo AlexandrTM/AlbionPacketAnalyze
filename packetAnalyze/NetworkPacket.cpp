@@ -26,7 +26,7 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
     uint8_t _commandsNumInPacket = rawPacket[3];
     ptrdiff_t _stringPosition = _packetHeaderSize;
     for (uint8_t i = 0; i < _commandsNumInPacket; i++) {
-        uint16_t _commandLength = ((rawPacket[_stringPosition + 6] << 8) + rawPacket[_stringPosition + 7]) & 0x0fff;
+        uint16_t _commandLength = ((rawPacket[_stringPosition + 6] << 8) + rawPacket[_stringPosition + 7]) & 0x07ff;
         networkPacket.push_back(NetworkCommand({ rawPacket.begin() + _stringPosition,
                                     rawPacket.begin() + _stringPosition + _commandLength }));
         _stringPosition += _commandLength;

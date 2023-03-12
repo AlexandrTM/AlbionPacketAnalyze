@@ -4,6 +4,77 @@ using namespace Tins;
 
 typedef std::vector<uint8_t> RawNetworkPacket;
 
+/*resource mob  
+80, 82 RM ap 
+58(resources), 60(resources), 61(Tier < 4), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
+60(leather), 61 ERM ap          
+19, 6b ERM, DRM disap
+1b ERM, DRM, RM disap
+4b ERM, DRM ap/disap
+"00000063","00000064"
+"00000080","00000082"
+
+player appearing
+41, 9b, 1a2, 3e, 19(not clean) player ap
+65, 6d, 3b, 1b player disap
+
+mob spawn
+7a, 80, 81, 82 mob ap
+19, 6f mob disap
+1b, 3b(not clean), 3e mob ap/disap
+
+solo dungeon 
+73, 71(with butts) SD ap
+19 SD disap
+1b, 3b(not clean), 82, 58(with butts) SD ap/disap
+"0000003e","00000040","0000004b","0000006d","0000006f","0000007c"
+
+corrupt dungeon
+7e, 76 CD ap
+19, 58, 82 CD disap
+3b, 3e, 1b CD ap/disap             
+
+group dungeon
+61(with butts), 63(box), 65, 67, 7a, 7f GD ap
+1b, 72(clean), 4b(box), 60, 61, 3e, 18 GD disap
+19, 3b GD ap/disap
+"00000061","00000063","00000065","00000067"
+
+crystal group dungeon
+64, 66, 72, 82(entered players ?) CGD ap
+71, d5 disap
+58 CGD ap/disap
+
+hell gate
+6c, 58 HG ap
+6d, 1b(not clean) HG disap
+3b(not clean),19(not clean) HG ap/disap
+
+mist
+"0000001f","00000024","0000002b","00000034","00000035","0000003b","00000041","00000048","0000004b","00000059","00000065","0000006f","00000082","00000096","000000f0","00000103"
+96 mist portal ap
+
+fish node
+3c fish node ap
+3e fish node ap/disap
+
+resource node
+"00000066","0000006d","00000072","000000e6"
+40, 46(resources T4+ enchanted), 47(mob hitting), 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
+6d,6f,81,82 empty resources
+"00000066"
+"00000025","00000034","00000037","00000039","0000003b","0000003f","00000043","00000047","00000054","00000059","0000005a","00000069","00000072","00000082","000000e6"
+"00000051","00000046","00000058","00000060","00000065","0000006a","00000072","00000073","0000007f","0000008c",
+"000000a2","000000c8","000000e3","0000014e"
+"0000005c","0000005f"
+"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",
+"00000047","00000048","0000004b","0000005a","00000061","0000006c"
+"0000002b","00000040","00000043","00000052","00000068","0000006d","00000071"
+"0000005c","0000005f","00000061","00000066"
+
+"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
+"00000043","00000060","000c0000"*/
+
 std::vector<std::string> ListOfCommandLenghts = {
     "00000000","00000001","00000013","00000014","00000018","00000019","0000001b","0000001c",
     "0000001e","00000020","00000021","00000024","00000025","00000027","00000028","0000002a",
@@ -62,85 +133,13 @@ std::vector<std::string> ListOfCommandLenghts = {
     "03646400","06067800","07780000","0c000000","1103ff01","2003ff01","2103ff01","2203ff01",
     "2a000101","2b000700","3803ff01","94060001","a1060001","a6060001","ae060001","c8060001"
 };
+std::vector<uint16_t> _eventCodes;
 
 int counter;
 int filteredCommands;
 
-std::vector<size_t> EventCodes = {
-    // resource mob  
-    // 80, 82 RM ap 
-    // 58(resources), 60(resources), 61(Tier < 4), 63(leather), 64(other resources) DRM ap, RM hitting, last 4 bytes determine difference  
-    // 60(leather), 61 ERM ap          
-    // 19, 6b ERM, DRM disap
-    // 1b ERM, DRM, RM disap
-    // 4b ERM, DRM ap/disap
-    //"00000063","00000064"
-    //"00000080","00000082"
-
-    // player appearing
-    // 41, 9b, 1a2, 3e, 19(not clean) player ap
-    // 65, 6d, 3b, 1b player disap
-
-    //mob spawn
-    // 7a, 80, 81, 82 mob ap
-    // 19, 6f mob disap
-    // 1b, 3b(not clean), 3e mob ap/disap
-
-    // solo dungeon 
-    // 73, 71(with butts) SD ap
-    // 19 SD disap
-    // 1b, 3b(not clean), 82, 58(with butts) SD ap/disap
-    //"0000003e","00000040","0000004b","0000006d","0000006f","0000007c"
-
-    // corrupt dungeon
-    // 7e, 76 CD ap
-    // 19, 58, 82 CD disap
-    // 3b, 3e, 1b CD ap/disap             
-
-    // group dungeon
-    // 61(with butts), 63(box), 65, 67, 7a, 7f GD ap
-    // 1b, 72(clean), 4b(box), 60, 61, 3e, 18 GD disap
-    // 19, 3b GD ap/disap
-    //"00000061","00000063","00000065","00000067"
-
-    // crystal group dungeon
-    // 64, 66, 72, 82(entered players ?) CGD ap
-    // 71, d5 disap
-    // 58 CGD ap/disap
-
-    // hell gate
-    // 6c, 58 HG ap
-    // 6d, 1b(not clean) HG disap
-    // 3b(not clean),19(not clean) HG ap/disap
-
-    // mist
-    //"0000001f","00000024","0000002b","00000034","00000035","0000003b","00000041","00000048","0000004b","00000059","00000065","0000006f","00000082","00000096","000000f0","00000103"
-    // 96 mist portal ap
-
-    // fish node
-    // 3c fish node ap
-    // 3e fish node ap/disap
-
-    // resource node
-    //"00000066","0000006d","00000072","000000e6"
-    // 40, 46(resources T4+ enchanted), 47(mob hitting), 58, 59, 5c, 5f, 60, 61, 63, 66(alive leather) ?
-    // 6d,6f,81,82 empty resources
-    //"00000066"
-    //"00000025","00000034","00000037","00000039","0000003b","0000003f","00000043","00000047","00000054","00000059","0000005a","00000069","00000072","00000082","000000e6"
-    /*"00000051","00000046","00000058","00000060","00000065","0000006a","00000072","00000073","0000007f","0000008c",
-    /*"000000a2","000000c8","000000e3","0000014e"*/
-    //"0000005c","0000005f"
-    //"00000028","0000002b","00000037","00000039","0000003b","0000003d","0000003f","00000040","00000043",*/
-    //"00000047","00000048","0000004b","0000005a","00000061","0000006c"
-    //"0000002b","00000040","00000043","00000052","00000068","0000006d","00000071"
-    /*"0000005c","0000005f","00000061","00000066"*/
-
-    //"00000014","00000019","0000001b","0000001c","0000001e","0000001f","00000041",
-    //"00000043","00000060","000c0000"
-};
 std::vector<std::vector<uint16_t>> commandLenghts;
-std::vector<std::size_t> amountOfSameCommands;
-NetworkPacket text;
+std::vector <NetworkPacket> text;
 
 enum operationType
 {
@@ -166,15 +165,115 @@ public:
         cleanup();
     }
 
+    std::vector<bool> findSameSymbolsInText(NetworkPacket paragraph)
+    {
+        std::vector<bool> sameSymbols = {};
+
+        for (size_t i = 0; i < paragraph[0].size(); i++) {
+            int symbolSimilarity = 1;
+
+            for (size_t j = 1; j < paragraph.size(); j++) {
+                if (paragraph[j][i] == paragraph[0][i]) {
+                    symbolSimilarity += 1;
+                }
+            }
+            sameSymbols.push_back(floor((float)symbolSimilarity / text.size()));
+        }
+
+        return sameSymbols;
+    }
+    void colorizeSameText(NetworkPacket paragraph, HANDLE consoleHandle)
+    {
+        std::vector<bool> sameSymbols = findSameSymbolsInText(paragraph);
+
+        for (size_t i = 0; i < sameSymbols.size(); i++) {
+            if (sameSymbols[i] == 1) {
+                SetConsoleTextAttribute(consoleHandle, 2);
+            }
+
+            std::cout << sameSymbols[i];
+            SetConsoleTextAttribute(consoleHandle, 7);
+            if (i % 8 == 7) {
+                std::cout << " ";
+            }
+            if (i % 64 == 63 and i != (sameSymbols.size() - 1)) {
+                std::cout << "\n";
+            }
+        }
+        std::cout << "\n";
+
+        for (size_t i = 0; i < paragraph.size(); i++) {
+            for (size_t j = 0; j < paragraph[i].size(); j++) {
+                if (sameSymbols[j] == 1) {
+                    SetConsoleTextAttribute(consoleHandle, 2);
+                }
+
+                std::cout << paragraph[i][j];
+                SetConsoleTextAttribute(consoleHandle, 7);
+                if (j % 8 == 7) {
+                    std::cout << " ";
+                }
+                if (j % 64 == 63 and j != (paragraph[i].size() - 1)) {
+                    std::cout << "\n";
+                }
+            }
+            std::cout << "\n";
+        }
+    }
+    void outputColorizedNetworkPacket(std::vector<NetworkPacket> text)
+    {
+        HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        for (size_t i = 0; i < text.size(); i++) {
+            SetConsoleTextAttribute(consoleHandle, 6);
+            std::cout << "\"" << _eventCodes[i] << "\"" << " " << _amountOfSameCommands[i] << "\n";
+            SetConsoleTextAttribute(consoleHandle, 7);
+
+            if (text[i].size() > 1) {
+                colorizeSameText(text[i], consoleHandle);
+            }
+        }
+    }
+
+    void findUniqueEventCodes(NetworkCommand& command)
+    {
+        if (!(std::find(std::begin(_eventCodes), std::end(_eventCodes),
+            command.getEventCode()) != std::end(_eventCodes)))
+        {
+            _eventCodes.push_back(command.getEventCode());
+            _amountOfSameCommands.push_back({});
+            text.push_back({});
+        }
+
+        ptrdiff_t eventCodeIndex = std::distance(_eventCodes.begin(),
+            std::find(_eventCodes.begin(), _eventCodes.end(), command.getEventCode()));
+        _amountOfSameCommands[eventCodeIndex] += 1;
+    }
+
 private:
     GLFWwindow* window;
     bool framebufferResized;
+    std::vector<std::size_t> _amountOfSameCommands;
 
     IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     NetworkInterface iface = NetworkInterface::default_interface();
     Sniffer sniffer = Sniffer(iface.name());
 
 private:
+    std::vector<size_t> findCommandBordersInPacket(std::string packet)
+    {
+        std::vector<size_t> commandBorders;
+        size_t packetHeaderSize = 24;
+        size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
+
+        commandBorders.push_back(packetHeaderSize);
+        for (size_t i = 0; i < commandsNumInPacket; i++) {
+            size_t commandWidth = strtoul(packet.substr(commandBorders[i] + 12, 4).c_str(), nullptr, 16);
+            commandBorders.push_back(commandBorders[i] + commandWidth * 2);
+        }
+
+        return commandBorders;
+    }
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
     {
         for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
@@ -245,10 +344,10 @@ private:
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-            if (counter < EventCodes.size() - 1) {
+            if (counter < _eventCodes.size() - 1) {
                 counter += 1;
             }
-            else if (counter == EventCodes.size() - 1) {
+            else if (counter == _eventCodes.size() - 1) {
                 counter = 0;
             }
             std::cout << "\n" << "<<" << counter << ">>" << "\n";
@@ -258,7 +357,7 @@ private:
                 counter -= 1;
             }
             else if (counter == 0) {
-                counter = EventCodes.size() - 1;
+                counter = _eventCodes.size() - 1;
             }
             std::cout << "\n" << "<<" << counter << ">>" << "\n";
         }
@@ -266,7 +365,7 @@ private:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
-
+    
     void initSniffer() 
     {
         SnifferConfiguration albionConfig;
@@ -332,22 +431,6 @@ private:
         return rawPacketPayload;
     }
 
-    std::vector<size_t> findCommandBordersInPacket(std::string packet)
-    {
-        std::vector<size_t> commandBorders;
-        size_t packetHeaderSize = 24;
-        size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
-
-        commandBorders.push_back(packetHeaderSize);
-        for (size_t i = 0; i < commandsNumInPacket; i++) {
-            size_t commandWidth = strtoul(packet.substr(commandBorders[i] + 12, 4).c_str(), nullptr, 16);
-            commandBorders.push_back(commandBorders[i] + commandWidth * 2);
-        }
-
-        return commandBorders;
-    }
-
-
     NetworkPacket _packet;
     NetworkCommand _fragmentedCommandBuffer;
     void catchPacket(RawNetworkPacket rawPacket)
@@ -369,97 +452,17 @@ private:
 
                 _packet[i].analyzeCommand();
 
-                if (!(std::find(std::begin(EventCodes), std::end(EventCodes),
-                    _packet[i].getEventCode()) != std::end(EventCodes)))
-                {
-                    EventCodes.push_back(_packet[i].getEventCode());
-                    amountOfSameCommands.push_back({});
-                    text.push_back({});
-                }
-
-                ptrdiff_t eventCodeIndex = std::distance(EventCodes.begin(),
-                    std::find(EventCodes.begin(), EventCodes.end(), _packet[i].getEventCode()));
-                amountOfSameCommands[eventCodeIndex] += 1;
+                findUniqueEventCodes(_packet[i]);
             }
         }
     }
 };
 
-//std::vector<bool> findSameSymbolsInText(NetworkCommand text)
-//{
-//    std::vector<bool> sameSymbols = {};
-//
-//    for (size_t i = 0; i < text[0].size(); i++) {
-//        int symbolSimilarity = 1;
-//
-//        for (size_t j = 1; j < text.size(); j++) {
-//            if (text[j][i] == text[0][i]) {
-//                symbolSimilarity += 1;
-//            }
-//        }
-//        sameSymbols.push_back(floor((float)symbolSimilarity / text.size()));
-//    }
-//
-//    return sameSymbols;
-//}
-//void colorizeSameText(NetworkCommand text, HANDLE consoleHandle)
-//{
-//    std::vector<bool> sameSymbols = findSameSymbolsInText(text);
-//
-//    for (size_t i = 0; i < sameSymbols.size(); i++) {
-//        if (sameSymbols[i] == 1) {
-//            SetConsoleTextAttribute(consoleHandle, 2);
-//        }
-//
-//        std::cout << sameSymbols[i];
-//        SetConsoleTextAttribute(consoleHandle, 7);
-//        if (i % 8 == 7) {
-//            std::cout << " ";
-//        }
-//        if (i % 64 == 63 and i != (sameSymbols.size() - 1)) {
-//            std::cout << "\n";
-//        }
-//    }
-//    std::cout << "\n";
-//
-//    for (size_t i = 0; i < text.size(); i++) {
-//        for (size_t j = 0; j < text[i].size(); j++) {
-//            if (sameSymbols[j] == 1) {
-//                SetConsoleTextAttribute(consoleHandle, 2);
-//            }
-//
-//            std::cout << text[i][j];
-//            SetConsoleTextAttribute(consoleHandle, 7);
-//            if (j % 8 == 7) {
-//                std::cout << " ";
-//            }
-//            if (j % 64 == 63 and j != (text[i].size() - 1)) {
-//                std::cout << "\n";
-//            }
-//        }
-//        std::cout << "\n";
-//    }
-//}
-void outputColorizedNetworkPacket(NetworkPacket text) 
-{
-    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    for (size_t i = 0; i < text.size(); i++) {
-        SetConsoleTextAttribute(consoleHandle, 6);
-        std::cout << "\"" << EventCodes[i] << "\"" << " " << amountOfSameCommands[i] << "\n";
-        SetConsoleTextAttribute(consoleHandle, 7);
-
-        /*if (text[i].size() > 1) {
-            colorizeSameText(text[i], consoleHandle);
-        }*/
-    }
-}
-
 int main() {
     PacketAnalyze packetAnalyze;
     packetAnalyze.run();
 
-    outputColorizedNetworkPacket(text);
+    packetAnalyze.outputColorizedNetworkPacket(text);
 
     //for (size_t j = 0; j < 10; j++) {
     //    auto start = std::chrono::high_resolution_clock::now();

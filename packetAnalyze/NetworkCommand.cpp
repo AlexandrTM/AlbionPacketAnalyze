@@ -27,10 +27,11 @@ enum eventCodes {
     HarvestFinished = 57,
     EquipmentChanged = 85,
     MobSpawn = 117,
+    NewRandomDungeonExit = 307,
 };
 
 std::vector<size_t> nnCodes = { 1,10,35,36,55,57,66,67,85,195 };
-std::vector<size_t> nCodes = { 117 };
+std::vector<size_t> nCodes = { 35 };
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
 {
@@ -40,7 +41,6 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
     _isCommandFull = isCommandFull();
     _eventCode = findEventCode();
 }
-
 NetworkCommand::NetworkCommand() 
 {
     _networkCommand = {};
@@ -49,6 +49,14 @@ NetworkCommand::NetworkCommand()
     _isCommandFull = false;
     _eventCode = 0;
 }
+
+// lenghts for event code 36
+//"100" 2
+//"106" 3
+//"99" 1
+//"70" 10
+//"64" 1
+//"67" 3
 
 void NetworkCommand::analyzeCommand()
 {
@@ -234,6 +242,13 @@ bool NetworkCommand::isCommandFull()
 uint16_t NetworkCommand::findEventCode()
 {
     if (_isCommandFull == true) {
+        /*if (_commandType = commandType::reliable) {
+            return ((_networkCommand[_networkCommand.size() - 2] << 8) + 
+                     _networkCommand[_networkCommand.size() - 1]) & 0x01ff;
+        }*/
         return _networkCommand[_networkCommand.size() - 1];
+    }
+    else {
+        return 0;
     }
 };
