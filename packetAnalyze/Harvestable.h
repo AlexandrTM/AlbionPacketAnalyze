@@ -19,10 +19,10 @@ public:
 				uint8_t charges, uint8_t enchantment);
 	Harvestable(NetworkCommand& harvestableRaw);
 
-	void findHarvestableFragments(NetworkCommand& rawHarvestable);
-
 	void printInfo();
 };
+
+// ============================== HarvestableList ==============================
 
 class HarvestableList
 {

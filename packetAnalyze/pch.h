@@ -17,5 +17,6 @@
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
 #include "Harvestable.h"
+#include "DataFragment.h"
 
 #endif // PCH_H

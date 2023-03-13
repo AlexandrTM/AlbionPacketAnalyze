@@ -37,7 +37,7 @@ void NetworkCommand::analyzeCommand()
             //_harvestableList.printInfo();
         }
         if (_eventCode == eventCode::harvestableObject) {
-            this->findDataFragments();
+            DataFragment::findDataFragments(*this);
             _harvestableList.push_back(Harvestable(*this));
             //_harvestableList.printInfo();
             //this->printCommandInOneString();
@@ -46,103 +46,6 @@ void NetworkCommand::analyzeCommand()
         //this->printCommandInOneString(), std::cout << "\n";
     }
     //_harvestableList.clear();
-}
-void NetworkCommand::findDataFragments()
-{
-    ptrdiff_t _offset = findFragmentsNumOffset();
-    uint8_t _fragmentsNum = _networkCommand[_offset];
-
-    uint8_t _fragmentID;
-    uint8_t _dataType;
-    uint8_t _dataTypeSize;
-    uint8_t _dataHeaderSize;
-    uint16_t _numOfEntries;
-
-    uint16_t _dataSize;
-
-    for (size_t i = 0; i < _fragmentsNum - 1; i++) { // excluding event code
-        _fragmentID = _networkCommand[_offset + 1];
-        _dataType = _networkCommand[_offset + 2];
-
-        DataTypeInfo _dataTypeInfo = DataTypeInfo::findDataTypeInfo(_dataType, *this, _offset);
-
-        _dataSize = _dataTypeInfo._dataHeaderSize + 
-                    _dataTypeInfo._dataTypeSize * _dataTypeInfo._numOfEntries + 1;
-        _offset += _dataSize;
-
-        _dataTypeInfo.printInfo();
-
-        //std::cout << (unsigned)_fragmentID << " " << (unsigned)_dataType << " " << (unsigned)_dataSize << "\n";
-    }
-    this->printCommandInOneString();
-}
-DataTypeInfo DataTypeInfo::findDataTypeInfo(uint8_t dataType, NetworkCommand& command, ptrdiff_t offset)
-{
-    switch (dataType)
-    {
-    case dataType::byteInt:
-        return DataTypeInfo(1, 1, 1);
-    case dataType::byteIntList:
-        return DataTypeInfo(1, 5, (command[offset + 5] << 8) |
-                                   command[offset + 6]);
-    case dataType::shortInt:
-        return DataTypeInfo(2, 1, 1);
-    case dataType::int32:
-        return DataTypeInfo(4, 1, 1);
-    case dataType::float32:
-        return DataTypeInfo(4, 1, 1);
-    case dataType::int64:
-        return DataTypeInfo(8, 1, 1);
-    case dataType::dictionary:
-        return DataTypeInfo(DataTypeInfo::findDataTypeSize(command[offset + 5]), 4, (command[offset + 3] << 8) |
-                                                                                     command[offset + 4]);
-    default:
-        break;
-    }
-}
-uint8_t DataTypeInfo::findDataTypeSize(uint8_t dataType)
-{
-    switch (dataType)
-    {
-    case dataType::byteInt:
-        return 1;
-    case dataType::byteIntList:
-        return 1;
-    case dataType::shortInt:
-        return 2;
-    case dataType::float32:
-        return 4;
-    case dataType::int32:
-        return 4;
-    case dataType::int64:
-        return 8;
-    default:
-        break;
-    }
-}
-ptrdiff_t NetworkCommand::findFragmentsNumOffset()
-{
-    switch (this->getCommandType())
-    {
-    case commandType::reliable:
-        return 16;
-    case commandType::unreliable:
-        return 20;
-    case commandType::fragmented:
-        return 36;
-    default:
-        return -1;
-    }
-}
-DataTypeInfo::DataTypeInfo(uint8_t dataTypeSize, uint8_t dataHeaderSize, uint16_t numOfEntries)
-{
-    _dataTypeSize = dataTypeSize;
-    _dataHeaderSize = dataHeaderSize;
-    _numOfEntries = numOfEntries;
-}
-void DataTypeInfo::printInfo()
-{
-    std::cout << (unsigned)_dataTypeSize << " " << (unsigned)_dataHeaderSize << " " << (unsigned)_numOfEntries << "\n";
 }
 
 bool NetworkCommand::isItemInVector(std::vector<size_t>& vector, size_t item)
@@ -333,3 +236,4 @@ uint16_t NetworkCommand::findEventCode()
         return 0;
     }
 };
+

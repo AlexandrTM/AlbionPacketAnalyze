@@ -60,7 +60,7 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset;
 	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset;
 
-	_id = (rawHarvestable[_idOffset     * 2] << 8) +
+	_id = (rawHarvestable[_idOffset     * 2] << 8) |
 		   rawHarvestable[_idOffset + 1 * 2];
 	_type = rawHarvestable[_typeOffset];
 	_tier = rawHarvestable[_tierOffset];
@@ -111,7 +111,7 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 	uint8_t _enchantment = 0;
 
 	for (size_t i = 0; i < _harvestablesNum; i++) {
-		_id = (rawHarvestableList[_idOffset +     i * 2] << 8) + 
+		_id = (rawHarvestableList[_idOffset +     i * 2] << 8) | 
 			   rawHarvestableList[_idOffset + 1 + i * 2];
 		_type = rawHarvestableList[_typeOffset + i];
 		_tier = rawHarvestableList[_tierOffset + i];

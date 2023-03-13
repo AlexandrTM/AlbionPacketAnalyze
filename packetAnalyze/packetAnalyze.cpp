@@ -385,7 +385,7 @@ private:
             if (isPacketFiltered(packet)) {
                 //auto start = std::chrono::high_resolution_clock::now();
 
-                catchPacket(packet); 
+                analyzePacket(packet); 
 
                 //auto stop = std::chrono::high_resolution_clock::now();
                 //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
@@ -418,7 +418,7 @@ private:
 
     NetworkPacket _packet;
     NetworkCommand _fragmentedCommandBuffer;
-    void catchPacket(RawNetworkPacket rawPacket)
+    void analyzePacket(RawNetworkPacket rawPacket)
     {
         _packet = NetworkPacket::findCommandsInPacket(rawPacket);
         //std::cout << _packet.size() << "\n";
