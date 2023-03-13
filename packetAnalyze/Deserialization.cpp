@@ -1,22 +1,28 @@
 #include "pch.h"
-#include "DataFragment.h"
 
-void DataFragments::findDataLayout(NetworkCommand& command)
+size_t DataLayout::findFragmentOffset(std::vector<uint8_t> fragmentIDs, uint8_t fragmentID)
+{
+    if (std::isElementInVector(fragmentIDs, (uint8_t)fragmentID)) {
+        DataFragment _dataFragment = _dataLayout[std::findElementIndex(fragmentIDs, (uint8_t)fragmentID)];
+        //std::cout << _dataFragment._offset << "\n";
+        return _dataFragment._offset + _dataFragment._dataHeaderSize + 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+void DataLayout::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t _offset = DataFragment::findFragmentsNumOffset(command);
     uint8_t _fragmentsNum = command[_offset];
     _offset += 1;
 
-    uint8_t _fragmentID;
-    uint8_t _dataType;
-
     uint16_t _dataSize;
 
     for (size_t i = 0; i < _fragmentsNum - 1; i++) { // excluding event code
-        _fragmentID = command[_offset];
-        _dataType = command[_offset + 1];
 
-        DataFragment _dataFragment = DataFragment::findDataFragmentInfo(_fragmentID, _dataType, command, _offset);
+        DataFragment _dataFragment = DataFragment::findDataElementInfo(command, _offset);
 
         _dataSize = _dataFragment._dataHeaderSize +
                     _dataFragment._dataTypeSize * _dataFragment._numOfEntries + 1;
@@ -26,28 +32,27 @@ void DataFragments::findDataLayout(NetworkCommand& command)
         //std::cout << (unsigned)_fragmentID << " " << (unsigned)_dataType << " " << (unsigned)_dataSize << "\n";
     }
 }
-DataFragments::DataFragments(std::vector<DataFragment> dataFragments)
+DataLayout::DataLayout(std::vector<DataFragment> dataFragments)
 {
     _dataLayout = dataFragments;
 }
-DataFragments::DataFragments()
+DataLayout::DataLayout()
 {
     _dataLayout = {};
 }
 
-void DataFragments::printInfo()
+void DataLayout::printInfo()
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         _dataLayout[i].printInfo();
     }
 }
 
-size_t DataFragments::size()
+size_t DataLayout::size()
 {
     return _dataLayout.size();
 }
-
-DataFragment DataFragments::operator[](size_t elementIndex)
+DataFragment DataLayout::operator[](size_t elementIndex)
 {
     return _dataLayout[elementIndex];
 }
@@ -58,27 +63,26 @@ DataFragment DataFragments::operator[](size_t elementIndex)
 // **************************************************************************
 
 
-DataFragment DataFragment::findDataFragmentInfo(uint8_t fragmentID, uint8_t dataType, NetworkCommand& command, ptrdiff_t offset)
+DataFragment DataFragment::findDataElementInfo(NetworkCommand& command, ptrdiff_t offset)
 {
-    switch (dataType)
+    switch (command[offset + 1])
     {
     case dataType::byteInt:
-        return DataFragment(fragmentID, 1, 1, 1);
+        return DataFragment(command[offset], 1, 1, 1, offset);
     case dataType::byteIntList:
-        return DataFragment(fragmentID, 1, 5, (command[offset + 4] << 8) |
-                                               command[offset + 5]);
+        return DataFragment(command[offset], 1, 5, (command[offset + 4] << 8) |
+                                                   command[offset + 5], offset);
     case dataType::shortInt:
-        return DataFragment(fragmentID, 2, 1, 1);
+        return DataFragment(command[offset], 2, 1, 1, offset);
     case dataType::int32:
-        return DataFragment(fragmentID, 4, 1, 1);
+        return DataFragment(command[offset], 4, 1, 1, offset);
     case dataType::float32:
-        return DataFragment(fragmentID, 4, 1, 1);
+        return DataFragment(command[offset], 4, 1, 1, offset);
     case dataType::int64:
-        return DataFragment(fragmentID, 8, 1, 1);
+        return DataFragment(command[offset], 8, 1, 1, offset);
     case dataType::dictionary:
-        return DataFragment(fragmentID, DataFragment::findDataTypeSize(command[offset + 4]), 
-                            4, 
-                            (command[offset + 2] << 8) | command[offset + 3]);
+        return DataFragment(command[offset], DataFragment::findDataTypeSize(command[offset + 4]), 4, 
+                          (command[offset + 2] << 8) | command[offset + 3], offset);
     default:
         break;
     }
@@ -118,20 +122,26 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     }
 }
 
-DataFragment::DataFragment(uint8_t fragmentID, uint8_t dataTypeSize, uint8_t dataHeaderSize, uint16_t numOfEntries)
+DataFragment::DataFragment(uint8_t fragmentID, uint8_t dataTypeSize, 
+                         uint8_t dataHeaderSize, uint16_t numOfEntries, ptrdiff_t offset)
 {
     _fragmentID = fragmentID;
     _dataTypeSize = dataTypeSize;
     _dataHeaderSize = dataHeaderSize;
     _numOfEntries = numOfEntries;
+    _offset = offset;
 }
 DataFragment::DataFragment()
 {
+    _fragmentID = 0;
     _dataTypeSize = 0;
     _dataHeaderSize = 0;
     _numOfEntries = 0;
+    _offset = 0;
 }
 void DataFragment::printInfo()
 {
-    std::cout << (unsigned)_dataTypeSize << " " << (unsigned)_dataHeaderSize << " " << (unsigned)_numOfEntries << "\n";
+    std::cout << (unsigned)_fragmentID << " " << (unsigned)_dataTypeSize << " " << 
+                 (unsigned)_dataHeaderSize << " " << (unsigned)_numOfEntries << " " << 
+                 (unsigned)_offset << "\n";
 }

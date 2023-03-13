@@ -30,7 +30,7 @@
     <ClCompile Include="Harvestable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataFragment.cpp">
+    <ClCompile Include="Deserialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClInclude Include="Enumerations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataFragment.h">
+    <ClInclude Include="Deserialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="namespace_std.h">

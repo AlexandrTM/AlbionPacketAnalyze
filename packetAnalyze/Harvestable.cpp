@@ -21,6 +21,50 @@ struct HarvestableOffsets
 	ptrdiff_t _chargesOffset = 45;
 } _harvestableOffsets;
 
+Harvestable::Harvestable(NetworkCommand& rawHarvestable)
+{
+	uint16_t _id = 0;
+	uint8_t _type = 0;
+	uint8_t _tier = 0;
+	float_t _positionX = 0;
+	float_t _positionY = 0;
+	uint8_t _charges = 0;
+	uint8_t _enchantment = 0;
+
+	DataLayout _dataLayout{};
+	_dataLayout.findDataLayout(rawHarvestable);
+	std::vector<uint8_t> _fragmentIDs{};
+	size_t _fragmentOffset;
+
+	for (size_t i = 0; i < _dataLayout.size(); i++) {
+		_fragmentIDs.push_back(_dataLayout[i]._fragmentID);
+	}
+
+	//_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)0);
+	//_id = (rawHarvestable[_fragmentOffset] << 8) | rawHarvestable[_fragmentOffset + 1];
+	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)5);
+	_type = rawHarvestable[_fragmentOffset];
+	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)7);
+	_tier = rawHarvestable[_fragmentOffset];
+	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)8);
+	_positionX = binToFloat((rawHarvestable[_fragmentOffset    ] << 24) |
+							(rawHarvestable[_fragmentOffset + 1] << 16) |
+							(rawHarvestable[_fragmentOffset + 2] << 8 ) |
+							 rawHarvestable[_fragmentOffset + 3]);
+	_positionY = binToFloat((rawHarvestable[_fragmentOffset + 4] << 24) |
+							(rawHarvestable[_fragmentOffset + 5] << 16) |
+							(rawHarvestable[_fragmentOffset + 6] << 8 ) |
+							 rawHarvestable[_fragmentOffset + 7]);
+	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)10);
+	_charges = rawHarvestable[_fragmentOffset];
+	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)11);
+	_enchantment = rawHarvestable[_fragmentOffset];
+	//std::cout << _positionX << "\n";
+	Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment).printInfo();
+	//std::cout << (unsigned)this->_type;
+	//this->printInfo();
+	rawHarvestable.printCommandInOneString();
+}
 Harvestable::Harvestable()
 {
 	_id = 0;
@@ -31,55 +75,17 @@ Harvestable::Harvestable()
 	_positionY = 0;
 	_charges = 0;
 }
-Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier, 
-						 float_t positionX, float_t positionY, 
-						 uint8_t charges, uint8_t enchantment)
+Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier,
+	float_t positionX, float_t positionY,
+	uint8_t charges, uint8_t enchantment)
 {
 	_id = id;
 	_type = type;
 	_tier = tier;
-	_enchantment = enchantment;
 	_positionX = positionX;
 	_positionY = positionY;
 	_charges = charges;
-}
-Harvestable::Harvestable(NetworkCommand& rawHarvestable)
-{
-	DataFragments _dataLayout{};
-	_dataLayout.findDataLayout(rawHarvestable);
-
-	uint16_t _id = 0;
-	uint8_t _type = 0;
-	uint8_t _tier = 0;
-	float_t _positionX = 0;
-	float_t _positionY = 0;
-	uint8_t _charges = 0;
-	uint8_t _enchantment = 0;
-
-	ptrdiff_t _idOffset = 20;
-	ptrdiff_t _typeOffset = _harvestableOffsets._typeOffset;
-	ptrdiff_t _tierOffset = _harvestableOffsets._tierOffset;
-	ptrdiff_t _positionXOffset = _harvestableOffsets._positionXOffset;
-	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset;
-	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset;
-
-	if (std::isElementInVector(_dataLayout[0]))
-	_id = (rawHarvestable[_idOffset     * 2] << 8) |
-		   rawHarvestable[_idOffset + 1 * 2];
-	_type = rawHarvestable[_typeOffset];
-	_tier = rawHarvestable[_tierOffset];
-	_positionX = binToFloat((rawHarvestable[_positionXOffset     * 8] << 24) |
-							(rawHarvestable[_positionXOffset + 1 * 8] << 16) |
-							(rawHarvestable[_positionXOffset + 2 * 8] << 8 ) |
-							 rawHarvestable[_positionXOffset + 3 * 8]);
-	_positionY = binToFloat((rawHarvestable[_positionYOffset     * 8] << 24) |
-							(rawHarvestable[_positionYOffset + 1 * 8] << 16) |
-							(rawHarvestable[_positionYOffset + 2 * 8] << 8 ) |
-							 rawHarvestable[_positionYOffset + 3 * 8]);
-	_charges = rawHarvestable[_chargesOffset];
-
-	Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment);
-	this->printInfo();
+	_enchantment = enchantment;
 }
 
 void Harvestable::printInfo()

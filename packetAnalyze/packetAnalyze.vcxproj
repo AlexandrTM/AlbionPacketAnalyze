@@ -137,7 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DataFragment.cpp" />
+    <ClCompile Include="Deserialization.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
     <ClCompile Include="NetworkPacket.cpp" />
@@ -148,7 +148,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DataFragment.h" />
+    <ClInclude Include="Deserialization.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="namespace_std.h" />
