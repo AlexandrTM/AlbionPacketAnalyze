@@ -142,6 +142,7 @@ std::vector<std::vector<uint16_t>> commandLenghts;
 std::vector <NetworkPacket> text;
 
 class PacketAnalyze {
+
 public:
     void run() 
     {
@@ -223,16 +224,14 @@ public:
 
     void findUniqueEventCodes(NetworkCommand& command)
     {
-        if (!(std::find(std::begin(_eventCodes), std::end(_eventCodes),
-            command.getEventCode()) != std::end(_eventCodes)))
+        if (!std::isElementInVector(_eventCodes, command.getEventCode()))
         {
             _eventCodes.push_back(command.getEventCode());
             _amountOfSameCommands.push_back({});
             text.push_back({});
         }
 
-        ptrdiff_t eventCodeIndex = std::distance(_eventCodes.begin(),
-            std::find(_eventCodes.begin(), _eventCodes.end(), command.getEventCode()));
+        size_t eventCodeIndex = std::findElementIndex(_eventCodes, command.getEventCode());
         _amountOfSameCommands[eventCodeIndex] += 1;
     }
 

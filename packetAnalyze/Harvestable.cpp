@@ -45,6 +45,9 @@ Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier,
 }
 Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 {
+	DataFragments _dataLayout{};
+	_dataLayout.findDataLayout(rawHarvestable);
+
 	uint16_t _id = 0;
 	uint8_t _type = 0;
 	uint8_t _tier = 0;
@@ -60,6 +63,7 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset;
 	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset;
 
+	if (std::isElementInVector(_dataLayout[0]))
 	_id = (rawHarvestable[_idOffset     * 2] << 8) |
 		   rawHarvestable[_idOffset + 1 * 2];
 	_type = rawHarvestable[_typeOffset];
@@ -75,6 +79,7 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	_charges = rawHarvestable[_chargesOffset];
 
 	Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment);
+	this->printInfo();
 }
 
 void Harvestable::printInfo()

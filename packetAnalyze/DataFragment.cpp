@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "DataFragment.h"
 
-void DataFragments::findDataFragments(NetworkCommand& command)
+void DataFragments::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t _offset = DataFragment::findFragmentsNumOffset(command);
     uint8_t _fragmentsNum = command[_offset];
@@ -16,49 +16,69 @@ void DataFragments::findDataFragments(NetworkCommand& command)
         _fragmentID = command[_offset];
         _dataType = command[_offset + 1];
 
-        DataFragment _dataFragment = DataFragment::findDataFragmentInfo(_dataType, command, _offset);
+        DataFragment _dataFragment = DataFragment::findDataFragmentInfo(_fragmentID, _dataType, command, _offset);
 
         _dataSize = _dataFragment._dataHeaderSize +
-            _dataFragment._dataTypeSize * _dataFragment._numOfEntries + 1;
+                    _dataFragment._dataTypeSize * _dataFragment._numOfEntries + 1;
         _offset += _dataSize;
 
-        _dataFragments.push_back(_dataFragment);
+        _dataLayout.push_back(_dataFragment);
         //std::cout << (unsigned)_fragmentID << " " << (unsigned)_dataType << " " << (unsigned)_dataSize << "\n";
     }
 }
 DataFragments::DataFragments(std::vector<DataFragment> dataFragments)
 {
-    _dataFragments = dataFragments;
+    _dataLayout = dataFragments;
 }
 DataFragments::DataFragments()
 {
-    _dataFragments = {};
+    _dataLayout = {};
 }
+
+void DataFragments::printInfo()
+{
+    for (size_t i = 0; i < _dataLayout.size(); i++) {
+        _dataLayout[i].printInfo();
+    }
+}
+
+size_t DataFragments::size()
+{
+    return _dataLayout.size();
+}
+
+DataFragment DataFragments::operator[](size_t elementIndex)
+{
+    return _dataLayout[elementIndex];
+}
+
 
 // **************************************************************************
 // ============================== DataFragment ==============================
 // **************************************************************************
 
-DataFragment DataFragment::findDataFragmentInfo(uint8_t dataType, NetworkCommand& command, ptrdiff_t offset)
+
+DataFragment DataFragment::findDataFragmentInfo(uint8_t fragmentID, uint8_t dataType, NetworkCommand& command, ptrdiff_t offset)
 {
     switch (dataType)
     {
     case dataType::byteInt:
-        return DataFragment(1, 1, 1);
+        return DataFragment(fragmentID, 1, 1, 1);
     case dataType::byteIntList:
-        return DataFragment(1, 5, (command[offset + 4] << 8) |
-            command[offset + 5]);
+        return DataFragment(fragmentID, 1, 5, (command[offset + 4] << 8) |
+                                               command[offset + 5]);
     case dataType::shortInt:
-        return DataFragment(2, 1, 1);
+        return DataFragment(fragmentID, 2, 1, 1);
     case dataType::int32:
-        return DataFragment(4, 1, 1);
+        return DataFragment(fragmentID, 4, 1, 1);
     case dataType::float32:
-        return DataFragment(4, 1, 1);
+        return DataFragment(fragmentID, 4, 1, 1);
     case dataType::int64:
-        return DataFragment(8, 1, 1);
+        return DataFragment(fragmentID, 8, 1, 1);
     case dataType::dictionary:
-        return DataFragment(DataFragment::findDataTypeSize(command[offset + 4]), 4, (command[offset + 2] << 8) |
-            command[offset + 3]);
+        return DataFragment(fragmentID, DataFragment::findDataTypeSize(command[offset + 4]), 
+                            4, 
+                            (command[offset + 2] << 8) | command[offset + 3]);
     default:
         break;
     }
@@ -98,8 +118,9 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     }
 }
 
-DataFragment::DataFragment(uint8_t dataTypeSize, uint8_t dataHeaderSize, uint16_t numOfEntries)
+DataFragment::DataFragment(uint8_t fragmentID, uint8_t dataTypeSize, uint8_t dataHeaderSize, uint16_t numOfEntries)
 {
+    _fragmentID = fragmentID;
     _dataTypeSize = dataTypeSize;
     _dataHeaderSize = dataHeaderSize;
     _numOfEntries = numOfEntries;

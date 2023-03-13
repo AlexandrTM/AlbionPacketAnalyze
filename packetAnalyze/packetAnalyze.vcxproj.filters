@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="packetAnalyze.cpp">
+    <ClCompile Include="PacketAnalyze.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -52,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="DataFragment.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="namespace_std.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

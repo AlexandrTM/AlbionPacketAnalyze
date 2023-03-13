@@ -31,31 +31,25 @@ NetworkCommand::NetworkCommand()
 void NetworkCommand::analyzeCommand()
 {
     HarvestableList _harvestableList{};
+
     if (_operationType == operationType::event) {
+        //auto start = std::chrono::high_resolution_clock::now();
+
         if (_eventCode == eventCode::harvestableObjectList) {
-            _harvestableList += HarvestableList(*this);
+            //_harvestableList += HarvestableList(*this);
             //_harvestableList.printInfo();
+            //this->printCommandInOneString();
         }
         if (_eventCode == eventCode::harvestableObject) {
-            DataFragment::findDataFragments(*this);
             _harvestableList.push_back(Harvestable(*this));
             //_harvestableList.printInfo();
             //this->printCommandInOneString();
         }
-        //this->printCommand(), std::cout << "\n";
-        //this->printCommandInOneString(), std::cout << "\n";
+        //auto stop = std::chrono::high_resolution_clock::now();
+        //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
+        
     }
     //_harvestableList.clear();
-}
-
-bool NetworkCommand::isItemInVector(std::vector<size_t>& vector, size_t item)
-{
-    if ((std::find(std::begin(vector), std::end(vector), item) != std::end(vector))) {
-        return true;
-    }
-    else {
-        return false;
-    }
 }
 
 void NetworkCommand::printCommand()

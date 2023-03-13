@@ -22,8 +22,6 @@ public:
 
     void analyzeCommand();
 
-    bool isItemInVector(std::vector<size_t>& vector, size_t item);
-
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);
     void printCommandInOneString();

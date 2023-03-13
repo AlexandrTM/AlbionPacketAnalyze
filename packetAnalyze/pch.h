@@ -18,5 +18,6 @@
 #include "NetworkPacket.h"
 #include "Harvestable.h"
 #include "DataFragment.h"
+#include "namespace_std.h"
 
 #endif // PCH_H
