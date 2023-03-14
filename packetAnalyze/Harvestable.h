@@ -1,10 +1,9 @@
 #ifndef HARVESTABLE_H
 #define HARVESTABLE_H
 
-class Harvestable
+struct Harvestable
 {
-private:
-	uint16_t _id;
+	uint32_t _id;
 	uint8_t _type;
 	uint8_t _tier;
 	uint8_t _enchantment;
@@ -12,9 +11,8 @@ private:
 	float_t _positionY;
 	uint8_t _charges;
 
-public:
 	Harvestable();
-	Harvestable(uint16_t id, uint8_t type, uint8_t tier,
+	Harvestable(uint32_t id, uint8_t type, uint8_t tier,
 				float_t positionX, float_t positionY, 
 				uint8_t charges, uint8_t enchantment);
 	Harvestable(NetworkCommand& harvestableRaw);

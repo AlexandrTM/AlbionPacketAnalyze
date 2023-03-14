@@ -19,7 +19,7 @@ public:
     NetworkCommand(std::vector<uint8_t> command);
     NetworkCommand();
 
-    void analyzeCommand();
+    void analyzeCommand(GLFWwindow* window);
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);

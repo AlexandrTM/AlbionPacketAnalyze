@@ -28,15 +28,15 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
-void NetworkCommand::analyzeCommand()
+HarvestableList _harvestableList{};
+void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
-    HarvestableList _harvestableList{};
 
     if (_operationType == operationType::event) {
 
         if (_eventCode == eventCode::harvestableObjectList) {
             //auto start = std::chrono::high_resolution_clock::now();
-            //_harvestableList += HarvestableList(*this);
+            _harvestableList += HarvestableList(*this);
             //_harvestableList.printInfo();
             //this->printCommandInOneString();
             //auto stop = std::chrono::high_resolution_clock::now();
@@ -50,7 +50,7 @@ void NetworkCommand::analyzeCommand()
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
-        
+        Entities::draw(window, _harvestableList);
     }
     //_harvestableList.clear();
 }

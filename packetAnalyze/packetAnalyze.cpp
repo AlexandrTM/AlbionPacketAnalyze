@@ -1,5 +1,8 @@
 #include "pch.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 using namespace Tins;
 
 typedef std::vector<uint8_t> RawNetworkPacket;
@@ -235,13 +238,12 @@ public:
     }
 
 private:
-    GLFWwindow* window;
+    GLFWwindow* _window;
     bool framebufferResized;
     std::vector<std::size_t> _amountOfSameCommands;
     IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     NetworkInterface iface = NetworkInterface::default_interface();
     Sniffer sniffer = Sniffer(iface.name());
-
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet)
     {
@@ -292,15 +294,20 @@ private:
 
     void mainLoop() 
     {
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
+        GLint windowWidth, windowHeight;
+        glfwGetWindowSize(_window, &windowWidth, &windowHeight);
+        glViewport(0, 0, windowWidth, windowHeight);
+
+        while (!glfwWindowShouldClose(_window)) {
             sniffPacket();
+
+            glfwPollEvents();
         }
     }
 
     void cleanup() 
     {
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(_window);
         glfwTerminate();
     }
 
@@ -308,23 +315,36 @@ private:
     {
         glfwInit();
 
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+        glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+        //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+        //glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+        GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
 
-        window = glfwCreateWindow(100, 100, "Packet Analyze", nullptr, nullptr);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-        glfwSetKeyCallback(window, keyCallback);
-        glfwSetWindowPos(window, 0, 30);
+        _window = glfwCreateWindow(_videoMode->width / 5, _videoMode->width / 5, 
+                                  u8"Packet Analyze", nullptr, nullptr);
+
+        GLFWimage images[1];
+        images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
+        glfwSetWindowIcon(_window, 2, images);
+        stbi_image_free(images[0].pixels);
+
+        glfwSetWindowUserPointer(_window, this);
+        glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+        glfwSetKeyCallback(_window, keyCallback);
+        glfwSetWindowPos(_window, _videoMode->width / 15, _videoMode->width / 12);
+        glfwMakeContextCurrent(_window);
     }
 
-    static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-        auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(window));
+    static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
+        auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
         app->framebufferResized = true;
     }
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    static void keyCallback(GLFWwindow* _window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
             if (counter < _eventCodes.size() - 1) {
@@ -345,7 +365,7 @@ private:
             std::cout << "\n" << "<<" << counter << ">>" << "\n";
         }
         if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            glfwSetWindowShouldClose(_window, GLFW_TRUE);
         }
     }
     
@@ -427,14 +447,14 @@ private:
             if (_packet[i].getCommandType() == commandType::fragmented) {
                 _fragmentedCommandBuffer.fillFragmentedCommand(_packet[i]);
                 if (_fragmentedCommandBuffer.isCommandFull()) {
-                    _fragmentedCommandBuffer.analyzeCommand();
+                    _fragmentedCommandBuffer.analyzeCommand(_window);
                     _fragmentedCommandBuffer.clear();
                 }
             }
             if (_packet[i].getCommandType() == commandType::reliable
              or _packet[i].getCommandType() == commandType::unreliable) {
 
-                _packet[i].analyzeCommand();
+                _packet[i].analyzeCommand(_window);
                 //findUniqueEventCodes(_packet[i]);
             }
         }

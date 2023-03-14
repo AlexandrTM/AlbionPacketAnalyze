@@ -18,7 +18,8 @@
 
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
-#include "Harvestable.h"
 #include "Deserialization.h"
+#include "Harvestable.h"
+#include "Entities.h"
 
 #endif // PCH_H

@@ -163,8 +163,6 @@ ptrdiff_t DataLayout::findFragmentOffset(uint8_t fragmentID)
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
-            //std::cout << (unsigned)_dataLayout[i]._fragmentID << " ";
-            //std::cout << (unsigned)_dataLayout[i]._offset << "\n";
             return _dataLayout[i]._offset;
         }
     }

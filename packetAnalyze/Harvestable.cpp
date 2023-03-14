@@ -14,7 +14,7 @@ struct HarvestableOffsets
 
 Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 {
-	uint16_t _id = 0;
+	uint32_t _id = 0;
 	uint8_t _type = 0;
 	uint8_t _tier = 0;
 	float_t _positionX = 0;
@@ -25,13 +25,13 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawHarvestable);
 
-	_id = net::read_int16(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)0));
-	_type = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)5));
-	_tier = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)7));
-	_positionX = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)8));
-	_positionY = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)8) + 4);
-	_charges = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)10));
-	_enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)11));
+	_id = net::read_int16(rawHarvestable, _dataLayout.findFragmentOffset(0));
+	_type = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset(5));
+	_tier = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset(7));
+	_positionX = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset(8));
+	_positionY = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset(8) + 4);
+	_charges = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset(10));
+	_enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset(11));
 
 	this->_id = _id;
 	this->_type = _type;
@@ -52,7 +52,7 @@ Harvestable::Harvestable()
 	_charges = 0;
 	_enchantment = 0;
 }
-Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier,
+Harvestable::Harvestable(uint32_t id, uint8_t type, uint8_t tier,
 	float_t positionX, float_t positionY,
 	uint8_t charges, uint8_t enchantment)
 {
@@ -67,9 +67,10 @@ Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier,
 
 void Harvestable::printInfo()
 {
-	std::cout << std::setw(5) << (unsigned)_id << " " << std::setw(2) << (unsigned)_type << " " << std::setw(2) <<
-				 (unsigned)_tier << " " << std::setw(2) << (unsigned)_enchantment << " " << std::setw(5)
-				 << _positionX << " " << std::setw(5) << _positionY << " " << std::setw(2) << (unsigned)_charges << "\n";
+	std::cout << std::setw(5) << (unsigned)_id << " " << (unsigned)_type << " " <<
+				 (unsigned)_tier << " " << (unsigned)_enchantment << " " <<
+		std::setw(8) << std::round(_positionX) << " " << std::setw(8) << _positionY << " " << 
+		std::setw(3) << (unsigned)_charges << "\n";
 }
 
 // ============================== HarvestableList ==============================
@@ -90,7 +91,7 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset + _harvestablesNum * 4;
 	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset + _harvestablesNum * 12;
 
-	uint16_t _id = 0;
+	uint32_t _id = 0;
 	uint8_t _type = 0;
 	uint8_t _tier = 0;
 	float_t _positionX = 0;
