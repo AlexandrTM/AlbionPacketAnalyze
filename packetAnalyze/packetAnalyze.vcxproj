@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="Deserialization.cpp" />
     <ClCompile Include="Harvestable.cpp" />
+    <ClCompile Include="namespace_std.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
     <ClCompile Include="NetworkPacket.cpp" />
     <ClCompile Include="PacketAnalyze.cpp" />

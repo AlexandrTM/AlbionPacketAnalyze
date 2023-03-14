@@ -13,11 +13,11 @@
 #define TINS_STATIC
 #include "tins/tins.h"
 
+#include "namespace_std.h"
 #include "Enumerations.h"
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
 #include "Harvestable.h"
 #include "Deserialization.h"
-#include "namespace_std.h"
 
 #endif // PCH_H

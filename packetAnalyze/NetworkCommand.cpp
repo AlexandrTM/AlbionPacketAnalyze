@@ -28,12 +28,22 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
+template<typename T>
+T NetworkCommand::readDataEntry(NetworkCommand& command, ptrdiff_t offset, uint8_t dataTypeSize)
+{
+    T _dataEntry;
+    for (size_t i = 0; i < dataTypeSize; i++) {
+        _dataEntry |= (command[offset + i] << (8 * (dataTypeSize - i - 1)));
+    }
+
+    return _dataEntry;
+}
+
 void NetworkCommand::analyzeCommand()
 {
     HarvestableList _harvestableList{};
 
     if (_operationType == operationType::event) {
-        //auto start = std::chrono::high_resolution_clock::now();
 
         if (_eventCode == eventCode::harvestableObjectList) {
             //_harvestableList += HarvestableList(*this);
@@ -41,12 +51,13 @@ void NetworkCommand::analyzeCommand()
             //this->printCommandInOneString();
         }
         if (_eventCode == eventCode::harvestableObject) {
+            //auto start = std::chrono::high_resolution_clock::now();
             _harvestableList.push_back(Harvestable(*this));
             //_harvestableList.printInfo();
             //this->printCommandInOneString();
+            //auto stop = std::chrono::high_resolution_clock::now();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
-        //auto stop = std::chrono::high_resolution_clock::now();
-        //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         
     }
     //_harvestableList.clear();

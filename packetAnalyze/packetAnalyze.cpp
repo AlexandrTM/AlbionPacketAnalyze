@@ -231,8 +231,7 @@ public:
             text.push_back({});
         }
 
-        size_t eventCodeIndex = std::findElementIndex(_eventCodes, command.getEventCode());
-        _amountOfSameCommands[eventCodeIndex] += 1;
+        _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
     }
 
 private:
@@ -420,7 +419,6 @@ private:
     void analyzePacket(RawNetworkPacket rawPacket)
     {
         _packet = NetworkPacket::findCommandsInPacket(rawPacket);
-        //std::cout << _packet.size() << "\n";
 
         //if (eventCode == eventCodes[counter]) 
         for (size_t i = 0; i < _packet.size(); i++)
@@ -439,7 +437,6 @@ private:
                 _packet[i].analyzeCommand();
                 //findUniqueEventCodes(_packet[i]);
             }
-            //_packet[i].printCommand(), std::cout << "\n";
         }
     }
 };

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NAMESPACE_STD_H
+#define NAMESPACE_STD_H
 
 namespace std
 {
@@ -24,4 +25,8 @@ namespace std
     {
         return vector[std::findElementIndex(vector, element)];
     }
+
+    float binToFloat(uint32_t value);
 }
+
+#endif

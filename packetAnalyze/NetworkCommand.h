@@ -19,6 +19,8 @@ private:
 public:
     NetworkCommand(std::vector<uint8_t> command);
     NetworkCommand();
+    template<typename T>
+    static T readDataEntry(NetworkCommand& command, ptrdiff_t offset, uint8_t dataTypeSize);
 
     void analyzeCommand();
 

@@ -33,6 +33,9 @@
     <ClCompile Include="Deserialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="namespace_std.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
