@@ -21,40 +21,26 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	float_t _positionY = 0;
 	uint8_t _charges = 0;
 	uint8_t _enchantment = 0;
-
+	
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawHarvestable);
-	size_t _fragmentOffset;
 
-	std::map<uint8_t, size_t> _dataLayoutInfo{};
+	_id = net::read_int16(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)0));
+	_type = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)5));
+	_tier = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)7));
+	_positionX = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)8));
+	_positionY = net::read_float32(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)8) + 4);
+	_charges = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)10));
+	_enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragmentOffset((uint8_t)11));
 
-	_dataLayoutInfo = _dataLayout.getLayoutInfo();
-
-	rawHarvestable.printCommandInOneString();
-
-	/*_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)0);
-	_id = (rawHarvestable[_fragmentOffset    ] << 8) | 
-		   rawHarvestable[_fragmentOffset + 1];
-	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)5);
-	_type = rawHarvestable[_fragmentOffset];
-	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)7);
-	_tier = rawHarvestable[_fragmentOffset];
-	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)8);
-	_positionX = std::binToFloat((rawHarvestable[_fragmentOffset    ] << 24) |
-							(rawHarvestable[_fragmentOffset + 1] << 16) |
-							(rawHarvestable[_fragmentOffset + 2] << 8 ) |
-							 rawHarvestable[_fragmentOffset + 3]);
-	_positionY = std::binToFloat((rawHarvestable[_fragmentOffset + 4] << 24) |
-							(rawHarvestable[_fragmentOffset + 5] << 16) |
-							(rawHarvestable[_fragmentOffset + 6] << 8 ) |
-							 rawHarvestable[_fragmentOffset + 7]);
-	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)10);
-	_charges = rawHarvestable[_fragmentOffset];
-	_fragmentOffset = _dataLayout.findFragmentOffset(_fragmentIDs, (uint8_t)11);
-	_enchantment = rawHarvestable[_fragmentOffset];*/
-
-	Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment);
-	//this->printInfo();
+	this->_id = _id;
+	this->_type = _type;
+	this->_tier = _tier;
+	this->_enchantment = _enchantment;
+	this->_positionX = _positionX;
+	this->_positionY = _positionY;
+	this->_charges = _charges;
+	//rawHarvestable.printCommandInOneString();
 }
 Harvestable::Harvestable()
 {
@@ -81,9 +67,9 @@ Harvestable::Harvestable(uint16_t id, uint8_t type, uint8_t tier,
 
 void Harvestable::printInfo()
 {
-	std::cout << (unsigned)_id << " " << (unsigned)_type << " " << 
-				 (unsigned)_tier << " " << (unsigned)_enchantment << " "
-				 << _positionX << " " << _positionY << " " << (unsigned)_charges << "\n";
+	std::cout << std::setw(5) << (unsigned)_id << " " << std::setw(2) << (unsigned)_type << " " << std::setw(2) <<
+				 (unsigned)_tier << " " << std::setw(2) << (unsigned)_enchantment << " " << std::setw(5)
+				 << _positionX << " " << std::setw(5) << _positionY << " " << std::setw(2) << (unsigned)_charges << "\n";
 }
 
 // ============================== HarvestableList ==============================
@@ -113,18 +99,11 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 	uint8_t _enchantment = 0;
 
 	for (size_t i = 0; i < _harvestablesNum; i++) {
-		_id = (rawHarvestableList[_idOffset +     i * 2] << 8) | 
-			   rawHarvestableList[_idOffset + 1 + i * 2];
+		_id = net::read_int16(rawHarvestableList, _idOffset + i * 2);
 		_type = rawHarvestableList[_typeOffset + i];
 		_tier = rawHarvestableList[_tierOffset + i];
-		_positionX = std::binToFloat((rawHarvestableList[_positionXOffset     + i * 8] << 24) |
-								(rawHarvestableList[_positionXOffset + 1 + i * 8] << 16) |
-								(rawHarvestableList[_positionXOffset + 2 + i * 8] << 8 ) |
-								 rawHarvestableList[_positionXOffset + 3 + i * 8]);
-		_positionY = std::binToFloat((rawHarvestableList[_positionYOffset     + i * 8] << 24) |
-								(rawHarvestableList[_positionYOffset + 1 + i * 8] << 16) |
-								(rawHarvestableList[_positionYOffset + 2 + i * 8] << 8 ) |
-								 rawHarvestableList[_positionYOffset + 3 + i * 8]);
+		_positionX = net::read_float32(rawHarvestableList, _positionXOffset + i * 8);
+		_positionY = net::read_float32(rawHarvestableList, _positionYOffset + i * 8);
 		_charges = rawHarvestableList[_chargesOffset + i];
 
 		_harvestableList.push_back(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));

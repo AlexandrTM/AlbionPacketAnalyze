@@ -28,17 +28,6 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
-template<typename T>
-T NetworkCommand::readDataEntry(NetworkCommand& command, ptrdiff_t offset, uint8_t dataTypeSize)
-{
-    T _dataEntry;
-    for (size_t i = 0; i < dataTypeSize; i++) {
-        _dataEntry |= (command[offset + i] << (8 * (dataTypeSize - i - 1)));
-    }
-
-    return _dataEntry;
-}
-
 void NetworkCommand::analyzeCommand()
 {
     HarvestableList _harvestableList{};
@@ -46,9 +35,12 @@ void NetworkCommand::analyzeCommand()
     if (_operationType == operationType::event) {
 
         if (_eventCode == eventCode::harvestableObjectList) {
+            //auto start = std::chrono::high_resolution_clock::now();
             //_harvestableList += HarvestableList(*this);
             //_harvestableList.printInfo();
             //this->printCommandInOneString();
+            //auto stop = std::chrono::high_resolution_clock::now();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
         if (_eventCode == eventCode::harvestableObject) {
             //auto start = std::chrono::high_resolution_clock::now();
@@ -229,7 +221,7 @@ uint8_t NetworkCommand::findOperationType()
 uint16_t NetworkCommand::findEventCode()
 {
     if (_isCommandFull == true) {
-        if (_networkCommand[_networkCommand.size() - 3] == dataType::shortInt) {
+        if (_networkCommand[_networkCommand.size() - 3] == dataType::int16) {
             return ((_networkCommand[_networkCommand.size() - 2] << 8) |
                         _networkCommand[_networkCommand.size() - 1]) & 0x0fff;
         }

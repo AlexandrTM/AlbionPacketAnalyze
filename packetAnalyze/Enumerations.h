@@ -45,12 +45,12 @@ enum resourceType : uint8_t
 
 enum dataType : uint16_t
 {
-    byteInt = 98,
+    int8 = 98,
     float32 = 102,
     int32 = 105,
-    shortInt = 107,
+    int16 = 107,
     int64 = 108,
-    byteIntList = 120,
+    int8_list = 120,
     dictionary = 121,
 
 };

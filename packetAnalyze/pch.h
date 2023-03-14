@@ -15,6 +15,7 @@
 
 #include "namespace_std.h"
 #include "Enumerations.h"
+
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
 #include "Harvestable.h"

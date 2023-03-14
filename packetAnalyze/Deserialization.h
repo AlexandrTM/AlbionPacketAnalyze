@@ -2,6 +2,62 @@
 #define DATA_FRAGMENT_H
 
 
+struct net
+{
+    static inline uint8_t read_int8(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            return command[offset];
+        }
+        return 0;
+    }
+    static inline uint16_t read_int16(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint16_t _dataEntry = 0;
+            for (size_t i = 0; i < 2; i++) {
+                _dataEntry += (command[offset + i] << (8 * (1 - i)));
+            }
+            return _dataEntry;
+        }
+        return 0;
+    }
+    static inline uint32_t read_int32(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint32_t _dataEntry = 0;
+            for (size_t i = 0; i < 4; i++) {
+                _dataEntry += (command[offset + i] << (8 * (3 - i)));
+            }
+            return _dataEntry;
+        }
+        return 0;
+    }
+    static inline float_t read_float32(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint32_t _dataEntry = 0;
+            for (size_t i = 0; i < 4; i++) {
+                _dataEntry += (command[offset + i] << (8 * (3 - i)));
+            }
+            return std::binToFloat(_dataEntry);
+        }
+        return 0;
+    }
+    static inline uint64_t read_int64(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint64_t _dataEntry = 0;
+            for (size_t i = 0; i < 8; i++) {
+                _dataEntry += (command[offset + i] << (8 * (7 - i)));
+            }
+            return _dataEntry;
+        }
+        return 0;
+    }
+};
+
+
 // **************************************************************************
 // ============================== DataType ==================================
 // **************************************************************************
@@ -54,12 +110,10 @@ private:
     std::vector<DataFragment> _dataLayout;
 
 public:
-    size_t findFragmentOffset(std::vector<uint8_t> fragmentIDs, uint8_t fragmentID);
-    std::map<uint8_t, size_t> getLayoutInfo();
-    size_t findFragmentsAvailable();
+    ptrdiff_t findFragmentOffset(uint8_t fragmentID);
 
     template<typename T>
-    T readDataFragmentEntry(NetworkCommand& command, uint8_t fragmentID);
+    T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);
 
     void findDataLayout(NetworkCommand& command);
 

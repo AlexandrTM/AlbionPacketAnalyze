@@ -1,6 +1,5 @@
 #include "pch.h"
 
-
 // **************************************************************************
 // ============================== DataType ==================================
 // **************************************************************************
@@ -10,11 +9,11 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
 {
     switch (dataType)
     {
-    case dataType::byteInt:
+    case dataType::int8:
         return 1;
-    case dataType::byteIntList:
+    case dataType::int8_list:
         return 1;
-    case dataType::shortInt:
+    case dataType::int16:
         return 2;
     case dataType::float32:
         return 4;
@@ -30,9 +29,9 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
 {
     switch (dataType)
     {
-    case dataType::byteInt:
+    case dataType::int8:
         return 1;
-    case dataType::shortInt:
+    case dataType::int16:
         return 1;
     case dataType::float32:
         return 1;
@@ -40,7 +39,7 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::int64:
         return 1;
-    case dataType::byteIntList:
+    case dataType::int8_list:
         return 5;
     case dataType::dictionary:
         return 4;
@@ -72,9 +71,9 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
 {
     switch (dataType)
     {
-    case dataType::byteInt:
+    case dataType::int8:
         return 1;
-    case dataType::shortInt:
+    case dataType::int16:
         return 1;
     case dataType::float32:
         return 1;
@@ -82,7 +81,7 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
         return 1;
     case dataType::int64:
         return 1;
-    case dataType::byteIntList:
+    case dataType::int8_list:
         return (command[offset + 4] << 8) | command[offset + 5];
     case dataType::dictionary:
         return (command[offset + 2] << 8) | command[offset + 3];
@@ -130,54 +129,46 @@ void DataFragment::printInfo()
 // **************************************************************************
 
 
-std::map<uint8_t, size_t> DataLayout::getLayoutInfo()
-{
-    std::map<uint8_t, size_t> _dataLayoutInfo{};
-
-    for (size_t i = 0; i < _dataLayout.size(); i++) {
-        _dataLayoutInfo.insert(std::make_pair(_dataLayout[i]._fragmentID, _dataLayout[i]._offset));
-        //std::cout << _dataLayout[i]._offset;
-        //std::cout << " " << (unsigned)_dataLayout[i]._fragmentID << "\n";
-    }
-    std::cout << _dataLayout.size() << " " << _dataLayoutInfo.size() << "\n";
-    return _dataLayoutInfo;
-}
-size_t DataLayout::findFragmentsAvailable()
-{
-
-}
-
 template<typename T>
-T DataLayout::readDataFragmentEntry(NetworkCommand& command, uint8_t fragmentID)
+T DataLayout::readDataFragmentEntry(NetworkCommand& command, size_t fragmentID)
 {
     T entry;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == fragmentID) {
-            entry = NetworkCommand::readDataEntry(command, _dataLayout[i]._offset, 
-                                                  _dataLayout[i]._dataType._dataTypeSize);
-            switch (_dataLayout[i]._dataType._dataType)
+            ptrdiff_t _offset = _dataLayout[i]._offset;
+            uint8_t _dataType = _dataLayout[i]._dataType._dataType;
+            switch (_dataType)
             {
+            case dataType::int8:
+                entry = NetworkCommand::read_byteInt(command, _offset);
+            case dataType::int16:
+                entry = NetworkCommand::read_shortInt(command, _offset);
+            case dataType::int32:
+                entry = NetworkCommand::read_int32(command, _offset);
             case dataType::float32:
-                return std::binToFloat(entry);
+                entry = NetworkCommand::read_float32(command, _offset);
+            case dataType::int64:
+                entry = NetworkCommand::read_int64(command, _offset);
             default:
                 return entry;
             }
         }
         else {
-            return T(0);
+            return (uint8_t)0;
         }
     }
 }
 
-size_t DataLayout::findFragmentOffset(std::vector<uint8_t> fragmentIDs, uint8_t fragmentID)
+ptrdiff_t DataLayout::findFragmentOffset(uint8_t fragmentID)
 {
-    if (std::isElementInVector(fragmentIDs, (uint8_t)fragmentID)) {
-        DataFragment _dataFragment = _dataLayout[std::findElementIndex(fragmentIDs, (uint8_t)fragmentID)];
-        return _dataFragment._offset;
+    for (size_t i = 0; i < _dataLayout.size(); i++) {
+        if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
+            //std::cout << (unsigned)_dataLayout[i]._fragmentID << " ";
+            //std::cout << (unsigned)_dataLayout[i]._offset << "\n";
+            return _dataLayout[i]._offset;
+        }
     }
-    else {
-        return 0;
-    }
+    return -1;
 }
 
 void DataLayout::findDataLayout(NetworkCommand& command)
