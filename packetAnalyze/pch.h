@@ -20,6 +20,6 @@
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 #include "Harvestable.h"
-#include "Entities.h"
+#include "Entity.h"
 
 #endif // PCH_H

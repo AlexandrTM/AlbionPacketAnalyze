@@ -33,6 +33,17 @@ struct net
         }
         return 0;
     }
+    static inline uint32_t read_int32(std::vector<uint8_t> rawCommand, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint32_t _dataEntry = 0;
+            for (size_t i = 0; i < 4; i++) {
+                _dataEntry += (rawCommand[offset + i] << (8 * (3 - i)));
+            }
+            return _dataEntry;
+        }
+        return 0;
+    }
     static inline float_t read_float32(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {

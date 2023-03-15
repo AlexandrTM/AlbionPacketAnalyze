@@ -11,7 +11,11 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
     {
     case dataType::int8:
         return 1;
+    case dataType::uint8:
+        return 1;
     case dataType::int8_list:
+        return 1;
+    case dataType::int8_string:
         return 1;
     case dataType::int16:
         return 2;
@@ -31,6 +35,8 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
     {
     case dataType::int8:
         return 1;
+    case dataType::uint8:
+        return 1;
     case dataType::int16:
         return 1;
     case dataType::float32:
@@ -41,6 +47,8 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::int8_list:
         return 5;
+    case dataType::int8_string:
+        return 3;
     case dataType::dictionary:
         return 4;
     default:
@@ -73,6 +81,8 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
     {
     case dataType::int8:
         return 1;
+    case dataType::uint8:
+        return 1;
     case dataType::int16:
         return 1;
     case dataType::float32:
@@ -83,6 +93,8 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
         return 1;
     case dataType::int8_list:
         return (command[offset + 4] << 8) | command[offset + 5];
+    case dataType::int8_string:
+        return (command[offset + 2] << 8) | command[offset + 3];
     case dataType::dictionary:
         return (command[offset + 2] << 8) | command[offset + 3];
     default:

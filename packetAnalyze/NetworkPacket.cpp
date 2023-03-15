@@ -5,7 +5,7 @@
 NetworkPacket::NetworkPacket()
 {
     _networkPacket = { {} };
-    _packetTime = findPacketTime();
+    _packetTime = 0;
 }
 
 void NetworkPacket::addCommandsFromPacket(std::vector<uint8_t> rawPacket)
@@ -21,27 +21,26 @@ void NetworkPacket::addCommandsFromPacket(std::vector<uint8_t> rawPacket)
 }
 NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket)
 {
-    NetworkPacket networkPacket;
+    NetworkPacket _networkPacket;
 
     uint8_t _commandsNumInPacket = rawPacket[3];
     ptrdiff_t _stringPosition = _packetHeaderSize;
     for (uint8_t i = 0; i < _commandsNumInPacket; i++) {
         uint16_t _commandLength = ((rawPacket[_stringPosition + 6] << 8) + rawPacket[_stringPosition + 7]) & 0x07ff;
-        networkPacket.push_back(NetworkCommand({ rawPacket.begin() + _stringPosition,
+        _networkPacket.push_back(NetworkCommand({ rawPacket.begin() + _stringPosition,
                                     rawPacket.begin() + _stringPosition + _commandLength }));
         _stringPosition += _commandLength;
     }
-
-    return networkPacket;
+    _networkPacket.findPacketTime(rawPacket);
+    return _networkPacket;
 }
-uint32_t NetworkPacket::findPacketTime()
+void NetworkPacket::findPacketTime(std::vector<uint8_t> rawPacket)
 {
-    if (_networkPacket[0].size() >= 8) {
-        return (_networkPacket[0][4] << 24) + (_networkPacket[0][5] << 16) + 
-               (_networkPacket[0][6] << 8 ) +  _networkPacket[0][7];
+    if (rawPacket.size() >= 8) {
+        _packetTime = net::read_int32(rawPacket, 4);
     }
     else {
-        return 0;
+        _packetTime = 0;
     }
 }
 

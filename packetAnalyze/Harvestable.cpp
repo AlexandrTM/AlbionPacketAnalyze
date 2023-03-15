@@ -1,6 +1,10 @@
 #include "pch.h"
 
+
+// *****************************************************************************
 // ============================== Harvestable ==================================
+// *****************************************************************************
+
 
 struct HarvestableOffsets
 {
@@ -40,6 +44,7 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	this->_positionX = _positionX;
 	this->_positionY = _positionY;
 	this->_charges = _charges;
+	//this->printInfo();
 	//rawHarvestable.printCommandInOneString();
 }
 Harvestable::Harvestable()
@@ -73,13 +78,16 @@ void Harvestable::printInfo()
 		std::setw(3) << (unsigned)_charges << "\n";
 }
 
+
+// *****************************************************************************
 // ============================== HarvestableList ==============================
+// *****************************************************************************
+
 
 HarvestableList::HarvestableList()
 {
 	_harvestableList = {};
 }
-
 HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 {
 	uint8_t _harvestablesNum = rawHarvestableList[20];

@@ -14,7 +14,7 @@ public:
 
     void addCommandsFromPacket(std::vector<uint8_t> rawPacket);
     static NetworkPacket findCommandsInPacket(std::vector<uint8_t> rawPacket);
-    uint32_t findPacketTime();
+    void findPacketTime(std::vector<uint8_t> rawPacket);
 
     NetworkCommand& operator[](size_t elementIndex);
     NetworkPacket& operator+=(NetworkPacket packet);

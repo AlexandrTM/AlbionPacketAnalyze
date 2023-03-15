@@ -294,10 +294,6 @@ private:
 
     void mainLoop() 
     {
-        GLint windowWidth, windowHeight;
-        glfwGetWindowSize(_window, &windowWidth, &windowHeight);
-        glViewport(0, 0, windowWidth, windowHeight);
-
         while (!glfwWindowShouldClose(_window)) {
             sniffPacket();
 
@@ -317,7 +313,7 @@ private:
 
         //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
         //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
@@ -335,14 +331,31 @@ private:
 
         glfwSetWindowUserPointer(_window, this);
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+        glfwSetCursorEnterCallback(_window, cursorEnterCallback);
         glfwSetKeyCallback(_window, keyCallback);
         glfwSetWindowPos(_window, _videoMode->width / 15, _videoMode->width / 12);
         glfwMakeContextCurrent(_window);
+      
+
+        GLint windowWidth, windowHeight;
+        glfwGetWindowSize(_window, &windowWidth, &windowHeight);
+        glViewport(0, 0, windowWidth, windowHeight);
     }
 
     static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
         auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
         app->framebufferResized = true;
+    }
+    static void cursorEnterCallback(GLFWwindow* window, int entered)
+    {
+        if (entered)
+        {
+            // The cursor entered the content area of the window
+        }
+        else
+        {
+            // The cursor left the content area of the window
+        }
     }
     static void keyCallback(GLFWwindow* _window, int key, int scancode, int action, int mods)
     {
@@ -364,7 +377,7 @@ private:
             }
             std::cout << "\n" << "<<" << counter << ">>" << "\n";
         }
-        if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
             glfwSetWindowShouldClose(_window, GLFW_TRUE);
         }
     }
@@ -383,7 +396,7 @@ private:
             const IP& ip = sniffedPacket->rfind_pdu<IP>();
             const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-            if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056) {
+            if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
                 RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
                 RawNetworkPacket packet;
                 readRawPacket(rawPacket, packet);
@@ -455,7 +468,7 @@ private:
              or _packet[i].getCommandType() == commandType::unreliable) {
 
                 _packet[i].analyzeCommand(_window);
-                //findUniqueEventCodes(_packet[i]);
+                findUniqueEventCodes(_packet[i]);
             }
         }
     }

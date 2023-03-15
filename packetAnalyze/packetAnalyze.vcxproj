@@ -139,7 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Deserialization.cpp" />
-    <ClCompile Include="Entities.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="namespace_std.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
@@ -152,7 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Deserialization.h" />
-    <ClInclude Include="Entities.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="namespace_std.h" />

@@ -15,6 +15,8 @@ enum commandType: uint8_t
 };
 enum operationCode: uint16_t
 {
+    move = 21,
+    changeLocation = 35,
     auctionSellOrders = 76,
     auctionBuyOrders = 77,
     auctionAverageValues = 90,
@@ -29,7 +31,7 @@ enum eventCode: uint16_t
     harvestStart = 55,
     harvestFinished = 57,
     equipmentChanged = 85,
-    mobSpawn = 117,
+    newMob = 117,
     newRandomDungeonExit = 307,
 
 };
@@ -43,6 +45,7 @@ enum resourceType : uint8_t
     ORE = 23,
 };
 
+// header size, type size, num of entries
 enum dataType : uint16_t
 {
     int8 = 98,
@@ -50,6 +53,8 @@ enum dataType : uint16_t
     int32 = 105,
     int16 = 107,
     int64 = 108,
+    uint8 = 111,
+    int8_string = 115,
     int8_list = 120,
     dictionary = 121,
 

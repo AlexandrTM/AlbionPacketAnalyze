@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{d3de6990-c328-4b44-b142-5d87aed0aef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{0dadbccb-5f12-4b36-a354-aaab2898fbb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PacketAnalyze.cpp">
@@ -27,17 +33,17 @@
     <ClCompile Include="NetworkPacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Harvestable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Deserialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="namespace_std.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entities.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Harvestable.cpp">
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,9 +56,6 @@
     <ClInclude Include="NetworkPacket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Harvestable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Enumerations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -60,10 +63,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="namespace_std.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entities.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Harvestable.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

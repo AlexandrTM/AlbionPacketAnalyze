@@ -28,29 +28,49 @@ NetworkCommand::NetworkCommand()
     _eventCode = 0;
 }
 
-HarvestableList _harvestableList{};
+EntityList _entityList{};
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
-
     if (_operationType == operationType::event) {
 
         if (_eventCode == eventCode::harvestableObjectList) {
             //auto start = std::chrono::high_resolution_clock::now();
-            _harvestableList += HarvestableList(*this);
-            //_harvestableList.printInfo();
+            _entityList._harvestableList += HarvestableList(*this);
             //this->printCommandInOneString();
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
         if (_eventCode == eventCode::harvestableObject) {
             //auto start = std::chrono::high_resolution_clock::now();
-            _harvestableList.push_back(Harvestable(*this));
+            _entityList._harvestableList.push_back(Harvestable(*this));
             //_harvestableList.printInfo();
-            //this->printCommandInOneString();
+            //DataLayout _dataLayout{};
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo();
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
-        Entities::draw(window, _harvestableList);
+        if (_eventCode == 20) {
+            //DataLayout _dataLayout{};
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo();
+            //this->printCommandInOneString();
+        }
+        _entityList.draw(window);
+    }
+    //std::cout << (unsigned)_operationType << "\n";
+    if (_operationType == operationType::operationResponse) {
+        //DataLayout _dataLayout{};
+        //_dataLayout.findDataLayout(*this);
+        //_dataLayout.printInfo();
+        //this->printCommandInOneString();
+        if (_eventCode == operationCode::changeLocation) {
+            _entityList.clear();
+        }
+
+    }
+    if (_operationType == operationType::operationRequest) {
+        //this->printCommandInOneString();
     }
     //_harvestableList.clear();
 }
@@ -223,7 +243,7 @@ uint16_t NetworkCommand::findEventCode()
     if (_isCommandFull == true) {
         if (_networkCommand[_networkCommand.size() - 3] == dataType::int16) {
             return ((_networkCommand[_networkCommand.size() - 2] << 8) |
-                        _networkCommand[_networkCommand.size() - 1]) & 0x0fff;
+                        _networkCommand[_networkCommand.size() - 1]) & 0x03ff;
         }
         else {
             return _networkCommand[_networkCommand.size() - 1];
