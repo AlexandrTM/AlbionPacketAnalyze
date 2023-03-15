@@ -35,6 +35,8 @@ public:
 	HarvestableList();
 	HarvestableList(NetworkCommand& harvestableRawList);
 
+	void updateState(NetworkCommand& updateState);
+
 	void printInfo();
 
 	void clear();

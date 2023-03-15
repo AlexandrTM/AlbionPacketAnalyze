@@ -50,7 +50,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
-        if (_eventCode == 20) {
+        if (_eventCode == eventCode::harvestableChangeState) {
+            //std::cout << this->getEventCode() << "\n";
+            _entityList._harvestableList.updateState(*this);
             //DataLayout _dataLayout{};
             //_dataLayout.findDataLayout(*this);
             //_dataLayout.printInfo();

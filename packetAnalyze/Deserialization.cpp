@@ -126,7 +126,7 @@ DataFragment::DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfE
 DataFragment::DataFragment()
 {
     _fragmentID = 0;
-    _offset = 0;
+    _offset = -1;
     _numOfEntries = 0;
     _dataType = {};
 }
@@ -171,14 +171,14 @@ T DataLayout::readDataFragmentEntry(NetworkCommand& command, size_t fragmentID)
     }
 }
 
-ptrdiff_t DataLayout::findFragmentOffset(uint8_t fragmentID)
+DataFragment DataLayout::findFragment(uint8_t fragmentID)
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
-            return _dataLayout[i]._offset;
+            return _dataLayout[i];
         }
     }
-    return -1;
+    return DataFragment{};
 }
 
 void DataLayout::findDataLayout(NetworkCommand& command)

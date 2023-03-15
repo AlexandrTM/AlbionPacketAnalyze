@@ -23,11 +23,13 @@ enum operationCode: uint16_t
     getCharacterEquipment = 137,
 
 };
-enum eventCode: uint16_t
+enum eventCode : uint16_t
 {
     activeSpellEffectsUpdate = 10,
     harvestableObjectList = 35,
     harvestableObject = 36,
+    newSilverObject = 40,
+    harvestableChangeState = 42,
     harvestStart = 55,
     harvestFinished = 57,
     equipmentChanged = 85,

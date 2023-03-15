@@ -121,7 +121,7 @@ private:
     std::vector<DataFragment> _dataLayout;
 
 public:
-    ptrdiff_t findFragmentOffset(uint8_t fragmentID);
+    DataFragment findFragment(uint8_t fragmentID);
 
     template<typename T>
     T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);

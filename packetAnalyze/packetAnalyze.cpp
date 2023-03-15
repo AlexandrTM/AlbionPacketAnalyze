@@ -143,6 +143,8 @@ int filteredCommands;
 
 std::vector<std::vector<uint16_t>> commandLenghts;
 std::vector <NetworkPacket> text;
+int _windowPosX, _windowPosY;
+GLint _windowWidth, _windowHeight;
 
 class PacketAnalyze {
 
@@ -316,6 +318,7 @@ private:
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+        //glfwWindowHint(GLFW_HAND_CURSOR, GLFW_FALSE);
         //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         //glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
@@ -333,13 +336,11 @@ private:
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorEnterCallback(_window, cursorEnterCallback);
         glfwSetKeyCallback(_window, keyCallback);
-        glfwSetWindowPos(_window, _videoMode->width / 15, _videoMode->width / 12);
+        glfwSetWindowPos(_window, _videoMode->width / 18, _videoMode->width / 11);
         glfwMakeContextCurrent(_window);
       
-
-        GLint windowWidth, windowHeight;
-        glfwGetWindowSize(_window, &windowWidth, &windowHeight);
-        glViewport(0, 0, windowWidth, windowHeight);
+        glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
+        glViewport(0, 0, _windowWidth, _windowHeight);
     }
 
     static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
@@ -348,37 +349,39 @@ private:
     }
     static void cursorEnterCallback(GLFWwindow* window, int entered)
     {
-        if (entered)
+        if (entered == true)
         {
-            // The cursor entered the content area of the window
+            glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_FALSE);
         }
         else
         {
-            // The cursor left the content area of the window
+            glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
         }
     }
-    static void keyCallback(GLFWwindow* _window, int key, int scancode, int action, int mods)
+    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
-            if (counter < _eventCodes.size() - 1) {
-                counter += 1;
+        if (action == GLFW_RELEASE) {
+
+            if (key == GLFW_KEY_RIGHT) {
+                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+                glfwSetWindowPos(window, _windowPosX + _windowHeight / 10, _windowPosY);
             }
-            else if (counter == _eventCodes.size() - 1) {
-                counter = 0;
+            if (key == GLFW_KEY_LEFT) {
+                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+                glfwSetWindowPos(window, _windowPosX - _windowHeight / 10, _windowPosY);
             }
-            std::cout << "\n" << "<<" << counter << ">>" << "\n";
-        }
-        if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
-            if (counter > 0) {
-                counter -= 1;
+            if (key == GLFW_KEY_DOWN) {
+                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+                glfwSetWindowPos(window, _windowPosX, _windowPosY + _windowHeight / 10);
             }
-            else if (counter == 0) {
-                counter = _eventCodes.size() - 1;
+            if (key == GLFW_KEY_UP) {
+                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+                glfwSetWindowPos(window, _windowPosX, _windowPosY - _windowHeight / 10);
             }
-            std::cout << "\n" << "<<" << counter << ">>" << "\n";
-        }
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-            glfwSetWindowShouldClose(_window, GLFW_TRUE);
+
+            if (key == GLFW_KEY_ESCAPE) {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            }
         }
     }
     
@@ -396,7 +399,7 @@ private:
             const IP& ip = sniffedPacket->rfind_pdu<IP>();
             const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-            if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
+            if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056 /*or udp.dport() == 5056*/) {
                 RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
                 RawNetworkPacket packet;
                 readRawPacket(rawPacket, packet);
@@ -443,7 +446,6 @@ private:
         for (size_t i = regionStart; i < regionEnd; i++) {
             rawPacketPayload.push_back(pdu.payload()[i]);
         }
-
         return rawPacketPayload;
     }
 
