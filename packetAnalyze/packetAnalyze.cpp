@@ -146,7 +146,7 @@ std::vector <NetworkPacket> text;
 int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
-uint8_t _mapState = mapState::miniMap;
+uint8_t _mapState = mapState::fullscreenMap;
 
 class PacketAnalyze {
 
@@ -324,6 +324,7 @@ private:
         //glfwWindowHint(GLFW_HAND_CURSOR, GLFW_FALSE);
         //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
         glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+        glfwWindowHint(GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE);
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
 
@@ -333,18 +334,18 @@ private:
         glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);*/
         // full screen map
-        /*_window = glfwCreateWindow(_videoMode->width / 1.7, _videoMode->width / 1.7,
+        _window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715,
             u8"Packet Analyze", nullptr, nullptr);
         glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(_window, 300, -7);*/
+        glfwSetWindowPos(_window, 300, -7);
 
         // mini map
-        _window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
+        /*_window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
             u8"Packet Analyze", nullptr, nullptr);
         glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(_window, 1142, 574);
+        glfwSetWindowPos(_window, 1142, 574);*/
 
         GLFWimage images[1];
         images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
@@ -361,16 +362,20 @@ private:
     static void changeMapState(GLFWwindow*  window)
     {
         if (_mapState == mapState::miniMap) {
-            glfwSetWindowSize(window, _screenWidth / 6.9, _screenWidth / 6.9);
-            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
-            glViewport(0, 0, _screenWidth, _screenHeight);
-            glfwSetWindowPos(window, 300, -7);
-        }
-        if (_mapState == mapState::fullscreenMap) {
-            glfwSetWindowSize(window, _screenWidth / 6.9, _screenWidth / 6.9);
+            GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
+            glfwSetWindowSize(window, _videoMode->width / 6.9, _videoMode->width / 6.9);
             glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
             glViewport(0, 0, _screenWidth, _screenHeight);
             glfwSetWindowPos(window, 1142, 574);
+        }
+        else if (_mapState == mapState::fullscreenMap) {
+            GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
+            glfwSetWindowSize(window, _videoMode->width / 1.715, _videoMode->width / 1.715);
+            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
+            glViewport(0, 0, _screenWidth, _screenHeight);
+            glfwSetWindowPos(window, 300, -7);
         }
     }
 
@@ -382,7 +387,7 @@ private:
     {
         if (entered == GLFW_TRUE)
         {
-            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_FALSE);
+            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
         }
         else
         {
@@ -409,13 +414,15 @@ private:
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
                 glfwSetWindowPos(window, _windowPosX, _windowPosY - _screenHeight / 6);
             }
-            if (key == GLFW_KEY_N and _mapState == mapState::miniMap) {
-                _mapState = mapState::fullscreenMap;
-                //changeMapState(window);
-            }
-            if ((key == GLFW_KEY_N or key == GLFW_KEY_ESCAPE) and _mapState == mapState::fullscreenMap) {
-                _mapState = mapState::miniMap;
-                //changeMapState(window);
+            if (glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE) {
+                if (key == GLFW_KEY_N and _mapState == mapState::miniMap) {
+                    _mapState = mapState::fullscreenMap;
+                    changeMapState(window);
+                }
+                else if ((key == GLFW_KEY_N or key == GLFW_KEY_ESCAPE) and _mapState == mapState::fullscreenMap) {
+                    _mapState = mapState::miniMap;
+                    changeMapState(window);
+                }
             }
 
             if (key == GLFW_KEY_ESCAPE) {

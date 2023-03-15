@@ -19,9 +19,9 @@ void EntityList::clear()
 EntityList::EntityList()
 {
     _harvestableList = {};
-    _harvestableTrackingTiers = { 4,5,6,7,8 };
+    _harvestableTrackingTiers = { 1,2,3,4,5,6,7,8 };
     _harvestableTrackingTypes = {resourceType::FIBER,12,13,14,15,16};
-    _harvestableTrackingEnchantments = { 1,1,1,0,0 };
+    _harvestableTrackingEnchantments = { 0,0,0,1,1,1,0,0 };
 }
 
 void EntityList::drawWindowFrame()
@@ -47,14 +47,14 @@ void EntityList::colorizeHarvestables()
         if (std::isElementInVector(this->_harvestableTrackingTiers, _harvestableList[i]._tier)
             and _harvestableList[i]._charges > 0
             and _harvestableList[i]._enchantment >= _harvestableTrackingEnchantments[std::findElementIndex(this->_harvestableTrackingTiers, _harvestableList[i]._tier)]
-            and std::isElementInVector(this->_harvestableTrackingTypes, _harvestableList[i]._type)) {
+            /*and std::isElementInVector(this->_harvestableTrackingTypes, _harvestableList[i]._type)*/) {
 
             if (_harvestableList[i]._enchantment > 0) {
                 glPointSize(_harvestableList[i]._enchantment * 1.2 + _harvestableList[i]._tier / 2);
                 glBegin(GL_POINTS);
                 colorizeEnchantment(_harvestableList[i]._enchantment);
-                glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715,
-                    -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715, 0.0f);
+                glVertex3f(_harvestableList[i]._positionX / 400 * 0.45 + _harvestableList[i]._positionY / 400 * 0.45,
+                    (-1 * (_harvestableList[i]._positionX / 400 * 0.45) + _harvestableList[i]._positionY / 400 * 0.45) * 0.715, 0.0f);
                 glEnd();
             }
 
@@ -79,8 +79,8 @@ void EntityList::colorizeHarvestables()
                 glColor3f(1, 0, 1);
                 std::cout << (unsigned)_harvestableList[i]._type << "\n";
             }
-            glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715,
-                -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715, 0.0f); 
+            glVertex3f(_harvestableList[i]._positionX / 400 * 0.45 + _harvestableList[i]._positionY / 400 * 0.45,
+                (-1 * (_harvestableList[i]._positionX / 400 * 0.45) + _harvestableList[i]._positionY / 400 * 0.45) * 0.715, 0.0f);
             glEnd();
         }
     }
