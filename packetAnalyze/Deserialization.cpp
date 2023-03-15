@@ -188,7 +188,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     _offset += 1;
 
     uint16_t _dataSize;
-    for (size_t i = 0; i < _numOfFragments - 1; i++) { // excluding event code
+    for (size_t i = 0; i < _numOfFragments - 1; i++) { // excluding event code, change for unreliable commands
         uint8_t _fragmentID = command[_offset];
         uint8_t _dataType = command[_offset + 1];
 

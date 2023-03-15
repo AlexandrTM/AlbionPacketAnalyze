@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #define TINS_STATIC
+#include <glm.hpp>
 #include "tins/tins.h"
 
 #include "namespace_std.h"

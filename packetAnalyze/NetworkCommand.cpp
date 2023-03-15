@@ -59,6 +59,13 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //this->printCommandInOneString();
         }
         _entityList.draw(window);
+        if (_eventCode == 43) {
+
+            /*DataLayout _dataLayout{};
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo();
+            this->printCommandInOneString();*/
+        }
     }
     //std::cout << (unsigned)_operationType << "\n";
     if (_operationType == operationType::operationResponse) {

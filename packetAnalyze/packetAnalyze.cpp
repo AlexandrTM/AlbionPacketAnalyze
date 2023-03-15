@@ -144,7 +144,7 @@ int filteredCommands;
 std::vector<std::vector<uint16_t>> commandLenghts;
 std::vector <NetworkPacket> text;
 int _windowPosX, _windowPosY;
-GLint _windowWidth, _windowHeight;
+GLint _screenWidth, _screenHeight;
 
 class PacketAnalyze {
 
@@ -320,12 +320,28 @@ private:
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
         //glfwWindowHint(GLFW_HAND_CURSOR, GLFW_FALSE);
         //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        //glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
 
-        _window = glfwCreateWindow(_videoMode->width / 5, _videoMode->width / 5, 
+        // big map
+        /*_window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715, 
                                   u8"Packet Analyze", nullptr, nullptr);
+        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+        glViewport(0, 0, _screenWidth, _screenHeight);*/
+        // full screen map
+        /*_window = glfwCreateWindow(_videoMode->width / 1.7, _videoMode->width / 1.7,
+            u8"Packet Analyze", nullptr, nullptr);
+        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+        glViewport(0, 0, _screenWidth, _screenHeight);
+        glfwSetWindowPos(_window, 300, -7);*/
+
+        // mini map
+        _window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
+            u8"Packet Analyze", nullptr, nullptr);
+        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+        glViewport(0, 0, _screenWidth, _screenHeight);
+        glfwSetWindowPos(_window, 1142, 574);
 
         GLFWimage images[1];
         images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
@@ -336,11 +352,7 @@ private:
         glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
         glfwSetCursorEnterCallback(_window, cursorEnterCallback);
         glfwSetKeyCallback(_window, keyCallback);
-        glfwSetWindowPos(_window, _videoMode->width / 18, _videoMode->width / 11);
         glfwMakeContextCurrent(_window);
-      
-        glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
-        glViewport(0, 0, _windowWidth, _windowHeight);
     }
 
     static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
@@ -349,13 +361,13 @@ private:
     }
     static void cursorEnterCallback(GLFWwindow* window, int entered)
     {
-        if (entered == true)
+        if (entered == GLFW_TRUE)
         {
-            glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_FALSE);
+            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_FALSE);
         }
         else
         {
-            glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
+            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
         }
     }
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -364,19 +376,19 @@ private:
 
             if (key == GLFW_KEY_RIGHT) {
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX + _windowHeight / 10, _windowPosY);
+                glfwSetWindowPos(window, _windowPosX + _screenHeight / 6, _windowPosY);
             }
             if (key == GLFW_KEY_LEFT) {
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX - _windowHeight / 10, _windowPosY);
+                glfwSetWindowPos(window, _windowPosX - _screenHeight / 6, _windowPosY);
             }
             if (key == GLFW_KEY_DOWN) {
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX, _windowPosY + _windowHeight / 10);
+                glfwSetWindowPos(window, _windowPosX, _windowPosY + _screenHeight / 6);
             }
             if (key == GLFW_KEY_UP) {
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX, _windowPosY - _windowHeight / 10);
+                glfwSetWindowPos(window, _windowPosX, _windowPosY - _screenHeight / 6);
             }
 
             if (key == GLFW_KEY_ESCAPE) {

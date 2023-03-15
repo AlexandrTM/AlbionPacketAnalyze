@@ -25,6 +25,7 @@ enum operationCode: uint16_t
 };
 enum eventCode : uint16_t
 {
+    healthUpdate = 6,
     activeSpellEffectsUpdate = 10,
     harvestableObjectList = 35,
     harvestableObject = 36,

@@ -6,11 +6,15 @@ struct EntityList
 {
     std::vector<uint8_t> _harvestableTrackingTiers;
     std::vector<uint8_t> _harvestableTrackingTypes;
+    std::vector<uint8_t> _harvestableTrackingEnchantments;
+
     HarvestableList _harvestableList;
 
     EntityList();
-    void colorizeHarvestables();
+
     void drawWindowFrame();
+    void colorizeHarvestables();
+    void colorizeEnchantment(uint8_t enchantment);
 
     void draw(GLFWwindow* window);
 
