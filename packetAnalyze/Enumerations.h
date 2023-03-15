@@ -63,4 +63,10 @@ enum dataType : uint16_t
 
 };
 
+enum mapState : uint8_t
+{
+    miniMap = 0,
+    fullscreenMap = 1,
+};
+
 #endif

@@ -146,6 +146,8 @@ std::vector <NetworkPacket> text;
 int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
+uint8_t _mapState = mapState::miniMap;
+
 class PacketAnalyze {
 
 public:
@@ -246,6 +248,7 @@ private:
     IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
     NetworkInterface iface = NetworkInterface::default_interface();
     Sniffer sniffer = Sniffer(iface.name());
+
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet)
     {
@@ -355,6 +358,22 @@ private:
         glfwMakeContextCurrent(_window);
     }
 
+    static void changeMapState(GLFWwindow*  window)
+    {
+        if (_mapState == mapState::miniMap) {
+            glfwSetWindowSize(window, _screenWidth / 6.9, _screenWidth / 6.9);
+            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
+            glViewport(0, 0, _screenWidth, _screenHeight);
+            glfwSetWindowPos(window, 300, -7);
+        }
+        if (_mapState == mapState::fullscreenMap) {
+            glfwSetWindowSize(window, _screenWidth / 6.9, _screenWidth / 6.9);
+            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
+            glViewport(0, 0, _screenWidth, _screenHeight);
+            glfwSetWindowPos(window, 1142, 574);
+        }
+    }
+
     static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
         auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
         app->framebufferResized = true;
@@ -389,6 +408,14 @@ private:
             if (key == GLFW_KEY_UP) {
                 glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
                 glfwSetWindowPos(window, _windowPosX, _windowPosY - _screenHeight / 6);
+            }
+            if (key == GLFW_KEY_N and _mapState == mapState::miniMap) {
+                _mapState = mapState::fullscreenMap;
+                //changeMapState(window);
+            }
+            if ((key == GLFW_KEY_N or key == GLFW_KEY_ESCAPE) and _mapState == mapState::fullscreenMap) {
+                _mapState = mapState::miniMap;
+                //changeMapState(window);
             }
 
             if (key == GLFW_KEY_ESCAPE) {
@@ -479,7 +506,7 @@ private:
                 }
             }
             if (_packet[i].getCommandType() == commandType::reliable
-             or _packet[i].getCommandType() == commandType::unreliable) {
+                or _packet[i].getCommandType() == commandType::unreliable) {
 
                 _packet[i].analyzeCommand(_window);
                 findUniqueEventCodes(_packet[i]);

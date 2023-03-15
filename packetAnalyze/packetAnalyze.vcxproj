@@ -158,6 +158,7 @@
     <ClInclude Include="namespace_std.h" />
     <ClInclude Include="NetworkCommand.h" />
     <ClInclude Include="NetworkPacket.h" />
+    <ClInclude Include="PacketAnalyze.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

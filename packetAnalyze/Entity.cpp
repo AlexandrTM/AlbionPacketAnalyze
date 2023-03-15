@@ -53,8 +53,8 @@ void EntityList::colorizeHarvestables()
                 glPointSize(_harvestableList[i]._enchantment * 1.2 + _harvestableList[i]._tier / 2);
                 glBegin(GL_POINTS);
                 colorizeEnchantment(_harvestableList[i]._enchantment);
-                glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.679,
-                    -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.679, 0.0f);
+                glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715,
+                    -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715, 0.0f);
                 glEnd();
             }
 
@@ -79,8 +79,8 @@ void EntityList::colorizeHarvestables()
                 glColor3f(1, 0, 1);
                 std::cout << (unsigned)_harvestableList[i]._type << "\n";
             }
-            glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.679,
-                -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.679, 0.0f);
+            glVertex3f(_harvestableList[i]._positionX / 400 * 0.707 * 0.707 + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715,
+                -1 * (_harvestableList[i]._positionX / 400 * 0.707 * 0.707) + _harvestableList[i]._positionY / 400 * 0.707 * 0.707 * 0.715, 0.0f); 
             glEnd();
         }
     }
