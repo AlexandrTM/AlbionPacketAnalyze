@@ -39,7 +39,7 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	_positionY = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset + 4);
 	_charges = net::read_int8(rawHarvestable, _dataLayout.findFragment(10)._offset);
 	_enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragment(11)._offset);
-
+	
 	this->_id = _id;
 	this->_type = _type;
 	this->_tier = _tier;
@@ -112,13 +112,13 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 
 	for (size_t i = 0; i < _harvestablesNum; i++) {
 		_id = net::read_int16(rawHarvestableList, _idOffset + i * 2);
-		_type = rawHarvestableList[_typeOffset + i];
-		_tier = rawHarvestableList[_tierOffset + i];
+		_type = net::read_int8(rawHarvestableList, _typeOffset + i);
+		_tier = net::read_int8(rawHarvestableList, _tierOffset + i);
 		_positionX = net::read_float32(rawHarvestableList, _positionXOffset + i * 8);
 		_positionY = net::read_float32(rawHarvestableList, _positionYOffset + i * 8);
-		_charges = rawHarvestableList[_chargesOffset + i];
+		_charges = net::read_int8(rawHarvestableList, _chargesOffset + i);
 
-		_harvestableList.push_back(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
+		this->update(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
 	}
 }
 
@@ -142,6 +142,7 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 		if (_harvestableList[i]._id == _id) {
 			_harvestableList[i]._charges = _charges;
 			_harvestableList[i]._enchantment = _enchantment;
+			break;
 		}
 	}
 }
@@ -161,11 +162,28 @@ size_t HarvestableList::size()
 {
 	return _harvestableList.size();
 }
-void HarvestableList::push_back(Harvestable harvestable)
+void HarvestableList::update(Harvestable harvestable)
 {
-	_harvestableList.push_back(harvestable);
+	if (_harvestableList.size() == 0) {
+		_harvestableList.push_back(harvestable);
+	}
+	for (size_t i = 0; i < _harvestableList.size(); i++) {
+		//std::cout << i << " " << _harvestableList.size() << "\n";
+		if (_harvestableList[i]._id == harvestable._id) {
+			_harvestableList[i] = harvestable;
+			break;
+		}
+		else if (i == (_harvestableList.size() - 1)) {
+			_harvestableList.push_back(harvestable);
+		}
+	}
 }
-
+void HarvestableList::update(HarvestableList harvestableList)
+{
+	for (size_t i = 0; i < harvestableList.size(); i++) {
+		this->update(harvestableList[i]);
+	}
+}
 Harvestable& HarvestableList::operator[](size_t elementIndex)
 {
 	return _harvestableList[elementIndex];

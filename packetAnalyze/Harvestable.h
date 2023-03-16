@@ -41,7 +41,8 @@ public:
 
 	void clear();
 	size_t size();
-	void push_back(Harvestable harvestable);
+	void update(Harvestable harvestable);
+	void update(HarvestableList harvestableList);
 
 	Harvestable& operator[](size_t elementIndex);
 	HarvestableList& operator+=(HarvestableList harvestableList);

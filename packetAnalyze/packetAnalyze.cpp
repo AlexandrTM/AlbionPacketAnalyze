@@ -148,7 +148,7 @@ GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
 
-class PacketAnalyze {
+
 
 public:
     void run() 
@@ -159,7 +159,7 @@ public:
         cleanup();
     }
 
-    std::vector<bool> findSameSymbolsInText(NetworkPacket paragraph)
+    std::vector<bool> PacketAnalyze::findSameSymbolsInText(NetworkPacket paragraph)
     {
         std::vector<bool> sameSymbols = {};
 
@@ -434,7 +434,8 @@ private:
     void initSniffer() 
     {
         SnifferConfiguration albionConfig;
-        albionConfig.set_filter("ip dst 192.168.1.70");
+        //albionConfig.set_filter("ip dst 192.168.1.70");
+        //albionConfig.set_promisc_mode(true);
         sniffer = Sniffer(iface.name(), albionConfig);
     }
     bool isPacketFiltered(RawNetworkPacket& filteredPacket)
@@ -445,7 +446,7 @@ private:
             const IP& ip = sniffedPacket->rfind_pdu<IP>();
             const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-            if (albionIPRange.contains(ip.src_addr()) and udp.sport() == 5056 /*or udp.dport() == 5056*/) {
+            if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
                 RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
                 RawNetworkPacket packet;
                 readRawPacket(rawPacket, packet);
@@ -520,7 +521,7 @@ private:
             }
         }
     }
-};
+
 
 int main() {
     PacketAnalyze packetAnalyze;
