@@ -324,11 +324,11 @@ void PacketAnalyze::initWindow()
     glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
     glViewport(0, 0, _screenWidth, _screenHeight);*/
     // full screen map
-    _window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715,
+    _window = glfwCreateWindow(_videoMode->width - 1, _videoMode->height - 1,
         u8"Packet Analyze", nullptr, nullptr);
     glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
     glViewport(0, 0, _screenWidth, _screenHeight);
-    glfwSetWindowPos(_window, 300, -7);
+    //glfwSetWindowPos(_window, 0, 0);
 
     // mini map
     /*_window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
@@ -362,10 +362,9 @@ void PacketAnalyze::changeMapState(GLFWwindow*  window)
     else if (_mapState == mapState::fullscreenMap) {
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-        glfwSetWindowSize(window, _videoMode->width / 1.715, _videoMode->width / 1.715);
+        glfwSetWindowSize(window, _videoMode->width, _videoMode->width);
         glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(window, 300, -7);
     }
 }
 
@@ -506,7 +505,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
             or _packet[i].getCommandType() == commandType::unreliable) {
 
             _packet[i].analyzeCommand(_window);
-            findUniqueEventCodes(_packet[i]);
+            //findUniqueEventCodes(_packet[i]);
         }
     }
 }

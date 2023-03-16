@@ -118,7 +118,7 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 		_positionY = net::read_float32(rawHarvestableList, _positionYOffset + i * 8);
 		_charges = net::read_int8(rawHarvestableList, _chargesOffset + i);
 
-		this->update(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
+		_harvestableList.push_back(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
 	}
 }
 

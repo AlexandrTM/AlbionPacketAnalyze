@@ -60,15 +60,15 @@ void EntityList::drawWindowFrame()
     glBegin(GL_LINES);
     glColor4f(0.5, 0.5, 0.5, 0);
 
-    glVertex2f(0, -0.715);
-    glVertex2f(1, 0);
-    glVertex2f(1, 0);
-    glVertex2f(0, 0.715);
+    glVertex2f(0, -0.821);
+    glVertex2f(0.59, -0.085);
+    glVertex2f(0.59, -0.085);
+    glVertex2f(0, 0.653);
 
-    glVertex2f(0, 0.715);
-    glVertex2f(-1, 0);
-    glVertex2f(-1, 0);
-    glVertex2f(0, -0.715);
+    glVertex2f(0, 0.653);
+    glVertex2f(-0.59, -0.085);
+    glVertex2f(-0.59, -0.085);
+    glVertex2f(0, -0.821);
     glEnd();
 }
 
@@ -76,7 +76,7 @@ void EntityList::drawHarvestables()
 {
     std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
     for (size_t i = 0; i < _harvestableList.size(); i++) {
-        if (harvestableFiltered(_harvestableList[i])) 
+        //if (harvestableFiltered(_harvestableList[i])) 
         {
             std::vector<GLfloat> _harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                                                  _harvestableList[i]._positionY);
@@ -176,25 +176,30 @@ void EntityList::DrawCircle(float_t offsetX, float_t offsetY, float_t radius, si
     for (size_t i = 0; i < num_segments; i++) {
         float_t theta = 2.0f * 3.1415926f * i / num_segments;
 
-        glVertex2f(offsetX + radius * cosf(theta), offsetY + radius * sinf(theta) * 0.715);
+        glVertex2f(offsetX + radius * cosf(theta) * 0.5647, offsetY + radius * sinf(theta) * 0.7085);
     }
     glEnd();
 }
+
+float_t _cos = 0.7071/*0.8159*/;
+float_t _sin = 0.7071/*0.5781*/;
 std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y)
 {
-    return { (float)(x / 400 * 0.4921 + y / 400 * 0.4921),
-             (float)((-1 * (x / 400 * 0.4921) + y / 400 * 0.4921) * 0.715) };
+    x = x / 400;
+    y = y / 400;
+    return { (float)((x * _cos + y * _sin) * 0.56 * 0.7366),
+             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 - 0.085)};
 }
 
-float_t _pixelsInMeter = 61.5;
+float_t _pixelsInMeter = 61.1;
 void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
 {
     for (size_t j = 0; j < charges; j++) {
         glPointSize(15);
         glColor3f(0.45 + 0.05f * j, 0.45 + 0.05f * j, 0.75 + 0.05f * j);
         glBegin(GL_POINTS);
-        glVertex2f((harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter + (25.0f * j - 50.0f) / 400,
-            ((harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter) + (100.0f / 400));
+        glVertex2f((harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter + (16.0f * j - 39.0f) / 400,
+            ((harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter) + (90.0f / 400));
         glEnd();
     }
 }
