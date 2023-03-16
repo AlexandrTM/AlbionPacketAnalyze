@@ -35,7 +35,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
 
         if (_eventCode == eventCode::harvestableObjectList) {
             //auto start = std::chrono::high_resolution_clock::now();
-            _entityList._harvestableList += HarvestableList(*this);
+            _entityList._harvestableList.update(HarvestableList(*this));
             //this->printCommandInOneString();
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
@@ -43,6 +43,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         if (_eventCode == eventCode::harvestableObject) {
             //auto start = std::chrono::high_resolution_clock::now();
             _entityList._harvestableList.update(Harvestable(*this));
+            //this->printCommandInOneString();
             //_harvestableList.printInfo();
             //DataLayout _dataLayout{};
             //_dataLayout.findDataLayout(*this);
@@ -56,7 +57,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //DataLayout _dataLayout{};
             //_dataLayout.findDataLayout(*this);
             //_dataLayout.printInfo();
-            this->printCommandInOneString();
+            //this->printCommandInOneString();
         }
         if (_eventCode == 117) {
 

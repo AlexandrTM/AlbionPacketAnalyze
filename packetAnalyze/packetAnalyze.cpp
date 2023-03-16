@@ -138,6 +138,53 @@ std::vector<std::string> ListOfCommandLenghts = {
 };
 std::vector<uint16_t> _eventCodes;
 
+std::vector<size_t> PacketAnalyze::findCommandBordersInPacket(std::string packet)
+{
+    std::vector<size_t> commandBorders;
+    size_t packetHeaderSize = 24;
+    size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
+
+    commandBorders.push_back(packetHeaderSize);
+    for (size_t i = 0; i < commandsNumInPacket; i++) {
+        size_t commandWidth = strtoul(packet.substr(commandBorders[i] + 12, 4).c_str(), nullptr, 16);
+        commandBorders.push_back(commandBorders[i] + commandWidth * 2);
+    }
+
+    return commandBorders;
+}
+bool PacketAnalyze::findStringInString(std::string packet, std::string string, size_t& stringPosition)
+{
+    for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
+        if (packet.substr(i, string.length()) == string) {
+            return true;
+        }
+    }
+
+    return false;
+}
+bool PacketAnalyze::findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
+{
+    for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+        if (packet.substr(i, string.length()) == string) {
+            return true;
+        }
+    }
+
+    return false;
+}
+bool PacketAnalyze::findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string,
+    size_t& stringPosition)
+{
+    for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
+        if (packet.substr(i, string.length()) == string) {
+            stringPosition = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int counter;
 int filteredCommands;
 
@@ -149,378 +196,320 @@ GLint _screenWidth, _screenHeight;
 uint8_t _mapState = mapState::fullscreenMap;
 
 
+void PacketAnalyze::run()
+{
+    initWindow();
+    initSniffer();
+    mainLoop();
+    cleanup();
+}
 
-public:
-    void run() 
-    {
-        initWindow();
-        initSniffer();
-        mainLoop();
-        cleanup();
+std::vector<bool> PacketAnalyze::findSameSymbolsInText(NetworkPacket paragraph)
+{
+    std::vector<bool> sameSymbols = {};
+
+    for (size_t i = 0; i < paragraph[0].size(); i++) {
+        int symbolSimilarity = 1;
+
+        for (size_t j = 1; j < paragraph.size(); j++) {
+            if (paragraph[j][i] == paragraph[0][i]) {
+                symbolSimilarity += 1;
+            }
+        }
+        sameSymbols.push_back(floor((float)symbolSimilarity / text.size()));
     }
 
-    std::vector<bool> PacketAnalyze::findSameSymbolsInText(NetworkPacket paragraph)
-    {
-        std::vector<bool> sameSymbols = {};
+    return sameSymbols;
+}
+void PacketAnalyze::colorizeSameText(NetworkPacket paragraph, HANDLE consoleHandle)
+{
+    std::vector<bool> sameSymbols = findSameSymbolsInText(paragraph);
 
-        for (size_t i = 0; i < paragraph[0].size(); i++) {
-            int symbolSimilarity = 1;
-
-            for (size_t j = 1; j < paragraph.size(); j++) {
-                if (paragraph[j][i] == paragraph[0][i]) {
-                    symbolSimilarity += 1;
-                }
-            }
-            sameSymbols.push_back(floor((float)symbolSimilarity / text.size()));
+    for (size_t i = 0; i < sameSymbols.size(); i++) {
+        if (sameSymbols[i] == 1) {
+            SetConsoleTextAttribute(consoleHandle, 2);
         }
 
-        return sameSymbols;
+        std::cout << sameSymbols[i];
+        SetConsoleTextAttribute(consoleHandle, 7);
+        if (i % 8 == 7) {
+            std::cout << " ";
+        }
+        if (i % 64 == 63 and i != (sameSymbols.size() - 1)) {
+            std::cout << "\n";
+        }
     }
-    void colorizeSameText(NetworkPacket paragraph, HANDLE consoleHandle)
-    {
-        std::vector<bool> sameSymbols = findSameSymbolsInText(paragraph);
+    std::cout << "\n";
 
-        for (size_t i = 0; i < sameSymbols.size(); i++) {
-            if (sameSymbols[i] == 1) {
+    for (size_t i = 0; i < paragraph.size(); i++) {
+        for (size_t j = 0; j < paragraph[i].size(); j++) {
+            if (sameSymbols[j] == 1) {
                 SetConsoleTextAttribute(consoleHandle, 2);
             }
 
-            std::cout << sameSymbols[i];
+            std::cout << paragraph[i][j];
             SetConsoleTextAttribute(consoleHandle, 7);
-            if (i % 8 == 7) {
+            if (j % 8 == 7) {
                 std::cout << " ";
             }
-            if (i % 64 == 63 and i != (sameSymbols.size() - 1)) {
+            if (j % 64 == 63 and j != (paragraph[i].size() - 1)) {
                 std::cout << "\n";
             }
         }
         std::cout << "\n";
+    }
+}
+void PacketAnalyze::outputColorizedNetworkPacket(std::vector<NetworkPacket> text)
+{
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-        for (size_t i = 0; i < paragraph.size(); i++) {
-            for (size_t j = 0; j < paragraph[i].size(); j++) {
-                if (sameSymbols[j] == 1) {
-                    SetConsoleTextAttribute(consoleHandle, 2);
-                }
+    for (size_t i = 0; i < text.size(); i++) {
+        SetConsoleTextAttribute(consoleHandle, 6);
+        std::cout << "\"" << _eventCodes[i] << "\"" << " " << _amountOfSameCommands[i] << "\n";
+        SetConsoleTextAttribute(consoleHandle, 7);
 
-                std::cout << paragraph[i][j];
-                SetConsoleTextAttribute(consoleHandle, 7);
-                if (j % 8 == 7) {
-                    std::cout << " ";
-                }
-                if (j % 64 == 63 and j != (paragraph[i].size() - 1)) {
-                    std::cout << "\n";
-                }
-            }
-            std::cout << "\n";
+        if (text[i].size() > 1) {
+            colorizeSameText(text[i], consoleHandle);
         }
     }
-    void outputColorizedNetworkPacket(std::vector<NetworkPacket> text)
+}
+
+void PacketAnalyze::findUniqueEventCodes(NetworkCommand& command)
+{
+    if (!std::isElementInVector(_eventCodes, command.getEventCode()))
     {
-        HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-
-        for (size_t i = 0; i < text.size(); i++) {
-            SetConsoleTextAttribute(consoleHandle, 6);
-            std::cout << "\"" << _eventCodes[i] << "\"" << " " << _amountOfSameCommands[i] << "\n";
-            SetConsoleTextAttribute(consoleHandle, 7);
-
-            if (text[i].size() > 1) {
-                colorizeSameText(text[i], consoleHandle);
-            }
-        }
+        _eventCodes.push_back(command.getEventCode());
+        _amountOfSameCommands.push_back({});
+        text.push_back({});
     }
 
-    void findUniqueEventCodes(NetworkCommand& command)
-    {
-        if (!std::isElementInVector(_eventCodes, command.getEventCode()))
-        {
-            _eventCodes.push_back(command.getEventCode());
-            _amountOfSameCommands.push_back({});
-            text.push_back({});
-        }
+    _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
+}
 
-        _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
+
+void PacketAnalyze::mainLoop()
+{
+    while (!glfwWindowShouldClose(_window)) {
+        sniffPacket();
+
+        glfwPollEvents();
     }
+}
 
-private:
-    GLFWwindow* _window;
-    bool framebufferResized;
-    std::vector<std::size_t> _amountOfSameCommands;
-    IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
-    NetworkInterface iface = NetworkInterface::default_interface();
-    Sniffer sniffer = Sniffer(iface.name());
+void PacketAnalyze::cleanup()
+{
+    glfwDestroyWindow(_window);
+    glfwTerminate();
+}
 
+void PacketAnalyze::initWindow()
+{
+    glfwInit();
 
-    std::vector<size_t> findCommandBordersInPacket(std::string packet)
-    {
-        std::vector<size_t> commandBorders;
-        size_t packetHeaderSize = 24;
-        size_t commandsNumInPacket = strtoul(packet.substr(6, 2).c_str(), nullptr, 16);
+    //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+    //glfwWindowHint(GLFW_HAND_CURSOR, GLFW_FALSE);
+    //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+    glfwWindowHint(GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE);
+    GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
 
-        commandBorders.push_back(packetHeaderSize);
-        for (size_t i = 0; i < commandsNumInPacket; i++) {
-            size_t commandWidth = strtoul(packet.substr(commandBorders[i] + 12, 4).c_str(), nullptr, 16);
-            commandBorders.push_back(commandBorders[i] + commandWidth * 2);
-        }
+    // big map
+    /*_window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715, 
+                                u8"Packet Analyze", nullptr, nullptr);
+    glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+    glViewport(0, 0, _screenWidth, _screenHeight);*/
+    // full screen map
+    _window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715,
+        u8"Packet Analyze", nullptr, nullptr);
+    glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+    glViewport(0, 0, _screenWidth, _screenHeight);
+    glfwSetWindowPos(_window, 300, -7);
 
-        return commandBorders;
-    }
-    bool findStringInString(std::string packet, std::string string, size_t& stringPosition)
-    {
-        for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                return true;
-            }
-        }
+    // mini map
+    /*_window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
+        u8"Packet Analyze", nullptr, nullptr);
+    glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+    glViewport(0, 0, _screenWidth, _screenHeight);
+    glfwSetWindowPos(_window, 1142, 574);*/
 
-        return false;
-    }
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
-    {
-        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                return true;
-            }
-        }
+    GLFWimage images[1];
+    images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
+    glfwSetWindowIcon(_window, 2, images);
+    stbi_image_free(images[0].pixels);
 
-        return false;
-    }
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string,
-        size_t& stringPosition)
-    {
-        for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-            if (packet.substr(i, string.length()) == string) {
-                stringPosition = i;
-                return true;
-            }
-        }
+    glfwSetWindowUserPointer(_window, this);
+    glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+    glfwSetCursorEnterCallback(_window, cursorEnterCallback);
+    glfwSetKeyCallback(_window, keyCallback);
+    glfwMakeContextCurrent(_window);
+}
 
-        return false;
-    }
-
-    void mainLoop() 
-    {
-        while (!glfwWindowShouldClose(_window)) {
-            sniffPacket();
-
-            glfwPollEvents();
-        }
-    }
-
-    void cleanup() 
-    {
-        glfwDestroyWindow(_window);
-        glfwTerminate();
-    }
-
-    void initWindow()
-    {
-        glfwInit();
-
-        //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-        glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
-        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-        //glfwWindowHint(GLFW_HAND_CURSOR, GLFW_FALSE);
-        //glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
-        glfwWindowHint(GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE);
+void PacketAnalyze::changeMapState(GLFWwindow*  window)
+{
+    if (_mapState == mapState::miniMap) {
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-
-        // big map
-        /*_window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715, 
-                                  u8"Packet Analyze", nullptr, nullptr);
-        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
-        glViewport(0, 0, _screenWidth, _screenHeight);*/
-        // full screen map
-        _window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715,
-            u8"Packet Analyze", nullptr, nullptr);
-        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+        glfwSetWindowSize(window, _videoMode->width / 6.9, _videoMode->width / 6.9);
+        glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(_window, 300, -7);
-
-        // mini map
-        /*_window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
-            u8"Packet Analyze", nullptr, nullptr);
-        glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
+        glfwSetWindowPos(window, 1142, 574);
+    }
+    else if (_mapState == mapState::fullscreenMap) {
+        GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
+        glfwSetWindowSize(window, _videoMode->width / 1.715, _videoMode->width / 1.715);
+        glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(_window, 1142, 574);*/
-
-        GLFWimage images[1];
-        images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
-        glfwSetWindowIcon(_window, 2, images);
-        stbi_image_free(images[0].pixels);
-
-        glfwSetWindowUserPointer(_window, this);
-        glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-        glfwSetCursorEnterCallback(_window, cursorEnterCallback);
-        glfwSetKeyCallback(_window, keyCallback);
-        glfwMakeContextCurrent(_window);
+        glfwSetWindowPos(window, 300, -7);
     }
+}
 
-    static void changeMapState(GLFWwindow*  window)
+void PacketAnalyze::framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
+    auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
+    app->framebufferResized = true;
+}
+void PacketAnalyze::cursorEnterCallback(GLFWwindow* window, int entered)
+{
+    if (entered == GLFW_TRUE)
     {
-        if (_mapState == mapState::miniMap) {
-            GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-            glfwSetWindowSize(window, _videoMode->width / 6.9, _videoMode->width / 6.9);
-            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
-            glViewport(0, 0, _screenWidth, _screenHeight);
-            glfwSetWindowPos(window, 1142, 574);
-        }
-        else if (_mapState == mapState::fullscreenMap) {
-            GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-            glfwSetWindowSize(window, _videoMode->width / 1.715, _videoMode->width / 1.715);
-            glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
-            glViewport(0, 0, _screenWidth, _screenHeight);
-            glfwSetWindowPos(window, 300, -7);
-        }
+        //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
     }
-
-    static void framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
-        auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
-        app->framebufferResized = true;
-    }
-    static void cursorEnterCallback(GLFWwindow* window, int entered)
+    else
     {
-        if (entered == GLFW_TRUE)
-        {
-            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
+        //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
+    }
+}
+void PacketAnalyze::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_RELEASE) {
+
+        if (key == GLFW_KEY_RIGHT) {
+            glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+            glfwSetWindowPos(window, _windowPosX + _screenHeight / 6, _windowPosY);
         }
-        else
-        {
-            //glfwSetWindowAttrib(window, GLFW_FOCUSED, GLFW_TRUE);
+        if (key == GLFW_KEY_LEFT) {
+            glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+            glfwSetWindowPos(window, _windowPosX - _screenHeight / 6, _windowPosY);
+        }
+        if (key == GLFW_KEY_DOWN) {
+            glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+            glfwSetWindowPos(window, _windowPosX, _windowPosY + _screenHeight / 6);
+        }
+        if (key == GLFW_KEY_UP) {
+            glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
+            glfwSetWindowPos(window, _windowPosX, _windowPosY - _screenHeight / 6);
+        }
+        if (glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE) {
+            if (key == GLFW_KEY_N and _mapState == mapState::miniMap) {
+                _mapState = mapState::fullscreenMap;
+                changeMapState(window);
+            }
+            else if ((key == GLFW_KEY_N or key == GLFW_KEY_ESCAPE) and _mapState == mapState::fullscreenMap) {
+                _mapState = mapState::miniMap;
+                changeMapState(window);
+            }
+        }
+
+        if (key == GLFW_KEY_ESCAPE) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (action == GLFW_RELEASE) {
-
-            if (key == GLFW_KEY_RIGHT) {
-                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX + _screenHeight / 6, _windowPosY);
-            }
-            if (key == GLFW_KEY_LEFT) {
-                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX - _screenHeight / 6, _windowPosY);
-            }
-            if (key == GLFW_KEY_DOWN) {
-                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX, _windowPosY + _screenHeight / 6);
-            }
-            if (key == GLFW_KEY_UP) {
-                glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
-                glfwSetWindowPos(window, _windowPosX, _windowPosY - _screenHeight / 6);
-            }
-            if (glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE) {
-                if (key == GLFW_KEY_N and _mapState == mapState::miniMap) {
-                    _mapState = mapState::fullscreenMap;
-                    changeMapState(window);
-                }
-                else if ((key == GLFW_KEY_N or key == GLFW_KEY_ESCAPE) and _mapState == mapState::fullscreenMap) {
-                    _mapState = mapState::miniMap;
-                    changeMapState(window);
-                }
-            }
-
-            if (key == GLFW_KEY_ESCAPE) {
-                glfwSetWindowShouldClose(window, GLFW_TRUE);
-            }
-        }
-    }
+}
     
-    void initSniffer() 
-    {
-        SnifferConfiguration albionConfig;
-        //albionConfig.set_filter("ip dst 192.168.1.70");
-        //albionConfig.set_promisc_mode(true);
-        sniffer = Sniffer(iface.name(), albionConfig);
-    }
-    bool isPacketFiltered(RawNetworkPacket& filteredPacket)
-    {
-        PDU* sniffedPacket = sniffer.next_packet();
+void PacketAnalyze::initSniffer()
+{
+    SnifferConfiguration albionConfig;
+    //albionConfig.set_filter("ip dst 192.168.1.70");
+    //albionConfig.set_promisc_mode(true);
+    sniffer = Sniffer(iface.name(), albionConfig);
+}
+bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket)
+{
+    PDU* sniffedPacket = sniffer.next_packet();
 
-        if (sniffedPacket) {
-            const IP& ip = sniffedPacket->rfind_pdu<IP>();
-            const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
+    if (sniffedPacket) {
+        const IP& ip = sniffedPacket->rfind_pdu<IP>();
+        const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-            if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
-                RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
-                RawNetworkPacket packet;
-                readRawPacket(rawPacket, packet);
-
-                if (packet.size() > 0) {
-                    filteredPacket = packet;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    void sniffPacket()
-    {
-        try {
+        if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
+            RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
             RawNetworkPacket packet;
-            if (isPacketFiltered(packet)) {
-                //auto start = std::chrono::high_resolution_clock::now();
+            readRawPacket(rawPacket, packet);
 
-                analyzePacket(packet); 
-
-                //auto stop = std::chrono::high_resolution_clock::now();
-                //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
-            }
-        }
-        catch (std::exception& e) {
-        }
-    }
-
-    void readRawPacket(RawPDU pdu, RawNetworkPacket& rawPacketPayload)
-    {
-        rawPacketPayload = pdu.payload();
-    }
-    void readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, RawNetworkPacket& rawPacketPayload)
-    {
-        for (size_t i = regionStart; i < regionEnd; i++) {
-            rawPacketPayload.push_back(pdu.payload()[i]);
-        }
-    }
-    RawNetworkPacket readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
-    {
-        RawNetworkPacket rawPacketPayload;
-
-        for (size_t i = regionStart; i < regionEnd; i++) {
-            rawPacketPayload.push_back(pdu.payload()[i]);
-        }
-        return rawPacketPayload;
-    }
-
-    NetworkPacket _packet;
-    NetworkCommand _fragmentedCommandBuffer;
-    void analyzePacket(RawNetworkPacket rawPacket)
-    {
-        _packet = NetworkPacket::findCommandsInPacket(rawPacket);
-
-        //if (eventCode == eventCodes[counter]) 
-        for (size_t i = 0; i < _packet.size(); i++)
-        {
-            //_packet[i].printCommandInOneString(), std::cout << "\n";
-            if (_packet[i].getCommandType() == commandType::fragmented) {
-                _fragmentedCommandBuffer.fillFragmentedCommand(_packet[i]);
-                if (_fragmentedCommandBuffer.isCommandFull()) {
-                    _fragmentedCommandBuffer.analyzeCommand(_window);
-                    _fragmentedCommandBuffer.clear();
-                }
-            }
-            if (_packet[i].getCommandType() == commandType::reliable
-                or _packet[i].getCommandType() == commandType::unreliable) {
-
-                _packet[i].analyzeCommand(_window);
-                findUniqueEventCodes(_packet[i]);
+            if (packet.size() > 0) {
+                filteredPacket = packet;
+                return true;
             }
         }
     }
+    return false;
+}
+void PacketAnalyze::sniffPacket()
+{
+    try {
+        RawNetworkPacket packet;
+        if (isPacketFiltered(packet)) {
+            //auto start = std::chrono::high_resolution_clock::now();
+
+            analyzePacket(packet); 
+
+            //auto stop = std::chrono::high_resolution_clock::now();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
+        }
+    }
+    catch (std::exception& e) {
+    }
+}
+
+void PacketAnalyze::readRawPacket(RawPDU pdu, RawNetworkPacket& rawPacketPayload)
+{
+    rawPacketPayload = pdu.payload();
+}
+void PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, RawNetworkPacket& rawPacketPayload)
+{
+    for (size_t i = regionStart; i < regionEnd; i++) {
+        rawPacketPayload.push_back(pdu.payload()[i]);
+    }
+}
+RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd)
+{
+    RawNetworkPacket rawPacketPayload;
+
+    for (size_t i = regionStart; i < regionEnd; i++) {
+        rawPacketPayload.push_back(pdu.payload()[i]);
+    }
+    return rawPacketPayload;
+}
+
+
+void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
+{
+    _packet = NetworkPacket::findCommandsInPacket(rawPacket);
+
+    //if (eventCode == eventCodes[counter]) 
+    for (size_t i = 0; i < _packet.size(); i++)
+    {
+        //_packet[i].printCommandInOneString(), std::cout << "\n";
+        if (_packet[i].getCommandType() == commandType::fragmented) {
+            _fragmentedCommandBuffer.fillFragmentedCommand(_packet[i]);
+            if (_fragmentedCommandBuffer.isCommandFull()) {
+                _fragmentedCommandBuffer.analyzeCommand(_window);
+                _fragmentedCommandBuffer.clear();
+            }
+        }
+        if (_packet[i].getCommandType() == commandType::reliable
+            or _packet[i].getCommandType() == commandType::unreliable) {
+
+            _packet[i].analyzeCommand(_window);
+            findUniqueEventCodes(_packet[i]);
+        }
+    }
+}
 
 
 int main() {

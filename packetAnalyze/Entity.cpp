@@ -83,7 +83,7 @@ void EntityList::drawHarvestables()
             if (_harvestableList[i]._enchantment > 0) {
                 glPointSize(_harvestableList[i]._enchantment * 1.5 + _harvestableList[i]._tier * 0.5);
                 glBegin(GL_POINTS);
-                colorizeEnchantment(_harvestableList[i]);
+                colorizeEnchantment(_harvestableList[i]._enchantment, _harvestableList[i]._charges);
                 glVertex3f(_harvestableMapCoords[0], _harvestableMapCoords[1], 0.0f);
                 glEnd();
             }
@@ -139,23 +139,30 @@ void EntityList::drawHarvestables()
     DrawCircle(_playerMapCoords[0], _playerMapCoords[1], (float_t)45 / 400, 25);
 }
 
-void EntityList::colorizeEnchantment(Harvestable harvestable)
+void EntityList::colorizeEnchantment(uint8_t enchantment, uint8_t charges)
 {
     std::vector<GLfloat> _color = {};
-    switch (harvestable._enchantment)
+    switch (enchantment)
     {
+    case 0:
+        _color = { 0, 0, 0 }; 
+        break;
     case 1:
-        _color = { 0.38, 0.9, 0.57 };
+        _color = { 0.38f, 0.9f, 0.57f }; 
+        break;
     case 2:
-        _color = { 0.27, 0.54, 0.97 };
+        _color = { 0.27f, 0.54f, 0.97f }; 
+        break;
     case 3:
-        _color = { 0.73, 0.55, 0.9 };
+        _color = { 0.73f, 0.55f, 0.9f }; 
+        break;
     case 4:
-        _color = { 0.89, 0.91, 0.65 };
+        _color = { 0.89f, 0.91f, 0.65f }; 
+        break;
     default:
         break;
     }
-    if (harvestable._charges == 0) {
+    if (charges == 0) {
         for (size_t i = 0; i < _color.size(); i++) {
             _color[i] /= 2;
         }

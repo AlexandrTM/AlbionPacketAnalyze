@@ -167,14 +167,16 @@ void HarvestableList::update(Harvestable harvestable)
 	if (_harvestableList.size() == 0) {
 		_harvestableList.push_back(harvestable);
 	}
-	for (size_t i = 0; i < _harvestableList.size(); i++) {
-		//std::cout << i << " " << _harvestableList.size() << "\n";
-		if (_harvestableList[i]._id == harvestable._id) {
-			_harvestableList[i] = harvestable;
-			break;
-		}
-		else if (i == (_harvestableList.size() - 1)) {
-			_harvestableList.push_back(harvestable);
+	else {
+		for (size_t i = 0; i < _harvestableList.size(); i++) {
+			//std::cout << i << " " << _harvestableList.size() << "\n";
+			if (_harvestableList[i]._id == harvestable._id) {
+				_harvestableList[i] = harvestable;
+				break;
+			}
+			else if (i == (_harvestableList.size() - 1)) {
+				_harvestableList.push_back(harvestable);
+			}
 		}
 	}
 }

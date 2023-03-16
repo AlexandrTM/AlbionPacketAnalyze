@@ -1,7 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-
 struct EntityList
 {
     std::vector<uint8_t> _harvestableTrackingTiers;
@@ -17,7 +16,7 @@ struct EntityList
     void drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords);
     void drawWindowFrame();
     void drawHarvestables();
-    std::vector<GLfloat> colorizeEnchantment(uint8_t enchantment);
+    void colorizeEnchantment(uint8_t enchantment, uint8_t charges);
 
     void draw(GLFWwindow* window);
     void DrawCircle(float_t offsetX, float_t offsetY, float_t radius, size_t num_segments);

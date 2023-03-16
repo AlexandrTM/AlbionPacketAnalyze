@@ -1,16 +1,11 @@
 #ifndef PACKET_ANALYZE_H
 #define PACKET_ANALYZE_H
 
+
 class PacketAnalyze {
 
 public:
-    void run()
-    {
-        initWindow();
-        initSniffer();
-        mainLoop();
-        cleanup();
-    }
+    void run();
 
     std::vector<bool> findSameSymbolsInText(NetworkPacket paragraph);
     void colorizeSameText(NetworkPacket paragraph, HANDLE consoleHandle);
@@ -22,10 +17,12 @@ private:
     GLFWwindow* _window;
     bool framebufferResized;
     std::vector<std::size_t> _amountOfSameCommands;
-    IPv4Range albionIPRange = IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
-    NetworkInterface iface = NetworkInterface::default_interface();
-    Sniffer sniffer = Sniffer(iface.name());
+    Tins::IPv4Range albionIPRange = Tins::IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
+    Tins::NetworkInterface iface = Tins::NetworkInterface::default_interface();
+    Tins::Sniffer sniffer = Tins::Sniffer(iface.name());
 
+    NetworkPacket _packet;
+    NetworkCommand _fragmentedCommandBuffer;
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition);
@@ -46,14 +43,14 @@ private:
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     void initSniffer();
-    bool isPacketFiltered(RawNetworkPacket& filteredPacket);
+    bool isPacketFiltered(std::vector<uint8_t>& filteredPacket);
     void sniffPacket();
 
-    void readRawPacket(RawPDU pdu, RawNetworkPacket& rawPacketPayload);
-    void readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd, RawNetworkPacket& rawPacketPayload);
-    RawNetworkPacket readRawPacket(RawPDU pdu, size_t regionStart, size_t regionEnd);
+    void readRawPacket(Tins::RawPDU pdu, std::vector<uint8_t>& rawPacketPayload);
+    void readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd, std::vector<uint8_t>& rawPacketPayload);
+    std::vector<uint8_t> readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd);
 
-    void analyzePacket(RawNetworkPacket rawPacket);
+    void analyzePacket(std::vector<uint8_t> rawPacket);
 };
 
 #endif // !PACKET_ANALYZE_H
