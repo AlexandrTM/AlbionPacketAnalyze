@@ -47,8 +47,6 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	this->_positionX = _positionX;
 	this->_positionY = _positionY;
 	this->_charges = _charges;
-	//this->printInfo();
-	//rawHarvestable.printCommandInOneString();
 }
 Harvestable::Harvestable()
 {
@@ -171,7 +169,8 @@ void HarvestableList::update(Harvestable harvestable)
 		for (size_t i = 0; i < _harvestableList.size(); i++) {
 			//std::cout << i << " " << _harvestableList.size() << "\n";
 			if (_harvestableList[i]._id == harvestable._id) {
-				_harvestableList[i] = harvestable;
+				_harvestableList[i]._charges = harvestable._charges;
+				_harvestableList[i]._enchantment = harvestable._enchantment;
 				break;
 			}
 			else if (i == (_harvestableList.size() - 1)) {

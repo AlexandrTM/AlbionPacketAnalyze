@@ -27,6 +27,7 @@ enum eventCode : uint16_t
 {
     healthUpdate = 6,
     activeSpellEffectsUpdate = 10,
+    newPlayer = 27,
     harvestableObjectList = 35,
     harvestableObject = 36,
     newSilverObject = 40,

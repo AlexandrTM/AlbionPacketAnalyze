@@ -1,12 +1,5 @@
 #include "pch.h"
 
-// lenghts for event code 36
-//"100" 2
-//"106" 3
-//"99" 1
-//"70" 10
-//"64" 1
-//"67" 3
 
 std::vector<size_t> nnCodes = {};
 std::vector<size_t> nCodes = {};
@@ -32,55 +25,33 @@ EntityList _entityList{};
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
     if (_operationType == operationType::event) {
-
-        if (_eventCode == eventCode::harvestableObjectList) {
-            //auto start = std::chrono::high_resolution_clock::now();
-            _entityList._harvestableList.update(HarvestableList(*this));
-            //this->printCommandInOneString();
-            //auto stop = std::chrono::high_resolution_clock::now();
-            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
-        }
-        if (_eventCode == eventCode::harvestableObject) {
-            //auto start = std::chrono::high_resolution_clock::now();
-            _entityList._harvestableList.update(Harvestable(*this));
-            //this->printCommandInOneString();
-            //_harvestableList.printInfo();
-            //DataLayout _dataLayout{};
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo();
-            //auto stop = std::chrono::high_resolution_clock::now();
-            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
-        }
-        if (_eventCode == eventCode::harvestableChangeState) {
-            //std::cout << this->getEventCode() << "\n";
-            _entityList._harvestableList.updateState(*this);
-            //DataLayout _dataLayout{};
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo();
-            //this->printCommandInOneString();
-        }
-        if (_eventCode == 117) {
-
-            /*DataLayout _dataLayout{};
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo();
-            this->printCommandInOneString();*/
+        switch (_eventCode)
+        {
+        case eventCode::harvestableObjectList:
+            _entityList._harvestableList.update(HarvestableList(*this)); break;
+        case eventCode::harvestableObject:
+            _entityList._harvestableList.update(Harvestable(*this)); break;
+        case eventCode::harvestableChangeState:
+            _entityList._harvestableList.updateState(*this); break;
+        case eventCode::newPlayer:
+            _entityList._playerList.update(Player(*this)); break;
+        default:
+            break;
         }
     }
-    //std::cout << (unsigned)_operationType << "\n";
     if (_operationType == operationType::operationResponse) {
-        //DataLayout _dataLayout{};
-        //_dataLayout.findDataLayout(*this);
-        //_dataLayout.printInfo();
-        //this->printCommandInOneString();
-        if (_eventCode == operationCode::changeLocation) {
-            _entityList.changeLocation();
-        }
-        if (_eventCode == operationCode::move) {
-            //_entityList._player = Player(*this);
+        switch (_eventCode) 
+        {
+        case operationCode::changeLocation:
+            _entityList.changeLocation(); break;
+        case operationCode::move:
+            _entityList._player = PlayerSelf(*this); break;
+        default:
+            break;
         }
     }
     if (_operationType == operationType::operationRequest) {
+
         if (_eventCode == operationCode::move) {
             _entityList._player.update(*this);
             /*DataLayout _dataLayout{};
@@ -91,7 +62,6 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
     _entityList.draw(window);
-    //_harvestableList.clear();
 }
 
 void NetworkCommand::printCommand()

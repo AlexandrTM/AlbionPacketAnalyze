@@ -323,6 +323,7 @@ void PacketAnalyze::initWindow()
                                 u8"Packet Analyze", nullptr, nullptr);
     glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
     glViewport(0, 0, _screenWidth, _screenHeight);*/
+
     // full screen map
     _window = glfwCreateWindow(_videoMode->width - 1, _videoMode->height - 1,
         u8"Packet Analyze", nullptr, nullptr);
@@ -330,12 +331,6 @@ void PacketAnalyze::initWindow()
     glViewport(0, 0, _screenWidth, _screenHeight);
     //glfwSetWindowPos(_window, 0, 0);
 
-    // mini map
-    /*_window = glfwCreateWindow(_videoMode->width / 6.9, _videoMode->width / 6.9,
-        u8"Packet Analyze", nullptr, nullptr);
-    glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
-    glViewport(0, 0, _screenWidth, _screenHeight);
-    glfwSetWindowPos(_window, 1142, 574);*/
 
     GLFWimage images[1];
     images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);

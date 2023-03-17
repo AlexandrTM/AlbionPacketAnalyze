@@ -7,6 +7,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
+    drawPlayers();
 
     glfwSwapBuffers(window);
 }
@@ -20,6 +21,9 @@ bool EntityList::harvestableFiltered(Harvestable harvestable)
             harvestable._enchantment >= _harvestableTrackingEnchantments[elementIndex]) {
             return true;
         }
+        else {
+            return false;
+        }
     }
     else {
         return false;
@@ -27,7 +31,8 @@ bool EntityList::harvestableFiltered(Harvestable harvestable)
 }
 void EntityList::changeLocation()
 {
-    _harvestableList.clear();
+    _harvestableList = {};
+    _playerList = {};
 
     if (abs(_player._positionX) >= abs(_player._positionY)) {
         _player._positionX = _player._positionX * -1;
@@ -36,11 +41,11 @@ void EntityList::changeLocation()
         _player._positionY = _player._positionY * -1;
     }
 }
-
 void EntityList::clear()
 {
-    _harvestableList.clear();
+    _harvestableList = {};
     _player = {};
+    _playerList = {};
 }
 
 EntityList::EntityList()
@@ -48,10 +53,11 @@ EntityList::EntityList()
     _harvestableList = {};
     _harvestableTrackingTiers = { 4,5,6,7,8 };
     _harvestableTrackingTypes = {resourceType::FIBER,12,13,14,15,16};
-    _harvestableTrackingEnchantments = { 1,1,1,0,0 };
+    _harvestableTrackingEnchantments = { 2,1,1,0,0 };
     _harvestableTrackingCharges = { 1,1,1,0,0 };
 
     _player = {};
+    _playerList = {};
 }
 
 void EntityList::drawWindowFrame()
@@ -74,58 +80,22 @@ void EntityList::drawWindowFrame()
 
 void EntityList::drawHarvestables()
 {
+    std::vector<GLfloat> _playerCoords = { _player._positionX, _player._positionY };
     std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
     for (size_t i = 0; i < _harvestableList.size(); i++) {
-        //if (harvestableFiltered(_harvestableList[i])) 
+        if (harvestableFiltered(_harvestableList[i])) 
         {
+            std::vector<GLfloat> _harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
             std::vector<GLfloat> _harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                                                  _harvestableList[i]._positionY);
-            if (_harvestableList[i]._enchantment > 0) {
-                glPointSize(_harvestableList[i]._enchantment * 1.5 + _harvestableList[i]._tier * 0.5);
-                glBegin(GL_POINTS);
-                colorizeEnchantment(_harvestableList[i]._enchantment, _harvestableList[i]._charges);
-                glVertex3f(_harvestableMapCoords[0], _harvestableMapCoords[1], 0.0f);
-                glEnd();
-            }
-
-            drawCharges(_harvestableList[i]._charges, _harvestableMapCoords, _playerMapCoords);
-
-            /*glPointSize(2);
+            
+            glPointSize(_harvestableList[i]._enchantment * 1.5 + pow((float)_harvestableList[i]._tier / 4, 2) * 1.9);
             glBegin(GL_POINTS);
-            glColor3f(1,1,1);
+            colorizeHarvestable(_harvestableList[i]);
             glVertex3f(_harvestableMapCoords[0], _harvestableMapCoords[1], 0.0f);
-            glEnd();*/
+            glEnd();
 
-
-            /*float_t _distance = sqrt(pow(_harvestableList[i]._positionX - _player._positionX, 2));
-            if (_distance > 42) {
-                std::cout << _distance << "\n";
-            }*/
-
-            /*glPointSize(2);
-            glBegin(GL_POINTS);
-            if (_harvestableList[i]._type < resourceType::ROCK) {
-                glColor3f(1, 1, 0);
-            }
-            else if (_harvestableList[i]._type < resourceType::FIBER) {
-                glColor3f(0.8, 0.8, 0.8);
-            }
-            else if (_harvestableList[i]._type < resourceType::HIDE) {
-                glColor3f(1, 1, 0);
-            }
-            else if (_harvestableList[i]._type < resourceType::ORE) {
-                glColor3f(0.5, 0.5, 0);
-            }
-            else if (_harvestableList[i]._type >= resourceType::ORE) {
-                glColor3f(1, 1, 1);
-            }
-            else {
-                glColor3f(1, 0, 1);
-                std::cout << (unsigned)_harvestableList[i]._type << "\n";
-            }
-            glVertex3f(_harvestableList[i]._positionX / 400 * 0.4921 + _harvestableList[i]._positionY / 400 * 0.4921,
-                (-1 * (_harvestableList[i]._positionX / 400 * 0.4921) + _harvestableList[i]._positionY / 400 * 0.4921) * 0.715, 0.0f);
-            glEnd();*/
+            drawCharges(_harvestableList[i]._charges, _harvestableCoords, _playerCoords);
         }
     }
     glPointSize(4);
@@ -139,32 +109,53 @@ void EntityList::drawHarvestables()
     DrawCircle(_playerMapCoords[0], _playerMapCoords[1], (float_t)45 / 400, 25);
 }
 
-void EntityList::colorizeEnchantment(uint8_t enchantment, uint8_t charges)
+void EntityList::drawPlayers()
+{
+    for (size_t i = 0; i < _playerList.size(); i++) {
+        std::vector<GLfloat> _playerCoords = { _playerList[i]._positionX, _playerList[i]._positionY};
+        std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(_playerCoords[0], _playerCoords[1]);
+    
+        glPointSize(15);
+        glBegin(GL_POINTS);
+        glColor3f(0.9, 0.9, 0.9);
+        glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
+        glEnd();
+    }
+}
+
+void EntityList::colorizeHarvestable(Harvestable harvestable)
 {
     std::vector<GLfloat> _color = {};
-    switch (enchantment)
+    switch (harvestable._enchantment)
     {
     case 0:
-        _color = { 0, 0, 0 }; 
+        _color = { 0.7f, 0.7f, 0.7f };
         break;
     case 1:
-        _color = { 0.38f, 0.9f, 0.57f }; 
+        _color = { 0.34f, 0.82f, 0.54f }; 
         break;
     case 2:
-        _color = { 0.27f, 0.54f, 0.97f }; 
+        _color = { 0.27f, 0.54f, 0.92f }; 
         break;
     case 3:
-        _color = { 0.73f, 0.55f, 0.9f }; 
+        _color = { 0.75f, 0.65f, 0.93f }; 
         break;
     case 4:
-        _color = { 0.89f, 0.91f, 0.65f }; 
+        _color = { 0.88f, 0.92f, 0.64f }; 
         break;
     default:
+        _color = { 1, 0, 1 };
         break;
     }
-    if (charges == 0) {
+    
+    if (harvestable._charges == 0) {
         for (size_t i = 0; i < _color.size(); i++) {
             _color[i] /= 2;
+        }
+    }
+    else {
+        for (size_t i = 0; i < _color.size(); i++) {
+            _color[i] += (harvestable._tier - 4) * 0.02;
         }
     }
     glColor3f(_color[0], _color[1], _color[2]);
@@ -190,16 +181,37 @@ std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y)
     return { (float)((x * _cos + y * _sin) * 0.56 * 0.7366),
              (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 - 0.085)};
 }
+float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
+{
+    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+}
 
-float_t _pixelsInMeter = 61.1;
+float_t _pixelsInMeter = 46;
 void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
 {
+    float_t chargeSize = 15;
+    glPointSize(chargeSize);
+    glBegin(GL_POINTS);
     for (size_t j = 0; j < charges; j++) {
-        glPointSize(15);
-        glColor3f(0.45 + 0.05f * j, 0.45 + 0.05f * j, 0.75 + 0.05f * j);
-        glBegin(GL_POINTS);
-        glVertex2f((harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter + (16.0f * j - 39.0f) / 400,
-            ((harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter) + (90.0f / 400));
-        glEnd();
+        glColor3f(0.4 + 0.04f * j, 0.4 + 0.04f * j, 0.6 + 0.04f * j);
+        GLfloat x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
+        GLfloat y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
+        //float_t distance = findDistance(harvestableCoords[0], harvestableCoords[1], playerCoords[0], playerCoords[1]);
+        std::vector<GLfloat> mapCoords = convertToMapCoordinates(x, y);
+        //if (distance > 0) {
+        //    glBegin(GL_LINES);
+        //    glVertex2f(0, 0);
+        //    glVertex2f(mapCoords[0], mapCoords[1]);
+        //    glEnd();
+        //}
+        //else {
+        //    glBegin(GL_POINTS);
+        //    //x = (x + (chargeSize + 1.0f) * j - chargeSize * 2) * _pixelsInMeter;
+        //    glVertex2f(mapCoords[0], mapCoords[1] + 0.3f);
+        //    glEnd();
+        //}
+        glVertex2f(mapCoords[0] + ((chargeSize) * j - chargeSize * (charges / 2)) / 400, 
+                   mapCoords[1] + 0.3f);
     }
+    glEnd();
 }

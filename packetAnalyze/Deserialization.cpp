@@ -188,23 +188,25 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     _offset += 1;
 
     uint16_t _dataSize;
-    for (size_t i = 0; i < _numOfFragments - 1; i++) { // excluding event code, change for unreliable commands
-        uint8_t _fragmentID = command[_offset];
-        uint8_t _dataType = command[_offset + 1];
+    if (command.size() > _offset) {
+        for (size_t i = 0; i < _numOfFragments - 1; i++) { // excluding event code, change for unreliable commands
+            uint8_t _fragmentID = command[_offset];
+            uint8_t _dataType = command[_offset + 1];
 
-        uint8_t _dataTypeHeaderSize = DataType::getDataTypeHeaderSize(_dataType);
-        uint16_t _numOfEntries = DataFragment::findNumOfEntries(command, _dataType, _offset);
+            uint8_t _dataTypeHeaderSize = DataType::getDataTypeHeaderSize(_dataType);
+            uint16_t _numOfEntries = DataFragment::findNumOfEntries(command, _dataType, _offset);
 
-        if (_dataType == dataType::dictionary) { _dataType = (command[_offset + 4]); }
-        uint8_t _dataTypeSize = DataType::getDataTypeSize(_dataType);
+            if (_dataType == dataType::dictionary) { _dataType = (command[_offset + 4]); }
+            uint8_t _dataTypeSize = DataType::getDataTypeSize(_dataType);
 
-        DataFragment _dataFragment = DataFragment(_fragmentID, _offset + _dataTypeHeaderSize + 1,
-                                        _numOfEntries, DataType(_dataTypeSize, _dataTypeHeaderSize, _dataType));
+            DataFragment _dataFragment = DataFragment(_fragmentID, _offset + _dataTypeHeaderSize + 1,
+                _numOfEntries, DataType(_dataTypeSize, _dataTypeHeaderSize, _dataType));
 
-        _dataSize = _dataTypeSize * _numOfEntries + _dataTypeHeaderSize + 1;
-        _offset += _dataSize;
+            _dataSize = _dataTypeSize * _numOfEntries + _dataTypeHeaderSize + 1;
+            _offset += _dataSize;
 
-        _dataLayout.push_back(_dataFragment);
+            _dataLayout.push_back(_dataFragment);
+        }
     }
 }
 DataLayout::DataLayout(std::vector<DataFragment> dataFragments)
