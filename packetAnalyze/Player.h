@@ -22,6 +22,7 @@ struct Player
 	Player();
 	Player(uint32_t id, float_t positionX, float_t positionY);
 	Player(NetworkCommand rawPlayer);
+	static Player PlayerMove(NetworkCommand rawPlayer);
 };
 
 class PlayerList
@@ -32,7 +33,10 @@ private:
 public:
 	PlayerList();
 	
-	void update(Player player);
+	void newPlayer(Player player);
+	void update(Player playerMove);
+	void removePlayer(Player player);
+
 	size_t size();
 	Player& operator[](size_t elementIndex);
 };

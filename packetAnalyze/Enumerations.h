@@ -25,6 +25,8 @@ enum operationCode: uint16_t
 };
 enum eventCode : uint16_t
 {
+    playerLeave = 1,
+    playerMove = 2,
     healthUpdate = 6,
     activeSpellEffectsUpdate = 10,
     newPlayer = 27,

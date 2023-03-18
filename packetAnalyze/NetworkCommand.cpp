@@ -24,6 +24,7 @@ NetworkCommand::NetworkCommand()
 EntityList _entityList{};
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
+    //this->printCommandInOneString();
     if (_operationType == operationType::event) {
         switch (_eventCode)
         {
@@ -34,7 +35,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case eventCode::harvestableChangeState:
             _entityList._harvestableList.updateState(*this); break;
         case eventCode::newPlayer:
-            _entityList._playerList.update(Player(*this)); break;
+            _entityList._playerList.newPlayer(Player(*this)); break;
+        case eventCode::playerMove:
+            _entityList._playerList.update(Player::PlayerMove(*this)); break;
+        case eventCode::playerLeave:
+            _entityList._playerList.update(Player::PlayerMove(*this)); break;
+        //case 66:
+        //    //this->printCommandInOneString(); break;
+
         default:
             break;
         }
@@ -119,20 +127,6 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
     std::cout.unsetf(std::ios::hex);
 }
 
-bool NetworkCommand::isCommandFull()
-{
-    switch (_commandType)
-    {
-    case commandType::reliable:
-        return true;
-    case commandType::unreliable:
-        return true;
-    case commandType::fragmented:
-        return _isCommandFull;
-    default:
-        return false;
-    }
-}
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
     if (command.isLastCommandInChain()) {
@@ -154,6 +148,20 @@ bool NetworkCommand::isLastCommandInChain()
         return true;
     }
     else {
+        return false;
+    }
+}
+bool NetworkCommand::isCommandFull()
+{
+    switch (_commandType)
+    {
+    case commandType::reliable:
+        return true;
+    case commandType::unreliable:
+        return true;
+    case commandType::fragmented:
+        return _isCommandFull;
+    default:
         return false;
     }
 }
@@ -233,6 +241,9 @@ uint16_t NetworkCommand::findEventCode()
         if (_networkCommand[_networkCommand.size() - 3] == dataType::int16) {
             return ((_networkCommand[_networkCommand.size() - 2] << 8) |
                         _networkCommand[_networkCommand.size() - 1]) & 0x03ff;
+        }
+        else if (_commandType == commandType::unreliable and _networkCommand.size() == 67) {
+            return _networkCommand[_networkCommand.size() - 1] & 0x000f;
         }
         else {
             return _networkCommand[_networkCommand.size() - 1];

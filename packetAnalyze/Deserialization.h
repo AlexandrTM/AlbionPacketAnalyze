@@ -55,6 +55,17 @@ struct net
         }
         return 0;
     }
+    static inline float_t read_float32big(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint32_t _dataEntry = 0;
+            for (size_t i = 0; i < 4; i++) {
+                _dataEntry += (command[offset + 3 - i] << (8 * (3 - i)));
+            }
+            return std::binToFloat(_dataEntry);
+        }
+        return 0;
+    }
     static inline uint64_t read_int64(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
@@ -99,7 +110,6 @@ struct DataFragment
     ptrdiff_t _offset;
     uint16_t _numOfEntries;
     DataType _dataType;
-
 
     static ptrdiff_t findFragmentsNumOffset(NetworkCommand& command);
     static uint16_t findNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset);

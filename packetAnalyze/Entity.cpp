@@ -1,5 +1,7 @@
 #include "pch.h"
 
+float_t _pixelsInMeter = 45;
+
 void EntityList::draw(GLFWwindow* window)
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -89,7 +91,7 @@ void EntityList::drawHarvestables()
             std::vector<GLfloat> _harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                                                  _harvestableList[i]._positionY);
             
-            glPointSize(_harvestableList[i]._enchantment * 1.5 + pow((float)_harvestableList[i]._tier / 4, 2) * 1.9);
+            glPointSize(pow((float)_harvestableList[i]._tier / 4, 2) * 2.1 + _harvestableList[i]._enchantment);
             glBegin(GL_POINTS);
             colorizeHarvestable(_harvestableList[i]);
             glVertex3f(_harvestableMapCoords[0], _harvestableMapCoords[1], 0.0f);
@@ -111,15 +113,20 @@ void EntityList::drawHarvestables()
 
 void EntityList::drawPlayers()
 {
+    std::vector<GLfloat> _playerSelfCoords = { _player._positionX, _player._positionY };
     for (size_t i = 0; i < _playerList.size(); i++) {
         std::vector<GLfloat> _playerCoords = { _playerList[i]._positionX, _playerList[i]._positionY};
-        std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(_playerCoords[0], _playerCoords[1]);
+
+        GLfloat x = (_playerCoords[0] - _playerSelfCoords[0]) * _pixelsInMeter;
+        GLfloat y = (_playerCoords[1] - _playerSelfCoords[1]) * _pixelsInMeter;
+        std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(x, y);
     
         glPointSize(15);
         glBegin(GL_POINTS);
         glColor3f(0.9, 0.9, 0.9);
         glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
         glEnd();
+        //std::cout << _playerList[i]._positionX << " " << _playerList[i]._positionY << "\n";
     }
 }
 
@@ -150,7 +157,7 @@ void EntityList::colorizeHarvestable(Harvestable harvestable)
     
     if (harvestable._charges == 0) {
         for (size_t i = 0; i < _color.size(); i++) {
-            _color[i] /= 2;
+            _color[i] /= 1.7f;
         }
     }
     else {
@@ -186,7 +193,7 @@ float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
-float_t _pixelsInMeter = 46;
+
 void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
 {
     float_t chargeSize = 15;
