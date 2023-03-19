@@ -58,17 +58,16 @@ Player::Player(NetworkCommand rawPlayer)
 	//_dataLayout.printInfo();
 	//rawPlayer.printCommandInOneString();
 
-	if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset); }
+	/*if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
 	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
 		std::cout << "player id is 2 byte size";
-		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset); }
+		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset); }*/
+	_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
 	_positionX = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset);
 	_positionY = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset + 4);
-	//std::cout << _id << " " << _positionX << " " << _positionY << "\n";
 }
 
-Player Player::PlayerMove(NetworkCommand rawPlayer)
+Player Player::PlayerMove(NetworkCommand& rawPlayer)
 {
 	uint32_t _id = 0;
 	float_t _positionX = 0;
@@ -80,15 +79,14 @@ Player Player::PlayerMove(NetworkCommand rawPlayer)
 	_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
 	_positionX = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 9);
 	_positionY = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 13);
-	//std::cout << _id << "\n";
-	//std::cout << _positionX << " " << _positionY << "\n";//12 16, 21 25, 16 12
+
 	return Player(_id, _positionX, _positionY);
 }
+
 PlayerList::PlayerList()
 {
 	_playerList = {};
 }
-
 void PlayerList::newPlayer(Player player)
 {
 	if (_playerList.size() == 0) {
@@ -106,17 +104,15 @@ void PlayerList::newPlayer(Player player)
 			}
 		}
 	}
+	//_playerList.push_back(player);
 }
 
 void PlayerList::update(Player playerMove)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
 		if (_playerList[i]._id == playerMove._id) {
-			//std::cout << sqrt(pow(_playerList[i]._positionX - playerMove._positionX, 2) + 
-			//				  pow(_playerList[i]._positionY - playerMove._positionY, 2)) << "\n";
 			_playerList[i]._positionX = playerMove._positionX;
 			_playerList[i]._positionY = playerMove._positionY;
-			//std::cout << std::setw(9) << playerMove._positionX << " " << std::setw(9) << playerMove._positionY << "\n";
 			break;
 		}
 	}
@@ -129,6 +125,10 @@ void PlayerList::removePlayer(Player player)
 			break;
 		}
 	}
+}
+void PlayerList::removePlayer(size_t elementIndex)
+{
+	_playerList.erase(std::begin(_playerList) + elementIndex);
 }
 
 size_t PlayerList::size()

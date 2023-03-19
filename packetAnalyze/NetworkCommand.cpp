@@ -36,15 +36,23 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._harvestableList.updateState(*this); break;
         case eventCode::newPlayer:
             _entityList._playerList.newPlayer(Player(*this)); break;
-        case eventCode::playerMove:
-            _entityList._playerList.update(Player::PlayerMove(*this)); break;
+        case 66:
+            //_entityList._playerList.update(Player::PlayerMove(*this)); 
+            break;
+        case 65:
+            //_entityList._playerList.update(Player::PlayerMove(*this)); 
+            break;
         case eventCode::playerLeave:
-            _entityList._playerList.update(Player::PlayerMove(*this)); break;
-        //case 66:
-        //    //this->printCommandInOneString(); break;
-
+            //this->printCommandInOneString();
+            //_entityList._playerList.removePlayer(Player(*this)); break;
+            break;
         default:
             break;
+        }
+        if (this->size() == 67) {
+            _entityList._playerList.update(Player::PlayerMove(*this));
+            //this->printCommandInOneString();
+            //std::cout << (unsigned)(_networkCommand[_networkCommand.size() - 1]) << " ";
         }
     }
     if (_operationType == operationType::operationResponse) {
@@ -239,12 +247,13 @@ uint16_t NetworkCommand::findEventCode()
 {
     if (_isCommandFull == true) {
         if (_networkCommand[_networkCommand.size() - 3] == dataType::int16) {
+            //this->printCommandInOneString();
             return ((_networkCommand[_networkCommand.size() - 2] << 8) |
                         _networkCommand[_networkCommand.size() - 1]) & 0x03ff;
         }
-        else if (_commandType == commandType::unreliable and _networkCommand.size() == 67) {
+        /*else if (_commandType == commandType::unreliable and _networkCommand.size() == 67) {
             return _networkCommand[_networkCommand.size() - 1] & 0x000f;
-        }
+        }*/
         else {
             return _networkCommand[_networkCommand.size() - 1];
         }

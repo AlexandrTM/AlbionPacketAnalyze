@@ -1,6 +1,6 @@
 #include "pch.h"
 
-float_t _pixelsInMeter = 45;
+float_t _pixelsInMeter = 45.5;
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -55,7 +55,7 @@ EntityList::EntityList()
     _harvestableList = {};
     _harvestableTrackingTiers = { 4,5,6,7,8 };
     _harvestableTrackingTypes = {resourceType::FIBER,12,13,14,15,16};
-    _harvestableTrackingEnchantments = { 2,1,1,0,0 };
+    _harvestableTrackingEnchantments = { 0,0,0,0,0 };
     _harvestableTrackingCharges = { 1,1,1,0,0 };
 
     _player = {};
@@ -84,14 +84,16 @@ void EntityList::drawHarvestables()
 {
     std::vector<GLfloat> _playerCoords = { _player._positionX, _player._positionY };
     std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
+    std::vector<GLfloat> _harvestableCoords;
+    std::vector<GLfloat> _harvestableMapCoords;
     for (size_t i = 0; i < _harvestableList.size(); i++) {
         if (harvestableFiltered(_harvestableList[i])) 
         {
-            std::vector<GLfloat> _harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
-            std::vector<GLfloat> _harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
-                                                                                 _harvestableList[i]._positionY);
+            _harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
+            _harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
+                                                            _harvestableList[i]._positionY);
             
-            glPointSize(pow((float)_harvestableList[i]._tier / 4, 2) * 2.1 + _harvestableList[i]._enchantment);
+            glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.65, 4.0));
             glBegin(GL_POINTS);
             colorizeHarvestable(_harvestableList[i]);
             glVertex3f(_harvestableMapCoords[0], _harvestableMapCoords[1], 0.0f);
@@ -116,17 +118,37 @@ void EntityList::drawPlayers()
     std::vector<GLfloat> _playerSelfCoords = { _player._positionX, _player._positionY };
     for (size_t i = 0; i < _playerList.size(); i++) {
         std::vector<GLfloat> _playerCoords = { _playerList[i]._positionX, _playerList[i]._positionY};
-
-        GLfloat x = (_playerCoords[0] - _playerSelfCoords[0]) * _pixelsInMeter;
-        GLfloat y = (_playerCoords[1] - _playerSelfCoords[1]) * _pixelsInMeter;
+        GLfloat x = _playerCoords[0];
+        GLfloat y = _playerCoords[1];
         std::vector<GLfloat> _playerMapCoords = convertToMapCoordinates(x, y);
-    
-        glPointSize(15);
-        glBegin(GL_POINTS);
-        glColor3f(0.9, 0.9, 0.9);
-        glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
-        glEnd();
-        //std::cout << _playerList[i]._positionX << " " << _playerList[i]._positionY << "\n";
+        if (findDistance(_playerSelfCoords[0], _playerSelfCoords[1], _playerCoords[0], _playerCoords[1]) < 72) 
+        {
+            glPointSize(5);
+            glBegin(GL_POINTS);
+            glColor3f(0.9, 0.65, 0.65);
+            glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
+            glEnd();
+
+            x = (x - _playerSelfCoords[0]) * _pixelsInMeter;
+            y = (y - _playerSelfCoords[1]) * _pixelsInMeter;
+            _playerMapCoords = convertToMapCoordinates(x, y);
+
+            //glPointSize(7);
+            glBegin(GL_LINES);
+            glColor3f(0.9, 0.9, 0.9);
+            glVertex3f(0.0f, 0.085f, 0.0f);
+            glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
+            glEnd();
+
+            //std::cout << _playerList[i]._positionX << " " << _playerList[i]._positionY << "\n";
+        }
+        else {
+            glPointSize(5);
+            glBegin(GL_POINTS);
+            glColor3f(0.6, 0.42, 0.42);
+            glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
+            glEnd();
+        }
     }
 }
 
@@ -199,26 +221,25 @@ void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoor
     float_t chargeSize = 15;
     glPointSize(chargeSize);
     glBegin(GL_POINTS);
+    GLfloat x;
+    GLfloat y;
+    std::vector<GLfloat> mapCoords;
     for (size_t j = 0; j < charges; j++) {
-        glColor3f(0.4 + 0.04f * j, 0.4 + 0.04f * j, 0.6 + 0.04f * j);
-        GLfloat x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
-        GLfloat y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
-        //float_t distance = findDistance(harvestableCoords[0], harvestableCoords[1], playerCoords[0], playerCoords[1]);
-        std::vector<GLfloat> mapCoords = convertToMapCoordinates(x, y);
-        //if (distance > 0) {
-        //    glBegin(GL_LINES);
-        //    glVertex2f(0, 0);
-        //    glVertex2f(mapCoords[0], mapCoords[1]);
-        //    glEnd();
-        //}
-        //else {
-        //    glBegin(GL_POINTS);
-        //    //x = (x + (chargeSize + 1.0f) * j - chargeSize * 2) * _pixelsInMeter;
-        //    glVertex2f(mapCoords[0], mapCoords[1] + 0.3f);
-        //    glEnd();
-        //}
-        glVertex2f(mapCoords[0] + ((chargeSize) * j - chargeSize * (charges / 2)) / 400, 
-                   mapCoords[1] + 0.3f);
+        glColor3f(0.55 + 0.04f * j, 0.4 + 0.04f * j, 0.5 + 0.04f * j);
+        x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
+        y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
+        float_t distance = findDistance(harvestableCoords[0], harvestableCoords[1], 
+                                        playerCoords[0], playerCoords[1]);
+        mapCoords = convertToMapCoordinates(x, y);
+
+        if (distance > 21) {
+            glVertex2f(mapCoords[0] / distance * 10 + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
+                mapCoords[1] / distance * 10 + 0.2f);
+        }
+        else if (distance < 47){
+            glVertex2f(mapCoords[0] + ((chargeSize * 0.82f) * (j - (float)charges / 2)) / 400,
+                       mapCoords[1] + 0.32f);
+        }
     }
     glEnd();
 }
