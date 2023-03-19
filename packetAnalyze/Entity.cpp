@@ -53,9 +53,9 @@ void EntityList::clear()
 EntityList::EntityList()
 {
     _harvestableList = {};
-    _harvestableTrackingTiers = { 4,5,6,7,8 };
-    _harvestableTrackingTypes = {resourceType::FIBER,12,13,14,15,16};
-    _harvestableTrackingEnchantments = { 0,0,0,0,0 };
+    _harvestableTrackingTiers = { 4,5,6 };
+    _harvestableTrackingTypes = {resourceType::WOOD,1,2,3,4,5};
+    _harvestableTrackingEnchantments = { 1,1,0,0,0 };
     _harvestableTrackingCharges = { 1,1,1,0,0 };
 
     _player = {};
@@ -133,10 +133,10 @@ void EntityList::drawPlayers()
             y = (y - _playerSelfCoords[1]) * _pixelsInMeter;
             _playerMapCoords = convertToMapCoordinates(x, y);
 
-            //glPointSize(7);
-            glBegin(GL_LINES);
+            glPointSize(15);
+            glBegin(GL_POINTS);
             glColor3f(0.9, 0.9, 0.9);
-            glVertex3f(0.0f, 0.085f, 0.0f);
+            //glVertex3f(0.0f, 0.085f, 0.0f);
             glVertex3f(_playerMapCoords[0], _playerMapCoords[1], 0.0f);
             glEnd();
 
@@ -158,36 +158,58 @@ void EntityList::colorizeHarvestable(Harvestable harvestable)
     switch (harvestable._enchantment)
     {
     case 0:
-        _color = { 0.7f, 0.7f, 0.7f };
-        break;
+        _color = { 0.7f, 0.7f, 0.7f }; break;
     case 1:
-        _color = { 0.34f, 0.82f, 0.54f }; 
-        break;
+        _color = { 0.34f, 0.82f, 0.54f }; break;
     case 2:
-        _color = { 0.27f, 0.54f, 0.92f }; 
-        break;
+        _color = { 0.27f, 0.54f, 0.92f }; break;
     case 3:
-        _color = { 0.75f, 0.65f, 0.93f }; 
-        break;
+        _color = { 0.75f, 0.65f, 0.93f }; break;
     case 4:
-        _color = { 0.88f, 0.92f, 0.64f }; 
-        break;
+        _color = { 0.88f, 0.92f, 0.64f }; break;
     default:
-        _color = { 1, 0, 1 };
-        break;
+        _color = { 1, 0, 1 }; break;
     }
     
     if (harvestable._charges == 0) {
         for (size_t i = 0; i < _color.size(); i++) {
-            _color[i] /= 1.7f;
+            _color[i] /= 1.6f;
         }
     }
     else {
         for (size_t i = 0; i < _color.size(); i++) {
-            _color[i] += (harvestable._tier - 4) * 0.02;
+            _color[i] += (harvestable._tier - 4) * 0.033f;
         }
     }
     glColor3f(_color[0], _color[1], _color[2]);
+}
+void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
+{
+    float_t chargeSize = 15;
+    glPointSize(chargeSize);
+    glBegin(GL_POINTS);
+    GLfloat x;
+    GLfloat y;
+    std::vector<GLfloat> mapCoords;
+    float_t distance;
+    for (size_t j = 0; j < charges; j++) {
+        glColor3f(0.55 + 0.04f * j, 0.4 + 0.04f * j, 0.5 + 0.04f * j);
+        x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
+        y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
+        distance = findDistance(harvestableCoords[0], harvestableCoords[1],
+                                        playerCoords[0], playerCoords[1]);
+        mapCoords = convertToMapCoordinates(x, y);
+
+        if (distance > 20 and distance < 50) {
+            glVertex2f(mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
+                mapCoords[1] / distance * 8.5f + 0.2f);
+        }
+        else {
+            glVertex2f(mapCoords[0] + ((chargeSize * 0.82f) * (j - (float)charges / 2)) / 400,
+                       mapCoords[1] + 0.32f);
+        }
+    }
+    glEnd();
 }
 
 void EntityList::DrawCircle(float_t offsetX, float_t offsetY, float_t radius, size_t num_segments)
@@ -215,31 +237,3 @@ float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
-
-void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
-{
-    float_t chargeSize = 15;
-    glPointSize(chargeSize);
-    glBegin(GL_POINTS);
-    GLfloat x;
-    GLfloat y;
-    std::vector<GLfloat> mapCoords;
-    for (size_t j = 0; j < charges; j++) {
-        glColor3f(0.55 + 0.04f * j, 0.4 + 0.04f * j, 0.5 + 0.04f * j);
-        x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
-        y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
-        float_t distance = findDistance(harvestableCoords[0], harvestableCoords[1], 
-                                        playerCoords[0], playerCoords[1]);
-        mapCoords = convertToMapCoordinates(x, y);
-
-        if (distance > 21) {
-            glVertex2f(mapCoords[0] / distance * 10 + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
-                mapCoords[1] / distance * 10 + 0.2f);
-        }
-        else if (distance < 47){
-            glVertex2f(mapCoords[0] + ((chargeSize * 0.82f) * (j - (float)charges / 2)) / 400,
-                       mapCoords[1] + 0.32f);
-        }
-    }
-    glEnd();
-}

@@ -49,7 +49,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         default:
             break;
         }
-        if (this->size() == 67) {
+        if (_networkCommand.size() == 67) {
             _entityList._playerList.update(Player::PlayerMove(*this));
             //this->printCommandInOneString();
             //std::cout << (unsigned)(_networkCommand[_networkCommand.size() - 1]) << " ";

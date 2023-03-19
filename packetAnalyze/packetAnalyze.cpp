@@ -500,7 +500,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
             or _packet[i].getCommandType() == commandType::unreliable) {
 
             _packet[i].analyzeCommand(_window);
-            findUniqueEventCodes(_packet[i]);
+            //findUniqueEventCodes(_packet[i]);
         }
     }
 }

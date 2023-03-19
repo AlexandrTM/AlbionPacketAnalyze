@@ -56,13 +56,17 @@ Player::Player(NetworkCommand rawPlayer)
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawPlayer);
 	//_dataLayout.printInfo();
-	//rawPlayer.printCommandInOneString();
 
-	/*if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
-		std::cout << "player id is 2 byte size";
-		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset); }*/
-	_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
+	if (idSize == 2) {
+		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
+	}
+	if (idSize == 4) {
+		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+	}
+	if (idSize == 8) {
+		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+	}
 	_positionX = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset);
 	_positionY = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset + 4);
 }
@@ -76,7 +80,16 @@ Player Player::PlayerMove(NetworkCommand& rawPlayer)
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawPlayer);
 
-	_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
+	if (idSize == 2) {
+		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
+	}
+	if (idSize == 4) {
+		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+	}
+	if (idSize == 8) {
+		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+	}
 	_positionX = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 9);
 	_positionY = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 13);
 
