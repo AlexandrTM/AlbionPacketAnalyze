@@ -110,7 +110,7 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     case commandType::unreliable:
         return 20;
     case commandType::fragmented:
-        return 36;
+        return 39;
     default:
         return -1;
     }
@@ -183,29 +183,30 @@ DataFragment DataLayout::findFragment(uint8_t fragmentID)
 
 void DataLayout::findDataLayout(NetworkCommand& command)
 {
-    ptrdiff_t _offset = DataFragment::findFragmentsNumOffset(command);
-    uint8_t _numOfFragments = command[_offset];
-    _offset += 1;
+    ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
+    uint8_t numOfFragments = command[offset];
+    offset += 1;
 
-    uint16_t _dataSize;
-    if (command.size() > _offset + 1) {
-        for (size_t i = 0; i < _numOfFragments; i++) { // excluding event code, change for unreliable commands
-            uint8_t _fragmentID = command[_offset];
-            uint8_t _dataType = command[_offset + 1];
+    uint16_t dataSize;
+    for (size_t i = 0; i < numOfFragments; i++) { // excluding event code, change for unreliable commands
+        if (command.size() > offset) {
+            uint8_t fragmentID = command[offset];
+            uint8_t dataType = command[offset + 1];
 
-            uint8_t _dataTypeHeaderSize = DataType::getDataTypeHeaderSize(_dataType);
-            uint16_t _numOfEntries = DataFragment::findNumOfEntries(command, _dataType, _offset);
+            uint8_t dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
+            uint16_t numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
 
-            if (_dataType == dataType::dictionary) { _dataType = (command[_offset + 4]); }
-            uint8_t _dataTypeSize = DataType::getDataTypeSize(_dataType);
+            if (dataType == dataType::dictionary) { dataType = (command[offset + 4]); }
+            uint8_t dataTypeSize = DataType::getDataTypeSize(dataType);
 
-            DataFragment _dataFragment = DataFragment(_fragmentID, _offset + _dataTypeHeaderSize + 1,
-                _numOfEntries, DataType(_dataTypeSize, _dataTypeHeaderSize, _dataType));
+            DataFragment dataFragment = DataFragment(fragmentID, offset + dataTypeHeaderSize + 1,
+                numOfEntries, DataType(dataTypeSize, dataTypeHeaderSize, dataType));
 
-            _dataSize = _dataTypeSize * _numOfEntries + _dataTypeHeaderSize + 1;
-            _offset += _dataSize;
+            dataSize = dataTypeSize * numOfEntries + dataTypeHeaderSize + 1;
+            offset += dataSize;
 
-            _dataLayout.push_back(_dataFragment);
+            _dataLayout.push_back(dataFragment);
+
         }
     }
 }

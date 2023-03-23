@@ -18,35 +18,35 @@ struct HarvestableOffsets
 
 Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 {
-	uint32_t _id = 0;
-	uint8_t _type = 0;
-	uint8_t _tier = 0;
-	float_t _positionX = 0;
-	float_t _positionY = 0;
-	uint8_t _charges = 0;
-	uint8_t _enchantment = 0;
+	uint32_t id = 0;
+	uint8_t type = 0;
+	uint8_t tier = 0;
+	float_t positionX = 0;
+	float_t positionY = 0;
+	uint8_t charges = 0;
+	uint8_t enchantment = 0;
 	
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawHarvestable);
 
 	if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-		_id = net::read_int32(rawHarvestable, _dataLayout.findFragment(0)._offset); }
+		id = net::read_int32(rawHarvestable, _dataLayout.findFragment(0)._offset); }
 	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
-		_id = net::read_int16(rawHarvestable, _dataLayout.findFragment(0)._offset); }
-	_type = net::read_int8(rawHarvestable, _dataLayout.findFragment(5)._offset);
-	_tier = net::read_int8(rawHarvestable, _dataLayout.findFragment(7)._offset);
-	_positionX = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset);
-	_positionY = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset + 4);
-	_charges = net::read_int8(rawHarvestable, _dataLayout.findFragment(10)._offset);
-	_enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragment(11)._offset);
+		id = net::read_int16(rawHarvestable, _dataLayout.findFragment(0)._offset); }
+	type = net::read_int8(rawHarvestable, _dataLayout.findFragment(5)._offset);
+	tier = net::read_int8(rawHarvestable, _dataLayout.findFragment(7)._offset);
+	positionX = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset);
+	positionY = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset + 4);
+	charges = net::read_int8(rawHarvestable, _dataLayout.findFragment(10)._offset);
+	enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragment(11)._offset);
 	
-	this->_id = _id;
-	this->_type = _type;
-	this->_tier = _tier;
-	this->_enchantment = _enchantment;
-	this->_positionX = _positionX;
-	this->_positionY = _positionY;
-	this->_charges = _charges;
+	_id = id;
+	_type = type;
+	_tier = tier;
+	_enchantment = enchantment;
+	_positionX = positionX;
+	_positionY = positionY;
+	_charges = charges;
 }
 Harvestable::Harvestable()
 {
@@ -91,55 +91,55 @@ HarvestableList::HarvestableList()
 }
 HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 {
-	uint8_t _harvestablesNum = rawHarvestableList[20];
+	uint8_t harvestablesNum = rawHarvestableList[20];
 
-	ptrdiff_t _idOffset = _harvestableOffsets._idOffset;
-	ptrdiff_t _typeOffset = _harvestableOffsets._typeOffset + _harvestablesNum * 2;
-	ptrdiff_t _tierOffset = _harvestableOffsets._tierOffset + _harvestablesNum * 3;
-	ptrdiff_t _positionXOffset = _harvestableOffsets._positionXOffset + _harvestablesNum * 4;
-	ptrdiff_t _positionYOffset = _harvestableOffsets._positionYOffset + _harvestablesNum * 4;
-	ptrdiff_t _chargesOffset = _harvestableOffsets._chargesOffset + _harvestablesNum * 12;
+	ptrdiff_t idOffset = _harvestableOffsets._idOffset;
+	ptrdiff_t typeOffset = _harvestableOffsets._typeOffset + harvestablesNum * 2;
+	ptrdiff_t tierOffset = _harvestableOffsets._tierOffset + harvestablesNum * 3;
+	ptrdiff_t positionXOffset = _harvestableOffsets._positionXOffset + harvestablesNum * 4;
+	ptrdiff_t positionYOffset = _harvestableOffsets._positionYOffset + harvestablesNum * 4;
+	ptrdiff_t chargesOffset = _harvestableOffsets._chargesOffset + harvestablesNum * 12;
 
-	uint32_t _id = 0;
-	uint8_t _type = 0;
-	uint8_t _tier = 0;
-	float_t _positionX = 0;
-	float_t _positionY = 0;
-	uint8_t _charges = 0;
-	uint8_t _enchantment = 0;
+	uint32_t id = 0;
+	uint8_t type = 0;
+	uint8_t tier = 0;
+	float_t positionX = 0;
+	float_t positionY = 0;
+	uint8_t charges = 0;
+	uint8_t enchantment = 0;
 
-	for (size_t i = 0; i < _harvestablesNum; i++) {
-		_id = net::read_int16(rawHarvestableList, _idOffset + i * 2);
-		_type = net::read_int8(rawHarvestableList, _typeOffset + i);
-		_tier = net::read_int8(rawHarvestableList, _tierOffset + i);
-		_positionX = net::read_float32(rawHarvestableList, _positionXOffset + i * 8);
-		_positionY = net::read_float32(rawHarvestableList, _positionYOffset + i * 8);
-		_charges = net::read_int8(rawHarvestableList, _chargesOffset + i);
+	for (size_t i = 0; i < harvestablesNum; i++) {
+		id = net::read_int16(rawHarvestableList, idOffset + i * 2);
+		type = net::read_int8(rawHarvestableList, typeOffset + i);
+		tier = net::read_int8(rawHarvestableList, tierOffset + i);
+		positionX = net::read_float32(rawHarvestableList, positionXOffset + i * 8);
+		positionY = net::read_float32(rawHarvestableList, positionYOffset + i * 8);
+		charges = net::read_int8(rawHarvestableList, chargesOffset + i);
 
-		_harvestableList.push_back(Harvestable(_id, _type, _tier, _positionX, _positionY, _charges, _enchantment));
+		_harvestableList.push_back(Harvestable(id, type, tier, positionX, positionY, charges, enchantment));
 	}
 }
 
 void HarvestableList::updateState(NetworkCommand& updateState)
 {
-	uint32_t _id = 0;
-	uint8_t _charges = 0;
-	uint8_t _enchantment = 0;
+	uint32_t id = 0;
+	uint8_t charges = 0;
+	uint8_t enchantment = 0;
 
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(updateState);
 
 	if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-		_id = net::read_int32(updateState, _dataLayout.findFragment(0)._offset); }
+		id = net::read_int32(updateState, _dataLayout.findFragment(0)._offset); }
 	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
-		_id = net::read_int16(updateState, _dataLayout.findFragment(0)._offset); }
-	_charges = net::read_int8(updateState, _dataLayout.findFragment(1)._offset);
-	_enchantment = net::read_int8(updateState, _dataLayout.findFragment(2)._offset);
+		id = net::read_int16(updateState, _dataLayout.findFragment(0)._offset); }
+	charges = net::read_int8(updateState, _dataLayout.findFragment(1)._offset);
+	enchantment = net::read_int8(updateState, _dataLayout.findFragment(2)._offset);
 
 	for (size_t i = 0; i < _harvestableList.size(); i++) {
-		if (_harvestableList[i]._id == _id) {
-			_harvestableList[i]._charges = _charges;
-			_harvestableList[i]._enchantment = _enchantment;
+		if (_harvestableList[i]._id == id) {
+			_harvestableList[i]._charges = charges;
+			_harvestableList[i]._enchantment = enchantment;
 			break;
 		}
 	}

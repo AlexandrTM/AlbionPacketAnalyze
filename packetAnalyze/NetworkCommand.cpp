@@ -1,6 +1,5 @@
 #include "pch.h"
 
-
 std::vector<size_t> nnCodes = {};
 std::vector<size_t> nCodes = {};
 
@@ -36,21 +35,19 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._harvestableList.updateState(*this); break;
         case eventCode::newPlayer:
             _entityList._playerList.newPlayer(Player(*this)); break;
+        case eventCode::playerLeave:
+           _entityList._playerList.playerLeave(Player(*this)); break;
         case 66:
-            //_entityList._playerList.update(Player::PlayerMove(*this)); 
+            //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         case 65:
-            //_entityList._playerList.update(Player::PlayerMove(*this)); 
-            break;
-        case eventCode::playerLeave:
-            //this->printCommandInOneString();
-            //_entityList._playerList.removePlayer(Player(*this)); break;
+            //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         default:
             break;
         }
         if (_networkCommand.size() == 67) {
-            _entityList._playerList.update(Player::PlayerMove(*this));
+            _entityList._playerList.update(Player::playerMove(*this));
             //this->printCommandInOneString();
             //std::cout << (unsigned)(_networkCommand[_networkCommand.size() - 1]) << " ";
         }
@@ -62,6 +59,15 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList.changeLocation(); break;
         case operationCode::move:
             _entityList._player = PlayerSelf(*this); break;
+        case operationCode::auctionAverageValues:
+            //this->printCommandInOneString();
+            break;
+        case operationCode::auctionBuyOrders:
+
+            break;
+        case operationCode::auctionSellOrders:
+            //this->printCommandInOneString();
+            break;
         default:
             break;
         }
@@ -137,22 +143,19 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
 
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
+    *this += command;
     if (command.isLastCommandInChain()) {
-        *this += command;
         _commandType = commandType::fragmented;
         _operationType = findOperationType();
         _isCommandFull = true;
         _eventCode = findEventCode();
     }
-    else {
-        *this += command;
-    }
 }
 bool NetworkCommand::isLastCommandInChain()
 {
-    uint8_t _commandsNumInChain = _networkCommand[19];
-    uint8_t _commandIndexInChain = _networkCommand[23];
-    if (_commandsNumInChain == _commandIndexInChain + 1) {
+    uint8_t commandsNumInChain = _networkCommand[19];
+    uint8_t commandIndexInChain = _networkCommand[23];
+    if (commandsNumInChain == commandIndexInChain + 1) {
         return true;
     }
     else {

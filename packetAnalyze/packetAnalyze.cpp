@@ -195,7 +195,6 @@ GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
 
-
 void PacketAnalyze::run()
 {
     initWindow();
@@ -331,7 +330,6 @@ void PacketAnalyze::initWindow()
     glViewport(0, 0, _screenWidth, _screenHeight);
     //glfwSetWindowPos(_window, 0, 0);
 
-
     GLFWimage images[1];
     images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
     glfwSetWindowIcon(_window, 2, images);
@@ -349,17 +347,18 @@ void PacketAnalyze::changeMapState(GLFWwindow*  window)
     if (_mapState == mapState::miniMap) {
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-        glfwSetWindowSize(window, _videoMode->width / 6.9, _videoMode->width / 6.9);
+        glfwSetWindowSize(window, _videoMode->width / 4.05f, _videoMode->height / 4.05f);
         glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
-        glfwSetWindowPos(window, 1142, 574);
+        glfwSetWindowPos(window, 1073, 570);
     }
     else if (_mapState == mapState::fullscreenMap) {
         GLFWmonitor* _monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
-        glfwSetWindowSize(window, _videoMode->width, _videoMode->width);
+        glfwSetWindowSize(window, _videoMode->width - 1, _videoMode->height - 1);
         glfwGetWindowSize(window, &_screenWidth, &_screenHeight);
         glViewport(0, 0, _screenWidth, _screenHeight);
+        glfwSetWindowPos(window, 0, 0);
     }
 }
 

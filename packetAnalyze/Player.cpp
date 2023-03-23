@@ -25,13 +25,13 @@ PlayerSelf::PlayerSelf(NetworkCommand rawPlayer)
 
 void PlayerSelf::update(NetworkCommand rawPlayer)
 {
-	PlayerSelf _player = PlayerSelf(rawPlayer);
+	PlayerSelf player = PlayerSelf(rawPlayer);
 	if (_positionX == 0 and _positionY == 0) {
-		*this = _player;
+		*this = player;
 	}
-	else if (_player._positionX != 0 and _player._positionY != 0) {
-		_positionX = _player._positionX;
-		_positionY = _player._positionY;
+	else if (player._positionX != 0 and player._positionY != 0) {
+		_positionX = player._positionX;
+		_positionY = player._positionY;
 	}
 }
 
@@ -40,6 +40,7 @@ Player::Player()
 	_id = 0;
 	_positionX = 0;
 	_positionY = 0;
+	_isVisible = false;
 }
 Player::Player(uint32_t id, float_t positionX, float_t positionY)
 {
@@ -52,6 +53,7 @@ Player::Player(NetworkCommand rawPlayer)
 	_id = 0;
 	_positionX = 0;
 	_positionY = 0;
+	_isVisible = true;
 
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawPlayer);
@@ -71,34 +73,45 @@ Player::Player(NetworkCommand rawPlayer)
 	_positionY = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset + 4);
 }
 
-Player Player::PlayerMove(NetworkCommand& rawPlayer)
+Player Player::playerMove(NetworkCommand& rawPlayer)
 {
-	uint32_t _id = 0;
-	float_t _positionX = 0;
-	float_t _positionY = 0;
+	uint32_t id = 0;
+	float_t positionX = 0;
+	float_t positionY = 0;
 
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawPlayer);
 
 	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
 	if (idSize == 2) {
-		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
+		id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 4) {
-		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+		id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 8) {
-		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+		id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
 	}
-	_positionX = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 9);
-	_positionY = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 13);
+	positionX = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 9);
+	positionY = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 13);
 
-	return Player(_id, _positionX, _positionY);
+	return Player(id, positionX, positionY);
 }
 
 PlayerList::PlayerList()
 {
 	_playerList = {};
+}
+
+void PlayerList::update(Player playerMove)
+{
+	for (size_t i = 0; i < _playerList.size(); i++) {
+		if (_playerList[i]._id == playerMove._id) {
+			_playerList[i]._positionX = playerMove._positionX;
+			_playerList[i]._positionY = playerMove._positionY;
+			break;
+		}
+	}
 }
 void PlayerList::newPlayer(Player player)
 {
@@ -110,6 +123,7 @@ void PlayerList::newPlayer(Player player)
 			if (_playerList[i]._id == player._id) {
 				_playerList[i]._positionX = player._positionX;
 				_playerList[i]._positionY = player._positionY;
+				_playerList[i]._isVisible = true;
 				break;
 			}
 			else if (i == _playerList.size() - 1) {
@@ -119,13 +133,13 @@ void PlayerList::newPlayer(Player player)
 	}
 	//_playerList.push_back(player);
 }
-
-void PlayerList::update(Player playerMove)
+void PlayerList::playerLeave(Player playerLeave)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
-		if (_playerList[i]._id == playerMove._id) {
-			_playerList[i]._positionX = playerMove._positionX;
-			_playerList[i]._positionY = playerMove._positionY;
+		if (_playerList[i]._id == playerLeave._id) {/*
+			_playerList[i]._positionX = playerLeave._positionX;
+			_playerList[i]._positionY = playerLeave._positionY;*/
+			_playerList[i]._isVisible = false;
 			break;
 		}
 	}

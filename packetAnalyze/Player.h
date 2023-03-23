@@ -18,11 +18,12 @@ struct Player
 	uint32_t _id;
 	float_t _positionX;
 	float_t _positionY;
+	bool _isVisible;
 
 	Player();
 	Player(uint32_t id, float_t positionX, float_t positionY);
 	Player(NetworkCommand rawPlayer);
-	static Player PlayerMove(NetworkCommand& rawPlayer);
+	static Player playerMove(NetworkCommand& rawPlayer);
 };
 
 class PlayerList
@@ -35,6 +36,8 @@ public:
 	
 	void newPlayer(Player player);
 	void update(Player playerMove);
+	void playerLeave(Player playerLeave);
+
 	void removePlayer(Player player);
 	void removePlayer(size_t elementIndex);
 
