@@ -49,6 +49,7 @@ enum resourceType : uint8_t
     FIBER = 11,
     HIDE = 15,
     ORE = 23,
+    OTHER = 28,
 };
 
 // header size, type size, num of entries

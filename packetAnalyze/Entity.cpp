@@ -2,6 +2,29 @@
 
 float_t _pixelsInMeter = 45.5;
 
+HarvestableFilter::HarvestableFilter(std::vector<uint8_t> trackingTiers,
+                                     std::vector<uint8_t> trackingEnchantments,
+                                     std::vector<uint8_t> trackingCharges)
+{
+    _trackingTiers = trackingTiers;
+    _trackingEnchantments = trackingEnchantments;
+    _trackingCharges = trackingCharges;
+}
+HarvestableFilter::HarvestableFilter()
+{
+    _trackingTiers =        { 0,1,2,3,4,5,6,7,8 };
+    _trackingEnchantments = { 0,0,0,0,0,0,0,0,0 };
+    _trackingCharges =      { 0,0,0,0,0,0,0,0,0 };
+}
+size_t HarvestableListFilter::size()
+{
+    return _harvestableListFilter.size();
+}
+HarvestableFilter& HarvestableListFilter::operator[](size_t elementIndex)
+{
+    return _harvestableListFilter[elementIndex];
+}
+
 void EntityList::draw(GLFWwindow* window)
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -14,22 +37,33 @@ void EntityList::draw(GLFWwindow* window)
     glfwSwapBuffers(window);
 }
 
-bool EntityList::harvestableFiltered(Harvestable harvestable)
+bool EntityList::filterHarvestable(Harvestable harvestable)
 {
-    if (std::isElementInVector(this->_harvestableTrackingTiers, harvestable._tier) and 
-        std::isElementInVector(this->_harvestableTrackingTypes, harvestable._type)) {
-        size_t elementIndex = std::findElementIndex(this->_harvestableTrackingTiers, harvestable._tier);
-        if (harvestable._charges >= _harvestableTrackingCharges[elementIndex] and
-            harvestable._enchantment >= _harvestableTrackingEnchantments[elementIndex]) {
+    uint8_t filterID = 5;
+    if (harvestable._type >=  resourceType::WOOD and 
+        harvestable._type <= (resourceType::ROCK - 1)) {
+        filterID = 0; }
+    if (harvestable._type >=  resourceType::ROCK and 
+        harvestable._type <= (resourceType::FIBER - 1)) {
+        filterID = 1; }
+    if (harvestable._type >=  resourceType::FIBER and 
+        harvestable._type <= (resourceType::HIDE - 1)) {
+        filterID = 2; }
+    if (harvestable._type >=  resourceType::HIDE and 
+        harvestable._type <= (resourceType::ORE - 1)) {
+        filterID = 3; }
+    if (harvestable._type >=  resourceType::ORE and 
+        harvestable._type <= (resourceType::OTHER - 1)) {
+        filterID = 4; }
+
+    if (std::isElementInVector(this->_harvestableListFilter[filterID]._trackingTiers, harvestable._tier)) {
+        size_t elementIndex = std::findElementIndex(this->_harvestableListFilter[filterID]._trackingTiers, harvestable._tier);
+        if (harvestable._charges >= _harvestableListFilter[filterID]._trackingCharges[elementIndex] and
+            harvestable._enchantment >= _harvestableListFilter[filterID]._trackingEnchantments[elementIndex]) {
             return true;
         }
-        else {
-            return false;
-        }
     }
-    else {
-        return false;
-    }
+    return false;
 }
 void EntityList::changeLocation()
 {
@@ -53,10 +87,6 @@ void EntityList::clear()
 EntityList::EntityList()
 {
     _harvestableList = {};
-    _harvestableTrackingTiers = { 4,5 };
-    _harvestableTrackingTypes = {resourceType::WOOD,1,2,3,4,5,resourceType::ROCK,7,8,9,10,11};
-    _harvestableTrackingEnchantments = { 2,1,1,0,0 };
-    _harvestableTrackingCharges = { 1,1,1,0,0 };
 
     _player = {};
     _playerList = {};
@@ -87,13 +117,13 @@ void EntityList::drawHarvestables()
     std::vector<GLfloat> harvestableCoords;
     std::vector<GLfloat> harvestableMapCoords;
     for (size_t i = 0; i < _harvestableList.size(); i++) {
-        if (harvestableFiltered(_harvestableList[i])) 
+        if (filterHarvestable(_harvestableList[i])) 
         {
             harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
             harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                             _harvestableList[i]._positionY);
             
-            glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.75, 4.0));
+            glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
             colorizeHarvestable(_harvestableList[i]);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
@@ -200,12 +230,12 @@ void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoor
                                         playerCoords[0], playerCoords[1]);
         mapCoords = convertToMapCoordinates(x, y);
 
-        if (distance > 20 and distance < 50) {
+        if (distance > 16 and distance < 50) {
             glVertex2f(mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
-                mapCoords[1] / distance * 8.5f + 0.2f);
+                mapCoords[1] / distance * 8.5f + 0.24f);
         }
         else {
-            glVertex2f(mapCoords[0] + ((chargeSize * 0.82f) * (j - (float)charges / 2)) / 400,
+            glVertex2f(mapCoords[0] + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
                        mapCoords[1] + 0.32f);
         }
     }

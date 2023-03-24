@@ -147,20 +147,20 @@ T DataLayout::readDataFragmentEntry(NetworkCommand& command, size_t fragmentID)
     T entry;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == fragmentID) {
-            ptrdiff_t _offset = _dataLayout[i]._offset;
-            uint8_t _dataType = _dataLayout[i]._dataType._dataType;
-            switch (_dataType)
+            ptrdiff_t offset = _dataLayout[i]._offset;
+            uint8_t dataType = _dataLayout[i]._dataType._dataType;
+            switch (dataType)
             {
             case dataType::int8:
-                entry = NetworkCommand::read_byteInt(command, _offset);
+                entry = NetworkCommand::read_byteInt(command, offset);
             case dataType::int16:
-                entry = NetworkCommand::read_shortInt(command, _offset);
+                entry = NetworkCommand::read_shortInt(command, offset);
             case dataType::int32:
-                entry = NetworkCommand::read_int32(command, _offset);
+                entry = NetworkCommand::read_int32(command, offset);
             case dataType::float32:
-                entry = NetworkCommand::read_float32(command, _offset);
+                entry = NetworkCommand::read_float32(command, offset);
             case dataType::int64:
-                entry = NetworkCommand::read_int64(command, _offset);
+                entry = NetworkCommand::read_int64(command, offset);
             default:
                 return entry;
             }
@@ -206,7 +206,6 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             offset += dataSize;
 
             _dataLayout.push_back(dataFragment);
-
         }
     }
 }
