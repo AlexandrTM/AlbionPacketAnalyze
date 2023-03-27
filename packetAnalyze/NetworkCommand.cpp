@@ -11,6 +11,10 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
     _isCommandFull = isCommandFull();
     _eventCode = findEventCode();
 }
+NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
+{
+    _networkCommand = { command._networkCommand.begin() + regionStart, command._networkCommand.end() };
+}
 NetworkCommand::NetworkCommand() 
 {
     _networkCommand = {};
@@ -33,10 +37,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._harvestableList.update(Harvestable(*this)); break;
         case eventCode::harvestableChangeState:
             _entityList._harvestableList.updateState(*this); break;
-        case eventCode::newPlayer:
+        /*case eventCode::newPlayer:
             _entityList._playerList.newPlayer(Player(*this)); break;
         case eventCode::playerLeave:
-           _entityList._playerList.playerLeave(Player(*this)); break;
+           _entityList._playerList.playerLeave(Player(*this)); break;*/
         case 66:
             //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
@@ -46,11 +50,12 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         default:
             break;
         }
-        if (_networkCommand.size() == 67) {
+        /*if (_networkCommand.size() == 67) {
             _entityList._playerList.update(Player::playerMove(*this));
-        }
+        }*/
     }
     if (_operationType == operationType::operationResponse) {
+        DataLayout dataLayout;
         switch (_eventCode) 
         {
         case operationCode::changeLocation:
@@ -58,10 +63,12 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::move:
             _entityList._player = PlayerSelf(*this); break;
         case operationCode::auctionAverageValues:
+            dataLayout.findDataLayout(*this);
+            dataLayout.printInfo();
             //this->printCommandInOneString();
             break;
         case operationCode::auctionBuyOrders:
-
+            //this->printCommandInOneString();
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
@@ -74,14 +81,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
 
         if (_eventCode == operationCode::move) {
             _entityList._player.update(*this);
-            /*DataLayout _dataLayout{};
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo();*/
-            //this->printCommandInOneString();
         }
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    _entityList.draw(window);
+    //_entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
@@ -141,7 +144,13 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
 
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
-    *this += command;
+    if (command.isFirstCommandInChain()) {
+        *this += command;
+    }
+    else {
+        *this += NetworkCommand(command, 32);
+    }
+
     if (command.isLastCommandInChain()) {
         _commandType = commandType::fragmented;
         _operationType = findOperationType();
@@ -157,6 +166,16 @@ bool NetworkCommand::isLastCommandInChain()
         return true;
     }
     else {
+        return false;
+    }
+}
+bool NetworkCommand::isFirstCommandInChain()
+{
+    uint8_t commandIndexInChain = _networkCommand[23];
+    if (commandIndexInChain == 0) {
+        return true;
+    }
+    else {  
         return false;
     }
 }

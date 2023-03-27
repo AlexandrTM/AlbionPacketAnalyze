@@ -17,6 +17,7 @@ private:
 
 public:
     NetworkCommand(std::vector<uint8_t> command);
+    NetworkCommand(NetworkCommand& command, size_t regionStart);
     NetworkCommand();
 
     void analyzeCommand(GLFWwindow* window);
@@ -28,6 +29,7 @@ public:
 
     void fillFragmentedCommand(NetworkCommand command);
     bool isLastCommandInChain();
+    bool isFirstCommandInChain();
     bool isCommandFull();
 
     uint8_t getCommandType();
@@ -35,8 +37,8 @@ public:
     uint16_t getEventCode();
 
     uint16_t size();
-    void push_back(uint8_t element);
     void clear();
+    void push_back(uint8_t element);
 
     uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;

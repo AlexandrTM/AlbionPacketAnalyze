@@ -106,7 +106,12 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     switch (command.getCommandType())
     {
     case commandType::reliable:
-        return 16;
+        if (command.getOperationType() == operationType::event) {
+            return 16;
+        }
+        else {
+            return 19;
+        }
     case commandType::unreliable:
         return 20;
     case commandType::fragmented:
@@ -185,10 +190,12 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
     uint8_t numOfFragments = command[offset];
+    //std::cout << offset << "\n";
     offset += 1;
+    //std::cout << (unsigned)numOfFragments << "\n";
 
     uint16_t dataSize;
-    for (size_t i = 0; i < numOfFragments; i++) { // excluding event code, change for unreliable commands
+    for (size_t i = 0; i < numOfFragments; i++) {
         if (command.size() > offset) {
             uint8_t fragmentID = command[offset];
             uint8_t dataType = command[offset + 1];
@@ -196,7 +203,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             uint8_t dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
             uint16_t numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
 
-            if (dataType == dataType::dictionary) { dataType = (command[offset + 4]); }
+            if (dataType == dataType::dictionary) { dataType = command[offset + 4]; }
             uint8_t dataTypeSize = DataType::getDataTypeSize(dataType);
 
             DataFragment dataFragment = DataFragment(fragmentID, offset + dataTypeHeaderSize + 1,

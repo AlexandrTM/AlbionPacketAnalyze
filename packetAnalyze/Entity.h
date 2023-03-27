@@ -1,19 +1,12 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-std::vector<uint8_t> _woodCategory = { 0,1,2,3,4,5 };
-std::vector<uint8_t> _rockCategory = { 6,7,8,9,10 };
-std::vector<uint8_t> _fiberCategory = { 11,12,13,14 };
-std::vector<uint8_t> _hideCategory = { 15,16,17,18,19,20,21,22 };
-std::vector<uint8_t> _oreCategory = { 23,24,25,26,27 };
-std::vector<uint8_t> _otherCategory = {};
-std::vector<uint8_t> _trackingTypes = { resourceType::WOOD,1,2,3,4,5,resourceType::ROCK,7,8,9,10,11 };
 
 
 struct HarvestableFilter
 {
-    std::vector<uint8_t> _trackingTiers = { 4,5 };
-    std::vector<uint8_t> _trackingEnchantments = { 2,1,1,0,0 };
-    std::vector<uint8_t> _trackingCharges = { 1,1,1,0,0 };
+    std::vector<uint8_t> _trackingTiers;
+    std::vector<uint8_t> _trackingEnchantments;
+    std::vector<uint8_t> _trackingCharges;
 
     HarvestableFilter(std::vector<uint8_t> trackingTiers, 
                       std::vector<uint8_t> trackingEnchantments,
@@ -26,23 +19,23 @@ struct HarvestableListFilter
     std::vector<HarvestableFilter> _harvestableListFilter = { 
         HarvestableFilter(/*wood*/
             {4,5},
-            {2,1},
+            {0,1},
             {1,1}),
         HarvestableFilter(/*rock*/
-            {4,5},
-            {2,1},
-            {1,1}),
+            {1,4,5},
+            {0,0,1},
+            {1,1,1}),
         HarvestableFilter(/*fiber*/
             {4,5,6,7,8},
-            {2,1,1,0,0},
+            {0,1,1,0,0},
             {1,1,1,0,0}),
         HarvestableFilter(/*hide*/
-            {},
-            {},
-            {}),
+            {4},
+            {0},
+            {1}),
         HarvestableFilter(/*ore*/
             {4},
-            {2},
+            {0},
             {1}),
         HarvestableFilter(/*other*/) 
     };
