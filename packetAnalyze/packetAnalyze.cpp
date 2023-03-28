@@ -285,7 +285,6 @@ void PacketAnalyze::findUniqueEventCodes(NetworkCommand& command)
     _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
 }
 
-
 void PacketAnalyze::mainLoop()
 {
     while (!glfwWindowShouldClose(_window)) {
@@ -479,7 +478,6 @@ RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, si
     return rawPacketPayload;
 }
 
-
 void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
 {
     _packet = NetworkPacket::findCommandsInPacket(rawPacket);
@@ -498,12 +496,12 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
         if (_packet[i].getCommandType() == commandType::reliable
             or _packet[i].getCommandType() == commandType::unreliable) {
 
+            //_packet[i].printCommandInOneString();
             _packet[i].analyzeCommand(_window);
             //findUniqueEventCodes(_packet[i]);
         }
     }
 }
-
 
 int main() {
     PacketAnalyze packetAnalyze;

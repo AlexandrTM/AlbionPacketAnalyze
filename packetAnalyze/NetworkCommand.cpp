@@ -63,12 +63,12 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::move:
             _entityList._player = PlayerSelf(*this); break;
         case operationCode::auctionAverageValues:
-            dataLayout.findDataLayout(*this);
-            dataLayout.printInfo();
             //this->printCommandInOneString();
             break;
         case operationCode::auctionBuyOrders:
-            //this->printCommandInOneString();
+            dataLayout.findDataLayout(*this);
+            dataLayout.printInfo();
+            this->printCommandInOneString();
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
