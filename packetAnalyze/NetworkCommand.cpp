@@ -56,21 +56,28 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     }
     if (_operationType == operationType::operationResponse) {
         DataLayout dataLayout;
+        //std::cout << _eventCode << "\n";
         switch (_eventCode) 
         {
-        case operationCode::changeLocation:
-            _entityList.changeLocation(); break;
         case operationCode::move:
             _entityList._player = PlayerSelf(*this); break;
-        case operationCode::auctionAverageValues:
+        case operationCode::changeLocation:
+            _entityList.changeLocation(); break;
+        case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
             break;
         case operationCode::auctionBuyOrders:
-            dataLayout.findDataLayout(*this);
+            /*dataLayout.findDataLayout(*this);
             dataLayout.printInfo();
-            this->printCommandInOneString();
+            this->printCommandInOneString();*/
             break;
-        case operationCode::auctionSellOrders:
+        case operationCode::auctionGetFinishedOrders:
+            //this->printCommandInOneString();
+            break;
+        case operationCode::auctionAverageValues:
+            Auction::FindAuctionAverageValues(*this);
+            break;
+        case 88:
             //this->printCommandInOneString();
             break;
         default:

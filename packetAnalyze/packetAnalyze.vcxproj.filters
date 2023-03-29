@@ -19,6 +19,12 @@
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{0dadbccb-5f12-4b36-a354-aaab2898fbb1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Deserialization">
+      <UniqueIdentifier>{9bfec5eb-04f0-4ace-a7c3-eab2126712d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Deserialization">
+      <UniqueIdentifier>{d7591eea-af46-4167-8be1-140bccc71243}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PacketAnalyze.cpp">
@@ -33,9 +39,6 @@
     <ClCompile Include="NetworkPacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Deserialization.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="namespace_std.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,6 +50,12 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Deserialization.cpp">
+      <Filter>Source Files\Deserialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Auction.cpp">
+      <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +71,6 @@
     <ClInclude Include="Enumerations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Deserialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="namespace_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +84,15 @@
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="PacketAnalyze.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Auction.h">
+      <Filter>Header Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Deserialization.h">
+      <Filter>Header Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

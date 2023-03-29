@@ -8,9 +8,9 @@ struct PlayerSelf
 
 	PlayerSelf();
 	PlayerSelf(float_t positionX, float_t positionY);
-	PlayerSelf(NetworkCommand rawPlayer);
+	PlayerSelf(NetworkCommand& rawPlayer);
 
-	void update(NetworkCommand rawPlayer);
+	void update(NetworkCommand& rawPlayer);
 };
 
 struct Player
@@ -22,7 +22,7 @@ struct Player
 
 	Player();
 	Player(uint32_t id, float_t positionX, float_t positionY);
-	Player(NetworkCommand rawPlayer);
+	Player(NetworkCommand& rawPlayer);
 	static Player playerMove(NetworkCommand& rawPlayer);
 };
 

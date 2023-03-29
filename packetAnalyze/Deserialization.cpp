@@ -59,13 +59,13 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
 DataType::DataType()
 {
     _dataTypeSize = 0;
-    _dataHeaderSize = 0;
+    _dataTypeHeaderSize = 0;
     _dataType = 0;
 }
-DataType::DataType(uint8_t dataTypeSize, uint8_t dataHeaderSize, uint8_t dataType)
+DataType::DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType)
 {
     _dataTypeSize = dataTypeSize;
-    _dataHeaderSize = dataHeaderSize;
+    _dataTypeHeaderSize = dataTypeHeaderSize;
     _dataType = dataType;
 }
 
@@ -198,7 +198,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     uint8_t dataTypeSize;
     uint8_t dataTypeHeaderSize;
     uint16_t numOfEntries;
-    uint16_t dataSize;
+    uint16_t sizeOfData = 0;
 
     DataFragment dataFragment;
 
@@ -208,14 +208,12 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             offset += 1;
             dataType = command[offset];
 
-            dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
             numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
 
             if (dataType == dataType::dictionary) { 
                 offset += 3;
                 dataType = command[offset]; 
                 if (dataType == dataType::int8_string) {
-                    uint16_t sizeOfData = 0;
 
                     offset += 1;
                     for (size_t i = 0; i < numOfEntries; i++) {
@@ -233,22 +231,23 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                         sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - 3);
                         offset += sizeOfData;
                         //std::cout << "sizeofdata " << sizeOfData << "\n";
-
                     }
                     continue;
                 }
             }
             dataTypeSize = DataType::getDataTypeSize(dataType);
+            dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
+            offset += dataTypeHeaderSize;
 
             dataFragment = DataFragment(
                                         fragmentID, 
-                                        offset + dataTypeHeaderSize,
+                                        offset,
                                         numOfEntries, 
                                         DataType(dataTypeSize, dataTypeHeaderSize, dataType)
                                        );
 
-            dataSize = dataTypeSize * numOfEntries + dataTypeHeaderSize;
-            offset += dataSize;
+            sizeOfData = dataTypeSize * numOfEntries;
+            offset += sizeOfData;
 
             _dataLayout.push_back(dataFragment);
         }

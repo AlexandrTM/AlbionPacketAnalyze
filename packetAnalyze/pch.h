@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <chrono>
 #include <algorithm>
+#include <fstream>
 
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
@@ -22,6 +23,7 @@
 #include "NetworkCommand.h"
 #include "NetworkPacket.h"
 #include "Deserialization.h"
+#include "Auction.h"
 #include "Harvestable.h"
 #include "Player.h"
 #include "Entity.h"

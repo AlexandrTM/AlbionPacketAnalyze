@@ -11,7 +11,7 @@ PlayerSelf::PlayerSelf(float_t positionX, float_t positionY)
 	_positionY = positionY;
 }
 
-PlayerSelf::PlayerSelf(NetworkCommand rawPlayer)
+PlayerSelf::PlayerSelf(NetworkCommand& rawPlayer)
 {
 	_positionX = 0;
 	_positionY = 0;
@@ -23,7 +23,7 @@ PlayerSelf::PlayerSelf(NetworkCommand rawPlayer)
 	_positionY = net::read_float32(rawPlayer, _dataLayout.findFragment(1)._offset + 4);
 }
 
-void PlayerSelf::update(NetworkCommand rawPlayer)
+void PlayerSelf::update(NetworkCommand& rawPlayer)
 {
 	PlayerSelf player = PlayerSelf(rawPlayer);
 	if (_positionX == 0 and _positionY == 0) {
@@ -48,7 +48,7 @@ Player::Player(uint32_t id, float_t positionX, float_t positionY)
 	_positionX = positionX;
 	_positionY = positionY;
 }
-Player::Player(NetworkCommand rawPlayer)
+Player::Player(NetworkCommand& rawPlayer)
 {
 	_id = 0;
 	_positionX = 0;

@@ -71,7 +71,7 @@ struct net
         if (offset != -1) {
             uint64_t _dataEntry = 0;
             for (size_t i = 0; i < 8; i++) {
-                _dataEntry += (command[offset + i] << (8 * (7 - i)));
+                _dataEntry += (static_cast<unsigned __int64>(command[offset + i]) << (8 * (7 - i)));
             }
             return _dataEntry;
         }
@@ -88,11 +88,11 @@ struct net
 struct DataType
 {
     uint8_t _dataTypeSize;
-    uint8_t _dataHeaderSize;
+    uint8_t _dataTypeHeaderSize;
     uint8_t _dataType;
 
     DataType();
-    DataType(uint8_t dataTypeSize, uint8_t dataHeaderSize, uint8_t dataType);
+    DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType);
 
     static uint8_t getDataTypeSize(uint8_t dataType);
     static uint8_t getDataTypeHeaderSize(uint8_t dataType);

@@ -19,7 +19,9 @@ enum operationCode: uint16_t
     changeLocation = 35,
     auctionSellOrders = 76,
     auctionBuyOrders = 77,
+    auctionGetFinishedOrders = 84,
     auctionAverageValues = 90,
+
     getCharacterEquipment = 137,
 
 };
