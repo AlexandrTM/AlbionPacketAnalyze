@@ -75,7 +75,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //this->printCommandInOneString();
             break;
         case operationCode::auctionAverageValues:
+
             Auction::FindAuctionAverageValues(*this);
+            //std::cout << this->size() << "\n";
             break;
         case 88:
             //this->printCommandInOneString();
@@ -149,13 +151,18 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
     std::cout.unsetf(std::ios::hex);
 }
 
+uint8_t _previousCommandIndexInChain = 0;
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
+    uint8_t commandsNumInChain = command._networkCommand[19];
+    uint8_t commandIndexInChain = command._networkCommand[23];
+
     if (command.isFirstCommandInChain()) {
         *this += command;
     }
-    else {
+    else if (_previousCommandIndexInChain + 1 == commandIndexInChain) {
         *this += NetworkCommand(command, 32);
+        _previousCommandIndexInChain += 1;
     }
 
     if (command.isLastCommandInChain()) {
@@ -163,6 +170,7 @@ void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
         _operationType = findOperationType();
         _isCommandFull = true;
         _eventCode = findEventCode();
+        _previousCommandIndexInChain = 0;
     }
 }
 bool NetworkCommand::isLastCommandInChain()
@@ -246,6 +254,15 @@ NetworkCommand& NetworkCommand::operator+=(NetworkCommand command)
     }
     return *this;
 }
+bool NetworkCommand::operator!=(NetworkCommand& command)
+{
+    if (_networkCommand != command._networkCommand) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 uint8_t NetworkCommand::findCommandType()
 {
@@ -289,4 +306,3 @@ uint16_t NetworkCommand::findEventCode()
         return 0;
     }
 };
-

@@ -43,6 +43,7 @@ public:
     uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;
     NetworkCommand& operator+=(NetworkCommand command);
+    bool operator!=(NetworkCommand& command);
 
 };
 
