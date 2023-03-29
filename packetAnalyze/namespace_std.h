@@ -39,6 +39,14 @@ namespace std
     }
 
     float binToFloat(uint32_t value);
+
+    template <typename T>
+    string numberToString(T number)
+    {
+        ostringstream ss;
+        ss << number;
+        return ss.str();
+    }
 }
 
 #endif
