@@ -106,11 +106,11 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     switch (command.getCommandType())
     {
     case commandType::reliable:
-        if (command.getOperationType() == operationType::event) {
-            return 16;
+        if (command.getOperationType() == operationType::operationResponse) {
+            return 19;
         }
         else {
-            return 19;
+            return 16;
         }
     case commandType::unreliable:
         return 20;
@@ -202,55 +202,55 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 
     DataFragment dataFragment;
 
+    //std::cout << (unsigned)numOfFragments << "\n";
+    //command.printCommandInOneString();
     for (size_t i = 0; i < numOfFragments; i++) {
-        if (command.size() > offset) {
-            fragmentID = command[offset];
-            offset += 1;
-            dataType = command[offset];
+        fragmentID = command[offset];
+        offset += 1;
+        dataType = command[offset];
 
-            numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+        numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
 
-            if (dataType == dataType::dictionary) { 
-                offset += 3;
-                dataType = command[offset]; 
-                if (dataType == dataType::int8_string) {
+        if (dataType == dataType::dictionary) { 
+            offset += 3;
+            dataType = command[offset]; 
+            if (dataType == dataType::int8_string) {
 
-                    offset += 1;
-                    for (size_t i = 0; i < numOfEntries; i++) {
+                offset += 1;
+                for (size_t i = 0; i < numOfEntries; i++) {
 
-                        offset += 2;
-                        dataFragment = DataFragment(
-                                                    fragmentID,
-                                                    offset,
-                                                    sizeOfData,
-                                                    DataType(1, 3, dataType::int8_string)
-                                                   );
+                    offset += 2;
+                    dataFragment = DataFragment(
+                                                fragmentID,
+                                                offset,
+                                                sizeOfData,
+                                                DataType(1, 3, dataType::int8_string)
+                                                );
 
-                        _dataLayout.push_back(dataFragment);
+                    _dataLayout.push_back(dataFragment);
 
-                        sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - 3);
-                        offset += sizeOfData;
-                        //std::cout << "sizeofdata " << sizeOfData << "\n";
-                    }
-                    continue;
+                    //std::cout << "size of data " << sizeOfData << "\n";
+                    sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - 3);
+                    offset += sizeOfData;
                 }
+                continue;
             }
-            dataTypeSize = DataType::getDataTypeSize(dataType);
-            dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
-            offset += dataTypeHeaderSize;
-
-            dataFragment = DataFragment(
-                                        fragmentID, 
-                                        offset,
-                                        numOfEntries, 
-                                        DataType(dataTypeSize, dataTypeHeaderSize, dataType)
-                                       );
-
-            sizeOfData = dataTypeSize * numOfEntries;
-            offset += sizeOfData;
-
-            _dataLayout.push_back(dataFragment);
         }
+        dataTypeSize = DataType::getDataTypeSize(dataType);
+        dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
+        offset += dataTypeHeaderSize;
+
+        dataFragment = DataFragment(
+                                    fragmentID, 
+                                    offset,
+                                    numOfEntries, 
+                                    DataType(dataTypeSize, dataTypeHeaderSize, dataType)
+                                    );
+
+        sizeOfData = dataTypeSize * numOfEntries;
+        offset += sizeOfData;
+
+        _dataLayout.push_back(dataFragment);
     }
 }
 DataLayout::DataLayout(std::vector<DataFragment> dataFragments)

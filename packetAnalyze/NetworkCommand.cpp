@@ -10,6 +10,8 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> command)
     _operationType = findOperationType();
     _isCommandFull = isCommandFull();
     _eventCode = findEventCode();
+    _indexOfLastCommandInChain = 0;
+    _commandChainID = findCommandChainID();
 }
 NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
 {
@@ -20,8 +22,10 @@ NetworkCommand::NetworkCommand()
     _networkCommand = {};
     _commandType = 0;
     _operationType = 0;
-    _isCommandFull = false;
     _eventCode = 0;
+    _isCommandFull = false;
+    _indexOfLastCommandInChain = 0;
+    _commandChainID = 0;
 }
 
 EntityList _entityList{};
@@ -55,7 +59,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         }*/
     }
     if (_operationType == operationType::operationResponse) {
-        DataLayout dataLayout;
+        std::chrono::steady_clock::time_point start;
+        std::chrono::steady_clock::time_point stop;
         //std::cout << _eventCode << "\n";
         switch (_eventCode) 
         {
@@ -64,20 +69,16 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::changeLocation:
             _entityList.changeLocation(); break;
         case operationCode::auctionSellOrders:
-            //this->printCommandInOneString();
             break;
         case operationCode::auctionBuyOrders:
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo();
-            this->printCommandInOneString();*/
             break;
         case operationCode::auctionGetFinishedOrders:
-            //this->printCommandInOneString();
             break;
         case operationCode::auctionAverageValues:
-
+            //start = std::chrono::high_resolution_clock::now();
             Auction::FindAuctionAverageValues(*this);
-            //std::cout << this->size() << "\n";
+            //stop = std::chrono::high_resolution_clock::now();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
             break;
         case 88:
             //this->printCommandInOneString();
@@ -151,26 +152,32 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
     std::cout.unsetf(std::ios::hex);
 }
 
-uint8_t _previousCommandIndexInChain = 0;
+
 void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
 {
-    uint8_t commandsNumInChain = command._networkCommand[19];
-    uint8_t commandIndexInChain = command._networkCommand[23];
-
-    if (command.isFirstCommandInChain()) {
+    /*if (command.isFirstCommandInChain()) {
         *this += command;
     }
-    else if (_previousCommandIndexInChain + 1 == commandIndexInChain) {
+    else */if (command.isNextCommandInChain(*this)) {
         *this += NetworkCommand(command, 32);
-        _previousCommandIndexInChain += 1;
-    }
+        _indexOfLastCommandInChain += 1;
 
-    if (command.isLastCommandInChain()) {
-        _commandType = commandType::fragmented;
-        _operationType = findOperationType();
-        _isCommandFull = true;
-        _eventCode = findEventCode();
-        _previousCommandIndexInChain = 0;
+        if (command.isLastCommandInChain()) {
+            _commandType = commandType::fragmented;
+            _operationType = findOperationType();
+            _isCommandFull = true;
+            _eventCode = findEventCode();
+            _indexOfLastCommandInChain = 0;
+        }
+    }
+}
+uint32_t NetworkCommand::findCommandChainID()
+{
+    if (_commandType == commandType::fragmented) {
+        return net::read_int32(_networkCommand, 12);
+    }
+    else {
+        return 0;
     }
 }
 bool NetworkCommand::isLastCommandInChain()
@@ -191,6 +198,18 @@ bool NetworkCommand::isFirstCommandInChain()
         return true;
     }
     else {  
+        return false;
+    }
+}
+bool NetworkCommand::isNextCommandInChain(NetworkCommand& command)
+{
+    uint32_t commandChainID = net::read_int32(_networkCommand, 12);
+    uint8_t commandIndexInChain = _networkCommand[23];
+    if (command._indexOfLastCommandInChain + 1 == commandIndexInChain and
+        command._commandChainID == commandChainID) {
+        return true;
+    }
+    else {
         return false;
     }
 }

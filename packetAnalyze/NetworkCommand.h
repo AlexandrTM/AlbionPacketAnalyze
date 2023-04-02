@@ -9,7 +9,10 @@ private:
     uint8_t _commandType;
     uint8_t _operationType;
     uint16_t _eventCode;
+
     bool _isCommandFull;
+    int16_t _indexOfLastCommandInChain;
+    uint32_t _commandChainID;
 
     uint8_t findCommandType();
     uint8_t findOperationType();
@@ -28,8 +31,10 @@ public:
     void printCommandInOneString(size_t regionStart, size_t regionEnd);
 
     void fillFragmentedCommand(NetworkCommand command);
+    uint32_t findCommandChainID();
     bool isLastCommandInChain();
     bool isFirstCommandInChain();
+    bool isNextCommandInChain(NetworkCommand& command);
     bool isCommandFull();
 
     uint8_t getCommandType();
@@ -37,8 +42,8 @@ public:
     uint16_t getEventCode();
 
     uint16_t size();
-    void clear();
     void push_back(uint8_t element);
+    void clear();
 
     uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;

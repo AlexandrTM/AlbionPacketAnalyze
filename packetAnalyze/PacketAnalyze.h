@@ -22,7 +22,7 @@ private:
     Tins::Sniffer sniffer = Tins::Sniffer(iface.name());
 
     NetworkPacket _packet;
-    NetworkCommand _fragmentedCommandBuffer;
+    std::vector<NetworkCommand> _fragmentedCommandBuffer;
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition);

@@ -24,17 +24,17 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
     NetworkPacket networkPacket;
 
     uint8_t commandsNumInPacket = rawPacket[3];
-    ptrdiff_t stringPosition = _packetHeaderSize;
+    ptrdiff_t offset = _packetHeaderSize;
     for (uint8_t i = 0; i < commandsNumInPacket; i++) {
-        uint16_t commandLength = (rawPacket[stringPosition + 6] << 8) + rawPacket[stringPosition + 7];
-        if (rawPacket.begin() + stringPosition + commandLength < rawPacket.end()) {
-            networkPacket.push_back(NetworkCommand({ rawPacket.begin() + stringPosition,
-                                        rawPacket.begin() + stringPosition + commandLength }));
-            stringPosition += commandLength;
-        }
-        else if ((rawPacket.end() - (rawPacket.begin() + stringPosition)) > 0) {
-            networkPacket.push_back(NetworkCommand({rawPacket.begin() + stringPosition, rawPacket.end()}));
-        }
+        uint16_t commandLength = (rawPacket[offset + 6] << 8) + rawPacket[offset + 7];
+        if (rawPacket.begin() + offset + commandLength <= rawPacket.end()) {
+            networkPacket.push_back(NetworkCommand({ rawPacket.begin() + offset,
+                                        rawPacket.begin() + offset + commandLength }));
+            offset += commandLength;
+        }/*
+        else if ((rawPacket.end() - (rawPacket.begin() + offset)) > 0) {
+            networkPacket.push_back(NetworkCommand({rawPacket.begin() + offset, rawPacket.end()}));
+        }*/
         else {
             break;
         }
