@@ -63,9 +63,9 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 			uint64_t datePrevious = 0;
 			size_t addedValues = 0;
 			for (size_t i = 0; i < auctionData.size() - addedValues; i++) {
-				std::cout << auctionData.size() << "\n";
+				//std::cout << auctionData.size() << "\n";
 
-				uint64_t date = std::stoull(auctionData[i + addedValues][3]);
+				uint64_t date = std::stoull(auctionData[i][3]);
 				if (i > 0) {
 					size_t dateDifference = (date - datePrevious) / sixHours;
 					//std::cout << dateDifference << "\n";
@@ -77,6 +77,7 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 							addedValues += 1;
 							//std::cout << datePrevious + j * sixHours << "\n";
 						}
+						i += addedValues;
 					}
 				}
 
