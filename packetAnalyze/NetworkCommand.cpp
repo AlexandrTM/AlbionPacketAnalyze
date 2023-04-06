@@ -69,6 +69,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::changeLocation:
             _entityList.changeLocation(); break;
         case operationCode::auctionSellOrders:
+            //this->printCommandInOneString();
             break;
         case operationCode::auctionBuyOrders:
             break;
@@ -78,7 +79,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //start = std::chrono::high_resolution_clock::now();
             Auction::FindAuctionAverageValues(*this);
             //stop = std::chrono::high_resolution_clock::now();
-            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case 88:
             //this->printCommandInOneString();
@@ -275,10 +276,18 @@ NetworkCommand& NetworkCommand::operator+=(NetworkCommand command)
 }
 bool NetworkCommand::operator!=(NetworkCommand& command)
 {
-    if (_networkCommand != command._networkCommand) {
+    return !(_networkCommand == command._networkCommand);
+}
+bool NetworkCommand::operator==(NetworkCommand& command)
+{
+    uint32_t commandChainID1 = this->findCommandChainID();
+    uint32_t commandChainID2 = command.findCommandChainID();
+
+    if (commandChainID1 == commandChainID2) {
         return true;
     }
     else {
+        //std::cout << "false" << "\n";
         return false;
     }
 }

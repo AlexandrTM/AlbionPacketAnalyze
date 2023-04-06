@@ -4,11 +4,14 @@
 uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
 uint16_t numOfRows = 4;
 
+size_t counter = 0;
 NetworkCommand commandBuffer;
 void Auction::FindAuctionAverageValues(NetworkCommand& command)
 {
 	if (commandBuffer != command) {
 
+		counter += 1;
+		std::cout << counter << "\n";
 		DataLayout dataLayout;
 		dataLayout.findDataLayout(command);
 
@@ -16,6 +19,7 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 
 		auctionAverageValues.open("auctionAverageValues.txt", std::ofstream::app);
 		if (auctionAverageValues.is_open()) {
+
 			DataFragment soldAmountFragment = dataLayout.findFragment(0);
 			DataFragment soldVolumeFragment = dataLayout.findFragment(1);
 			DataFragment dateFragment = dataLayout.findFragment(2);
@@ -60,32 +64,7 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 					return std::stoull(a.at(idx)) < std::stoull(b.at(idx));
 				});
 
-			uint64_t datePrevious = 0;
-			size_t addedValues = 0;
-			for (size_t i = 0; i < auctionData.size() - addedValues; i++) {
-				//std::cout << auctionData.size() << "\n";
-
-				uint64_t date = std::stoull(auctionData[i][3]);
-				if (i > 0) {
-					size_t dateDifference = (date - datePrevious) / sixHours;
-					//std::cout << dateDifference << "\n";
-					if (dateDifference > 1) {
-						//std::cout << date << "\n";
-						for (size_t j = 1; j < dateDifference; j++) {
-							auctionData.insert(auctionData.begin() + i + j - 1,
-								{ "0", "0", "0", std::numberToString(datePrevious + j * sixHours) });
-							addedValues += 1;
-							//std::cout << datePrevious + j * sixHours << "\n";
-						}
-						i += addedValues;
-					}
-				}
-
-				//std::cout << date << " " << datePrevious << "\n";
-				//std::cout << auctionData.size() << "\n";
-				datePrevious = date;
-			}
-
+			addEmptyEntries(auctionData);
 
 			for (size_t i = 0; i < numOfRows; i++) {
 				for (size_t j = 0; j < auctionData.size(); j++) {
@@ -93,7 +72,6 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 				}
 				auctionAverageValues << "\n";
 			}
-
 			auctionAverageValues.close();
 		}
 		else {
@@ -103,4 +81,34 @@ void Auction::FindAuctionAverageValues(NetworkCommand& command)
 
 	//command.printCommandInOneString();
 	commandBuffer = command;
+}
+
+void Auction::addEmptyEntries(std::vector<std::vector<std::string>>& auctionData) 
+{
+	uint64_t datePrevious = 0;
+	size_t addedValues = 0;
+	for (size_t i = 0; i < auctionData.size(); i++) {
+
+		uint64_t date = std::stoull(auctionData[i][3]);
+		if (i > 0) {
+			size_t dateDifference = (date - datePrevious) / sixHours;
+			if (dateDifference > 1) {
+				for (size_t j = 1; j < dateDifference; j++) {
+					auctionData.insert(auctionData.begin() + i + j - 1,
+						{ "0", "0", "0", std::numberToString(datePrevious + j * sixHours) });
+					addedValues += 1;
+				}
+				i += addedValues;
+			}
+		}
+
+		datePrevious = date;
+	}
+
+	size_t valuesToAdd = 112 - auctionData.size();
+	uint64_t dateFirst = std::stoull(auctionData[0][3]);
+	for (size_t i = 0; i < valuesToAdd; i++) {
+		auctionData.insert(auctionData.begin(), 
+			{ "0", "0", "0", std::numberToString(dateFirst - (i + 1) * sixHours) });
+	}
 }

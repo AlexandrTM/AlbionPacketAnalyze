@@ -4,6 +4,8 @@
 struct Auction
 {
 	static void FindAuctionAverageValues(NetworkCommand& command);
+
+	static void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
 };
 
 #endif // !AUCTION_H
