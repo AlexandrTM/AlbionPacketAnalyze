@@ -18,24 +18,24 @@ struct HarvestableListFilter
 {
     std::vector<HarvestableFilter> _harvestableListFilter = { 
         HarvestableFilter(/*wood*/
-            {4,5},
-            {0,1},
-            {1,1}),
+            {4,5,6,7,8},
+            {1,1,1,0,0},
+            {1,1,1,0,0}),
         HarvestableFilter(/*rock*/
-            {1,4,5},
-            {0,0,1},
-            {1,1,1}),
+            {4,5},
+            {1,1},
+            {1,1}),
         HarvestableFilter(/*fiber*/
             {4,5,6,7,8},
-            {0,1,1,0,0},
+            {2,1,1,0,0},
             {1,1,1,0,0}),
         HarvestableFilter(/*hide*/
-            {4},
-            {0},
-            {1}),
+            /*{4},
+            {1},
+            {1}*/),
         HarvestableFilter(/*ore*/
             {4},
-            {0},
+            {1},
             {1}),
         HarvestableFilter(/*other*/) 
     };
@@ -54,11 +54,14 @@ struct EntityList
 
     EntityList();
 
-    void drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords);
+    void drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, std::vector<float> playerCoords);
     void drawWindowFrame();
     void drawHarvestables();
     void drawPlayers();
-    void colorizeHarvestable(Harvestable harvestable);
+
+    std::vector<GLfloat> returnEnchantmentColor(uint8_t enchantment);
+    void colorizeHarvestableEnchantment(Harvestable harvestable);
+    void colorizeHarvestableTier(Harvestable harvestable, size_t chargeID);
 
     void draw(GLFWwindow* window);
     void DrawCircle(float_t offsetX, float_t offsetY, float_t radius, size_t num_segments);

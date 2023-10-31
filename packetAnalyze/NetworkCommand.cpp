@@ -33,30 +33,35 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
     //this->printCommandInOneString();
     if (_operationType == operationType::event) {
-        switch (_eventCode)
-        {
-        case eventCode::harvestableObjectList:
-            _entityList._harvestableList.update(HarvestableList(*this)); break;
-        case eventCode::harvestableObject:
-            _entityList._harvestableList.update(Harvestable(*this)); break;
-        case eventCode::harvestableChangeState:
-            _entityList._harvestableList.updateState(*this); break;
-        /*case eventCode::newPlayer:
-            _entityList._playerList.newPlayer(Player(*this)); break;
-        case eventCode::playerLeave:
-           _entityList._playerList.playerLeave(Player(*this)); break;*/
-        case 66:
-            //_entityList._playerList.update(Player::playerMove(*this)); 
-            break;
-        case 65:
-            //_entityList._playerList.update(Player::playerMove(*this)); 
-            break;
-        default:
-            break;
-        }
-        /*if (_networkCommand.size() == 67) {
-            _entityList._playerList.update(Player::playerMove(*this));
-        }*/
+        //switch (_eventCode)
+        //{
+        //case eventCode::harvestableObjectList:
+        //    _entityList._harvestableList.update(HarvestableList(*this)); 
+        //    break;
+        //case eventCode::harvestableObject:
+        //    _entityList._harvestableList.update(Harvestable(*this)); 
+        //    break;
+        //case eventCode::harvestableChangeState:
+        //    _entityList._harvestableList.updateState(*this); 
+        //    break;
+        //case eventCode::newPlayer:
+        //    _entityList._playerList.newPlayer(Player(*this)); 
+        //    break;
+        //case eventCode::playerLeave:
+        //   _entityList._playerList.playerLeave(Player(*this)); 
+        //   break;
+        //case 65:
+        //    _entityList._playerList.update(Player::playerMove(*this)); 
+        //    break;
+        //case 64:
+        //    _entityList._playerList.update(Player::playerMove(*this)); 
+        //    break;
+        //default:
+        //    break;
+        //}
+        //if (_networkCommand.size() == 67) {
+        //    _entityList._playerList.update(Player::playerMove(*this));
+        //}
     }
     if (_operationType == operationType::operationResponse) {
         std::chrono::steady_clock::time_point start;
@@ -65,9 +70,11 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         switch (_eventCode) 
         {
         case operationCode::move:
-            _entityList._player = PlayerSelf(*this); break;
+            //_entityList._player = PlayerSelf(*this);
+            break;
         case operationCode::changeLocation:
-            _entityList.changeLocation(); break;
+            //_entityList.changeLocation(); 
+            break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
             break;
@@ -77,7 +84,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::FindAuctionAverageValues(*this);
+            //Auction::FindAuctionAverageValues(*this);
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
@@ -91,8 +98,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     if (_operationType == operationType::operationRequest) {
 
         if (_eventCode == operationCode::move) {
-            _entityList._player.update(*this);
+            //_entityList._player.update(*this);
+            //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
         }
+        this->printCommandInOneString();
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
     //_entityList.draw(window);

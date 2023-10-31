@@ -3,7 +3,7 @@
 
 struct Auction
 {
-	static void FindAuctionAverageValues(NetworkCommand& command);
+	static void findAuctionAverageValues(NetworkCommand& command);
 
 	static void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
 };

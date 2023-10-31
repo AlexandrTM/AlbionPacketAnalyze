@@ -12,9 +12,9 @@ HarvestableFilter::HarvestableFilter(std::vector<uint8_t> trackingTiers,
 }
 HarvestableFilter::HarvestableFilter()
 {
-    _trackingTiers =        { 0,1,2,3,4,5,6,7,8 };
-    _trackingEnchantments = { 0,0,0,0,0,0,0,0,0 };
-    _trackingCharges =      { 0,0,0,0,0,0,0,0,0 };
+    _trackingTiers =        {};
+    _trackingEnchantments = {};
+    _trackingCharges =      {};
 }
 size_t HarvestableListFilter::size()
 {
@@ -45,7 +45,7 @@ bool EntityList::filterHarvestable(Harvestable harvestable)
         filterID = 0; }
     if (harvestable._type >=  resourceType::ROCK and 
         harvestable._type <= (resourceType::FIBER - 1)) {
-        filterID = 1; }
+        filterID = 1; } 
     if (harvestable._type >=  resourceType::FIBER and 
         harvestable._type <= (resourceType::HIDE - 1)) {
         filterID = 2; }
@@ -125,11 +125,11 @@ void EntityList::drawHarvestables()
             
             glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
-            colorizeHarvestable(_harvestableList[i]);
+            colorizeHarvestableEnchantment(_harvestableList[i]);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
             glEnd();
 
-            drawCharges(_harvestableList[i]._charges, harvestableCoords, playerCoords);
+            drawCharges(_harvestableList[i], harvestableCoords, playerCoords);
         }
     }
     glPointSize(4);
@@ -182,24 +182,27 @@ void EntityList::drawPlayers()
     }
 }
 
-void EntityList::colorizeHarvestable(Harvestable harvestable)
+std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)
 {
-    std::vector<GLfloat> color = {};
-    switch (harvestable._enchantment)
+    switch (enchantment)
     {
     case 0:
-        color = { 0.7f, 0.7f, 0.7f }; break;
+        return { 0.7f, 0.7f, 0.7f }; break;
     case 1:
-        color = { 0.34f, 0.82f, 0.54f }; break;
+        return { 0.34f, 0.82f, 0.54f }; break;
     case 2:
-        color = { 0.27f, 0.54f, 0.92f }; break;
+        return { 0.27f, 0.54f, 0.92f }; break;
     case 3:
-        color = { 0.75f, 0.65f, 0.93f }; break;
+        return { 0.75f, 0.65f, 0.93f }; break;
     case 4:
-        color = { 0.88f, 0.92f, 0.64f }; break;
+        return { 0.88f, 0.92f, 0.64f }; break;
     default:
-        color = { 1, 0, 1 }; break;
+        return { 1, 0, 1 }; break;
     }
+}
+void EntityList::colorizeHarvestableEnchantment(Harvestable harvestable)
+{
+    std::vector<GLfloat> color = returnEnchantmentColor(harvestable._enchantment);
     
     if (harvestable._charges == 0) {
         for (size_t i = 0; i < color.size(); i++) {
@@ -213,17 +216,26 @@ void EntityList::colorizeHarvestable(Harvestable harvestable)
     }
     glColor3f(color[0], color[1], color[2]);
 }
-void EntityList::drawCharges(uint8_t charges, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
+void EntityList::colorizeHarvestableTier(Harvestable harvestable, size_t chargeID)
 {
-    float_t chargeSize = 15;
+    glColor3f(0.55 + 0.04f * chargeID, 0.4 + 0.04f * chargeID, 0.5 + 0.04f * chargeID);
+}
+void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
+{
+    float_t chargeSize = 12;
     glPointSize(chargeSize);
     glBegin(GL_POINTS);
+
     GLfloat x;
     GLfloat y;
     std::vector<GLfloat> mapCoords;
     float_t distance;
+
+    uint8_t charges = harvestable._charges;
+
     for (size_t j = 0; j < charges; j++) {
-        glColor3f(0.55 + 0.04f * j, 0.4 + 0.04f * j, 0.5 + 0.04f * j);
+        colorizeHarvestableTier(harvestable, j);
+
         x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
         y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
         distance = findDistance(harvestableCoords[0], harvestableCoords[1],
