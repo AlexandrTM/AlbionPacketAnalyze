@@ -6,6 +6,12 @@ class FragmentedCommandsBuffer
 public:
     FragmentedCommandsBuffer();
 
+    using iterator = std::vector<FragmentedNetworkCommand>::iterator;
+
+    iterator begin();
+    iterator end();
+    iterator erase(iterator it);
+
     bool isNewFragmentedCommand(NetworkCommand& networkCommand) const;
     void addCommandFragment(NetworkCommand& networkCommand);
 

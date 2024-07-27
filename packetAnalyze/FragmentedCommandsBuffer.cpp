@@ -5,6 +5,18 @@ FragmentedCommandsBuffer::FragmentedCommandsBuffer()
     _fragmentedCommandsBuffer = {};
 }
 
+FragmentedCommandsBuffer::iterator FragmentedCommandsBuffer::begin() {
+    return _fragmentedCommandsBuffer.begin();
+}
+
+FragmentedCommandsBuffer::iterator FragmentedCommandsBuffer::end() {
+    return _fragmentedCommandsBuffer.end();
+}
+
+FragmentedCommandsBuffer::iterator FragmentedCommandsBuffer::erase(iterator it) {
+    return _fragmentedCommandsBuffer.erase(it);
+}
+
 bool FragmentedCommandsBuffer::isNewFragmentedCommand(NetworkCommand& networkCommand) const
 {
     for (size_t i = 0; i < _fragmentedCommandsBuffer.size(); i++) {

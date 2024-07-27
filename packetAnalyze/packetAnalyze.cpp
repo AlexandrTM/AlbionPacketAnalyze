@@ -364,25 +364,17 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
             else {
                 _fragmentedCommandsBuffer.addCommandFragment(_packet[i]);
             }
-            for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
+            for (size_t j = 0; j < _fragmentedCommandsBuffer.size();) {
                 if (_fragmentedCommandsBuffer[j].isCommandFull()) {
                     _fragmentedCommandsBuffer[j].sort();
-
-                    /*for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
-                        _fragmentedCommandsBuffer[j].fillFragmentedCommand(_packet[i]);
-                        if (_fragmentedCommandsBuffer[j].isCommandFull()) {
-                            _fragmentedCommandsBuffer[j].analyzeCommand(_window);
-                            _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
-                            break;
-                        }
-                        if (_fragmentedCommandsBuffer.size() > 0 and
-                            j == _fragmentedCommandsBuffer.size() - 1) {
-                            std::cout << "true" << "\n";
-                        }
-                    }*/
+                    _fragmentedCommandsBuffer[j].connectFragments();
+                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window);
+                    _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
+                }
+                else {
+                    j++;
                 }
             }
-                
         }
         if (_packet[i].getCommandType() == commandType::reliable
          or _packet[i].getCommandType() == commandType::unreliable) {

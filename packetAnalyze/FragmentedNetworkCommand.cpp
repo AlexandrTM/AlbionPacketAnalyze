@@ -12,6 +12,18 @@ FragmentedNetworkCommand::FragmentedNetworkCommand(NetworkCommand& networkComman
 	_isCommandFull = false;
 }
 
+FragmentedNetworkCommand::iterator FragmentedNetworkCommand::begin() {
+	return _fragmentedNetworkCommand.begin();
+}
+
+FragmentedNetworkCommand::iterator FragmentedNetworkCommand::end() {
+	return _fragmentedNetworkCommand.end();
+}
+
+FragmentedNetworkCommand::iterator FragmentedNetworkCommand::erase(iterator it) {
+	return _fragmentedNetworkCommand.erase(it);
+}
+
 bool FragmentedNetworkCommand::isCommandFull() const
 {
 	//uint8_t commandIndexInChain = _networkCommand[23];
@@ -37,10 +49,22 @@ void FragmentedNetworkCommand::sort()
 		[this](const NetworkCommand& a, const NetworkCommand& b) -> bool {
 			return a.getCommandIndexInChain() < b.getCommandIndexInChain();
 		});
-	for (size_t i = 0; i < _fragmentedNetworkCommand.size(); i++) {
+	/*for (size_t i = 0; i < _fragmentedNetworkCommand.size(); i++) {
 		std::cout << (unsigned)_fragmentedNetworkCommand[i].getCommandIndexInChain() << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
+}
+
+void FragmentedNetworkCommand::connectFragments()
+{
+	for (size_t i = 1; i < _fragmentedNetworkCommand.size(); i++) {
+		_fragmentedNetworkCommand[0] += NetworkCommand(_fragmentedNetworkCommand[i], 32);
+	}
+}
+
+NetworkCommand& FragmentedNetworkCommand::operator[](size_t elementIndex)
+{
+	return _fragmentedNetworkCommand[elementIndex];
 }
 
 const NetworkCommand& FragmentedNetworkCommand::operator[](size_t elementIndex) const

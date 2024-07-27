@@ -83,10 +83,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         //std::cout << _eventCode << "\n";
-
-        /*DataLayout _dataLayout{};
+        DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
+        //_dataLayout.printInfo(*this);
+        /*if (_eventCode == operationCode::auctionAverageValues) {
+            DataLayout _dataLayout{};
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
+        }*/
         //switch (_eventCode) 
         //{
         //case operationCode::move:
@@ -147,7 +151,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         _dataLayout.printInfo(*this);*/
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    _entityList.draw(window);
+    //_entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
