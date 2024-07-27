@@ -349,6 +349,18 @@ RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, si
     return rawPacketPayload;
 }
 
+
+bool PacketAnalyze::isNewFragmentedCommand(NetworkCommand& networkCommand) const
+{
+    for (size_t i = 0; i < _fragmentedCommandsBuffer.size(); i++) {
+        if (_fragmentedCommandsBuffer[i][0].getCommandChainID() == 
+            networkCommand.getCommandChainID()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
 {
     _packet = NetworkPacket::findCommandsInPacket(rawPacket);
@@ -358,23 +370,26 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
     {
         //_packet[i].printCommandInOneString(), std::cout << "\n";
         if (_packet[i].getCommandType() == commandType::fragmented) {
-            if (_packet[i].isFirstCommandInChain()) {
-                _fragmentedCommandBuffer.push_back(_packet[i]);
+            if (isNewFragmentedCommand(_packet[i])) {
+                _fragmentedCommandsBuffer.push_back(FragmentedNetworkCommand());
+                _fragmentedCommandsBuffer[i].push_back(_packet[i]);
             }
             else {
-                for (size_t j = 0; j < _fragmentedCommandBuffer.size(); j++) {
-                    _fragmentedCommandBuffer[j].fillFragmentedCommand(_packet[i]);
-                    if (_fragmentedCommandBuffer[j].isCommandFull()) {
-                        _fragmentedCommandBuffer[j].analyzeCommand(_window);
-                        _fragmentedCommandBuffer.erase(_fragmentedCommandBuffer.begin() + j);
+
+                for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
+                    _fragmentedCommandsBuffer[j].fillFragmentedCommand(_packet[i]);
+                    if (_fragmentedCommandsBuffer[j].isCommandFull()) {
+                        _fragmentedCommandsBuffer[j].analyzeCommand(_window);
+                        _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
                         break;
                     }
-                    if (_fragmentedCommandBuffer.size() > 0 and
-                        j == _fragmentedCommandBuffer.size() - 1) {
+                    if (_fragmentedCommandsBuffer.size() > 0 and
+                        j == _fragmentedCommandsBuffer.size() - 1) {
                         std::cout << "true" << "\n";
                     }
                 }
             }
+
         }
         if (_packet[i].getCommandType() == commandType::reliable
          or _packet[i].getCommandType() == commandType::unreliable) {

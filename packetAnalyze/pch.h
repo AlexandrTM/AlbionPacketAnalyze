@@ -21,6 +21,7 @@
 #include "Enumerations.h"
 
 #include "NetworkCommand.h"
+#include "FragmentedNetworkCommand.h"
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 #include "Auction.h"

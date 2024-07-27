@@ -1,7 +1,6 @@
 #ifndef PACKET_ANALYZE_H
 #define PACKET_ANALYZE_H
 
-
 class PacketAnalyze {
 
 public:
@@ -22,7 +21,7 @@ private:
     Tins::Sniffer _sniffer = Tins::Sniffer(_iface.name());
 
     NetworkPacket _packet;
-    std::vector<NetworkCommand> _fragmentedCommandBuffer;
+    std::vector<FragmentedNetworkCommand> _fragmentedCommandsBuffer;
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition);
@@ -47,8 +46,11 @@ private:
     void sniffPacket();
 
     void readRawPacket(Tins::RawPDU pdu, std::vector<uint8_t>& rawPacketPayload);
-    void readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd, std::vector<uint8_t>& rawPacketPayload);
+    void readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd, 
+        std::vector<uint8_t>& rawPacketPayload);
     std::vector<uint8_t> readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd);
+
+    bool isNewFragmentedCommand(NetworkCommand& networkCommand) const;
 
     void analyzePacket(std::vector<uint8_t> rawPacket);
 };

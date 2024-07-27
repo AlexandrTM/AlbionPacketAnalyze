@@ -57,6 +57,9 @@
     <ClCompile Include="Auction.cpp">
       <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
+    <ClCompile Include="FragmentedNetworkCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -93,6 +96,9 @@
       <Filter>Header Files\Deserialization</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentedNetworkCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,12 +14,12 @@ private:
     int16_t _indexOfLastCommandInChain;
     uint32_t _commandChainID;
 
-    uint8_t findCommandType();
-    uint8_t findOperationType();
-    uint16_t findEventCode();
+    uint8_t findCommandType(std::vector<uint8_t>& rawCommand) const;
+    uint8_t findOperationType(std::vector<uint8_t>& rawCommand) const;
+    uint16_t findEventCode(std::vector<uint8_t>& rawCommand) const;
 
 public:
-    NetworkCommand(std::vector<uint8_t> command);
+    NetworkCommand(std::vector<uint8_t>& command);
     NetworkCommand(NetworkCommand& command, size_t regionStart);
     NetworkCommand();
 
@@ -31,7 +31,7 @@ public:
     void printCommandInOneString(size_t regionStart, size_t regionEnd);
 
     void fillFragmentedCommand(NetworkCommand command);
-    uint32_t findCommandChainID() const;
+    uint32_t findCommandChainID(std::vector<uint8_t>& rawCommand) const;
     bool isLastCommandInChain();
     bool isFirstCommandInChain();
     bool isNextCommandInChain(NetworkCommand& command);
@@ -40,12 +40,12 @@ public:
     uint8_t getCommandType() const;
     uint8_t getOperationType() const;
     uint16_t getEventCode() const;
+    uint32_t getCommandChainID() const;
 
     uint16_t size();
     void push_back(uint8_t element);
     void clear();
 
-    uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;
     NetworkCommand& operator+=(NetworkCommand command);
     bool operator!=(NetworkCommand& command);
