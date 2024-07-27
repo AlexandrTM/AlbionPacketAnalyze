@@ -5,9 +5,9 @@ FragmentedNetworkCommand::FragmentedNetworkCommand()
 	_fragmentedNetworkCommand = {};
 }
 
-inline void FragmentedNetworkCommand::push_back(NetworkCommand& networkCommand)
+FragmentedNetworkCommand::FragmentedNetworkCommand(NetworkCommand& networkCommand)
 {
-	_fragmentedNetworkCommand.push_back(networkCommand);
+	_fragmentedNetworkCommand = { networkCommand };
 }
 
 const NetworkCommand& FragmentedNetworkCommand::operator[](size_t elementIndex) const

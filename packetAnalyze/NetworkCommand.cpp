@@ -3,7 +3,7 @@
 std::vector<size_t> nnCodes = {};
 std::vector<size_t> nCodes = {};
 
-NetworkCommand::NetworkCommand(std::vector<uint8_t>& rawCommand)
+NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
 {
     _networkCommand = rawCommand;
     _commandType = findCommandType(rawCommand);
@@ -292,6 +292,10 @@ void NetworkCommand::clear()
     _isCommandFull = false;
 }
 
+uint8_t& NetworkCommand::operator[](size_t elementIndex)
+{
+    return _networkCommand[elementIndex];
+}
 const uint8_t& NetworkCommand::operator[](size_t elementIndex) const
 {
     return _networkCommand[elementIndex];

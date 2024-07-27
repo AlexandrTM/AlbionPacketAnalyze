@@ -5,6 +5,7 @@ class FragmentedNetworkCommand
 {
 public:
 	FragmentedNetworkCommand();
+	FragmentedNetworkCommand(NetworkCommand& networkCommand);
 
 	inline void push_back(NetworkCommand& networkCommand);
 
@@ -14,5 +15,10 @@ private:
 	std::vector<NetworkCommand> _fragmentedNetworkCommand;
 
 };
+
+inline void FragmentedNetworkCommand::push_back(NetworkCommand& networkCommand)
+{
+	_fragmentedNetworkCommand.push_back(networkCommand);
+}
 
 #endif

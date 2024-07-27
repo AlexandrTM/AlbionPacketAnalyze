@@ -22,6 +22,7 @@
 
 #include "NetworkCommand.h"
 #include "FragmentedNetworkCommand.h"
+#include "FragmentedCommandsBuffer.h"
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 #include "Auction.h"

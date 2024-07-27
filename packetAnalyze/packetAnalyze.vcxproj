@@ -141,6 +141,7 @@
     <ClCompile Include="Auction.cpp" />
     <ClCompile Include="Deserialization.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="namespace_std.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Deserialization.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Enumerations.h" />
+    <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="namespace_std.h" />

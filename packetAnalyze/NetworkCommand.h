@@ -19,7 +19,7 @@ private:
     uint16_t findEventCode(std::vector<uint8_t>& rawCommand) const;
 
 public:
-    NetworkCommand(std::vector<uint8_t>& command);
+    NetworkCommand(std::vector<uint8_t> rawCommand);
     NetworkCommand(NetworkCommand& command, size_t regionStart);
     NetworkCommand();
 
@@ -46,6 +46,7 @@ public:
     void push_back(uint8_t element);
     void clear();
 
+    uint8_t& operator[](size_t elementIndex);
     const uint8_t& operator[](size_t elementIndex) const;
     NetworkCommand& operator+=(NetworkCommand command);
     bool operator!=(NetworkCommand& command);

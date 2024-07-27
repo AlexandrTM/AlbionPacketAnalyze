@@ -60,6 +60,9 @@
     <ClCompile Include="FragmentedNetworkCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FragmentedCommandsBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FragmentedNetworkCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentedCommandsBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
