@@ -18,6 +18,7 @@ void Auction::findProductName(NetworkCommand& command, DataLayout& dataLayout)
 uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
 uint16_t numOfRows = 4;
 NetworkCommand commandBuffer;
+
 void Auction::findAuctionAverageValues(NetworkCommand& command)
 {
 	if (commandBuffer != command) {

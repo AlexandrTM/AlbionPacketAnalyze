@@ -87,39 +87,39 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         _dataLayout.findDataLayout(*this);
         _dataLayout.printInfo(*this);*/
         if (_eventCode == operationCode::auctionAverageValues) {
-            DataLayout _dataLayout{};
+            /*DataLayout _dataLayout{};
             _dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo(*this);
+            _dataLayout.printInfo(*this);*/
         }
-        //switch (_eventCode) 
-        //{
-        //case operationCode::move:
-        //    _entityList._player = PlayerSelf(*this);
-        //    break;
-        //case operationCode::changeLocation:
-        //    _entityList.changeLocation(); 
-        //    break;
-        //case operationCode::auctionSellOrders:
-        //    //this->printCommandInOneString();
-        //    break;
-        //case operationCode::auctionBuyOrders:
-        //    break;
-        //case operationCode::auctionGetFinishedOrders:
-        //    break;
-        //case operationCode::auctionAverageValues:
-        //    //start = std::chrono::high_resolution_clock::now();
-        //    //Auction::findAuctionAverageValues(*this);
-        //    //counter += 1;
-        //    //std::cout << counter << "\n";
-        //    //stop = std::chrono::high_resolution_clock::now();
-        //    //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
-        //    break;
-        //case 88:
-        //    //this->printCommandInOneString();
-        //    break;
-        //default:
-        //    break;
-        //}
+        switch (_eventCode) 
+        {
+        case operationCode::move:
+            //_entityList._player = PlayerSelf(*this);
+            break;
+        case operationCode::changeLocation:
+            //_entityList.changeLocation(); 
+            break;
+        case operationCode::auctionSellOrders:
+            //this->printCommandInOneString();
+            break;
+        case operationCode::auctionBuyOrders:
+            break;
+        case operationCode::auctionGetFinishedOrders:
+            break;
+        case operationCode::auctionAverageValues:
+            //start = std::chrono::high_resolution_clock::now();
+            Auction::findAuctionAverageValues(*this);
+            //counter += 1;
+            //std::cout << counter << "\n";
+            //stop = std::chrono::high_resolution_clock::now();
+            //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
+            break;
+        case 88:
+            //this->printCommandInOneString();
+            break;
+        default:
+            break;
+        }
         //std::cout << this->getEventCode() << "\n";
         //this->printCommandInOneString();
     }

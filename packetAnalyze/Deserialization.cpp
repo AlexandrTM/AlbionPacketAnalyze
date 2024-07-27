@@ -152,9 +152,9 @@ HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const
 {
     // take dicionaty into account
-    size_t fragmentLength =
-        (_offset + _dataType._size * _numOfEntries) - 
-        (_offset - _dataType._headerSize - 1) + 3;
+    ptrdiff_t startOffset = _offset - _dataType._headerSize - 1;
+    ptrdiff_t endOffset = _offset + _dataType._size * _numOfEntries;
+    size_t fragmentLength = endOffset - startOffset + 3;
 
     /*std::cout << "size: " << (unsigned)_dataType._size << " " <<
         "header size: " << (unsigned)_dataType._headerSize << " " <<
@@ -168,7 +168,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
 
     // fragment id
     SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    command.printCommandInOneString(_offset - _dataType._headerSize - 1,
+    command.printCommandInOneString(startOffset,
         _offset - _dataType._headerSize, false);
     SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
@@ -180,7 +180,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     //std::cout << "dataType size: " << (unsigned)_dataType._size << " ";
     // fragment payload
     SetConsoleTextAttribute(consoleHandle, 7 | FOREGROUND_INTENSITY);
-    command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
+    command.printCommandInOneString(_offset, endOffset, false);
     SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
     //std::cout << fragmentLength << "\n";
@@ -250,9 +250,6 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     DataFragment dataFragment;
 
     std::cout << "num of fragments: " << (unsigned)numOfFragments << " " << "\n";
-    //if (numOfFragments == 0) {
-        command.printCommandInOneString();
-    //}
 
 
     for (size_t i = 0; i < numOfFragments; i++) {
@@ -317,6 +314,10 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 
         _dataLayout.push_back(dataFragment);
     }
+
+    //if (numOfFragments == 0) {
+    command.printCommandInOneString();
+    //}
 }
 DataLayout::DataLayout(std::vector<DataFragment> dataFragments)
 {
