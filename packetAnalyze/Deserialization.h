@@ -4,14 +4,14 @@
 
 struct net
 {
-    static inline uint8_t read_int8(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint8_t read_uint8(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
             return command[offset];
         }
         return 0;
     }
-    static inline uint16_t read_int16(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint16_t read_uint16(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
             uint16_t _dataEntry = 0;
@@ -22,7 +22,7 @@ struct net
         }
         return 0;
     }
-    static inline uint32_t read_int32(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint32_t read_uint32(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
             uint32_t _dataEntry = 0;
@@ -33,7 +33,7 @@ struct net
         }
         return 0;
     }
-    static inline uint32_t read_int32(std::vector<uint8_t> rawCommand, ptrdiff_t offset)
+    static inline uint32_t read_uint32(std::vector<uint8_t> rawCommand, ptrdiff_t offset)
     {
         if (offset != -1) {
             uint32_t _dataEntry = 0;
@@ -66,7 +66,7 @@ struct net
         }
         return 0;
     }
-    static inline uint64_t read_int64(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint64_t read_uint64(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
             uint64_t _dataEntry = 0;

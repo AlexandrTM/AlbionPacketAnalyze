@@ -30,15 +30,15 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	_dataLayout.findDataLayout(rawHarvestable);
 
 	if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-		id = net::read_int32(rawHarvestable, _dataLayout.findFragment(0)._offset); }
+		id = net::read_uint32(rawHarvestable, _dataLayout.findFragment(0)._offset); }
 	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
-		id = net::read_int16(rawHarvestable, _dataLayout.findFragment(0)._offset); }
-	type = net::read_int8(rawHarvestable, _dataLayout.findFragment(5)._offset);
-	tier = net::read_int8(rawHarvestable, _dataLayout.findFragment(7)._offset);
+		id = net::read_uint16(rawHarvestable, _dataLayout.findFragment(0)._offset); }
+	type = net::read_uint8(rawHarvestable, _dataLayout.findFragment(5)._offset);
+	tier = net::read_uint8(rawHarvestable, _dataLayout.findFragment(7)._offset);
 	positionX = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset);
 	positionY = net::read_float32(rawHarvestable, _dataLayout.findFragment(8)._offset + 4);
-	charges = net::read_int8(rawHarvestable, _dataLayout.findFragment(10)._offset);
-	enchantment = net::read_int8(rawHarvestable, _dataLayout.findFragment(11)._offset);
+	charges = net::read_uint8(rawHarvestable, _dataLayout.findFragment(10)._offset);
+	enchantment = net::read_uint8(rawHarvestable, _dataLayout.findFragment(11)._offset);
 	
 	_id = id;
 	_type = type;
@@ -109,12 +109,12 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 	uint8_t enchantment = 0;
 
 	for (size_t i = 0; i < harvestablesNum; i++) {
-		id = net::read_int16(rawHarvestableList, idOffset + i * 2);
-		type = net::read_int8(rawHarvestableList, typeOffset + i);
-		tier = net::read_int8(rawHarvestableList, tierOffset + i);
+		id = net::read_uint16(rawHarvestableList, idOffset + i * 2);
+		type = net::read_uint8(rawHarvestableList, typeOffset + i);
+		tier = net::read_uint8(rawHarvestableList, tierOffset + i);
 		positionX = net::read_float32(rawHarvestableList, positionXOffset + i * 8);
 		positionY = net::read_float32(rawHarvestableList, positionYOffset + i * 8);
-		charges = net::read_int8(rawHarvestableList, chargesOffset + i);
+		charges = net::read_uint8(rawHarvestableList, chargesOffset + i);
 
 		_harvestableList.push_back(Harvestable(id, type, tier, positionX, positionY, charges, enchantment));
 	}
@@ -130,11 +130,11 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 	_dataLayout.findDataLayout(updateState);
 
 	if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 4) {
-		id = net::read_int32(updateState, _dataLayout.findFragment(0)._offset); }
+		id = net::read_uint32(updateState, _dataLayout.findFragment(0)._offset); }
 	else if (_dataLayout.findFragment(0)._dataType._dataTypeSize == 2) {
-		id = net::read_int16(updateState, _dataLayout.findFragment(0)._offset); }
-	charges = net::read_int8(updateState, _dataLayout.findFragment(1)._offset);
-	enchantment = net::read_int8(updateState, _dataLayout.findFragment(2)._offset);
+		id = net::read_uint16(updateState, _dataLayout.findFragment(0)._offset); }
+	charges = net::read_uint8(updateState, _dataLayout.findFragment(1)._offset);
+	enchantment = net::read_uint8(updateState, _dataLayout.findFragment(2)._offset);
 
 	for (size_t i = 0; i < _harvestableList.size(); i++) {
 		if (_harvestableList[i]._id == id) {

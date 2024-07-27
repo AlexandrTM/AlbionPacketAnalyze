@@ -234,7 +234,7 @@ void PacketAnalyze::changeMapState(GLFWwindow*  window)
 
 void PacketAnalyze::framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
     auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
-    app->framebufferResized = true;
+    app->_framebufferResized = true;
 }
 void PacketAnalyze::cursorEnterCallback(GLFWwindow* window, int entered)
 {
@@ -289,17 +289,17 @@ void PacketAnalyze::initSniffer()
     SnifferConfiguration albionConfig;
     //albionConfig.set_filter("ip dst 192.168.1.70");
     //albionConfig.set_promisc_mode(true);
-    sniffer = Sniffer(iface.name(), albionConfig);
+    _sniffer = Sniffer(_iface.name(), albionConfig);
 }
 bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket)
 {
-    PDU* sniffedPacket = sniffer.next_packet();
+    PDU* sniffedPacket = _sniffer.next_packet();
 
     if (sniffedPacket) {
         const IP& ip = sniffedPacket->rfind_pdu<IP>();
         const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-        if (/*albionIPRange.contains(ip.src_addr()) and*/ udp.sport() == 5056 or udp.dport() == 5056) {
+        if (_albionIPRange.contains(ip.src_addr()) and (udp.sport() == 5056 /*or udp.dport() == 5056*/)) {
             RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
             RawNetworkPacket packet;
             readRawPacket(rawPacket, packet);
@@ -367,6 +367,11 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
                     if (_fragmentedCommandBuffer[j].isCommandFull()) {
                         _fragmentedCommandBuffer[j].analyzeCommand(_window);
                         _fragmentedCommandBuffer.erase(_fragmentedCommandBuffer.begin() + j);
+                        break;
+                    }
+                    if (_fragmentedCommandBuffer.size() > 0 and
+                        j == _fragmentedCommandBuffer.size() - 1) {
+                        std::cout << "true" << "\n";
                     }
                 }
             }

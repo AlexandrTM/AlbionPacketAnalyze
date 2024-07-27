@@ -29,39 +29,40 @@ NetworkCommand::NetworkCommand()
 }
 
 EntityList _entityList{};
+size_t counter = 0;
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
     //this->printCommandInOneString();
     if (_operationType == operationType::event) {
-        //switch (_eventCode)
-        //{
-        //case eventCode::harvestableObjectList:
-        //    _entityList._harvestableList.update(HarvestableList(*this)); 
-        //    break;
-        //case eventCode::harvestableObject:
-        //    _entityList._harvestableList.update(Harvestable(*this)); 
-        //    break;
-        //case eventCode::harvestableChangeState:
-        //    _entityList._harvestableList.updateState(*this); 
-        //    break;
-        //case eventCode::newPlayer:
-        //    _entityList._playerList.newPlayer(Player(*this)); 
-        //    break;
-        //case eventCode::playerLeave:
-        //   _entityList._playerList.playerLeave(Player(*this)); 
-        //   break;
-        //case 65:
-        //    _entityList._playerList.update(Player::playerMove(*this)); 
-        //    break;
-        //case 64:
-        //    _entityList._playerList.update(Player::playerMove(*this)); 
-        //    break;
-        //default:
-        //    break;
-        //}
-        //if (_networkCommand.size() == 67) {
-        //    _entityList._playerList.update(Player::playerMove(*this));
-        //}
+        switch (_eventCode)
+        {
+        case eventCode::harvestableObjectList:
+            _entityList._harvestableList.update(HarvestableList(*this)); 
+            break;
+        case eventCode::harvestableObject:
+            _entityList._harvestableList.update(Harvestable(*this)); 
+            break;
+        case eventCode::harvestableChangeState:
+            _entityList._harvestableList.updateState(*this); 
+            break;
+        case eventCode::newPlayer:
+            _entityList._playerList.newPlayer(Player(*this)); 
+            break;
+        case eventCode::playerLeave:
+           _entityList._playerList.playerLeave(Player(*this)); 
+           break;
+        case 65:
+            _entityList._playerList.update(Player::playerMove(*this)); 
+            break;
+        case 64:
+            _entityList._playerList.update(Player::playerMove(*this)); 
+            break;
+        default:
+            break;
+        }
+        if (_networkCommand.size() == 67) {
+            _entityList._playerList.update(Player::playerMove(*this));
+        }
     }
     if (_operationType == operationType::operationResponse) {
         std::chrono::steady_clock::time_point start;
@@ -84,7 +85,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            //Auction::FindAuctionAverageValues(*this);
+            //Auction::findAuctionAverageValues(*this);
+            //counter += 1;
+            //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
@@ -94,14 +97,25 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         default:
             break;
         }
+        //std::cout << this->getEventCode() << "\n";
+        //this->printCommandInOneString();
     }
     if (_operationType == operationType::operationRequest) {
-
-        if (_eventCode == operationCode::move) {
+        switch (_eventCode)
+        {
+        case operationCode::move:
             //_entityList._player.update(*this);
             //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
+            break;
+        case operationCode::auctionBuyOrders:
+            /*DataLayout dataLayout;
+            dataLayout.findDataLayout(*this);
+            if (dataLayout.size() == 14) {
+                Auction::findProductName(*this, dataLayout);
+            }*/
+            break;
         }
-        this->printCommandInOneString();
+            
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
     //_entityList.draw(window);
@@ -181,10 +195,10 @@ void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
         }
     }
 }
-uint32_t NetworkCommand::findCommandChainID()
+uint32_t NetworkCommand::findCommandChainID() const
 {
     if (_commandType == commandType::fragmented) {
-        return net::read_int32(_networkCommand, 12);
+        return net::read_uint32(_networkCommand, 12);
     }
     else {
         return 0;
@@ -213,7 +227,7 @@ bool NetworkCommand::isFirstCommandInChain()
 }
 bool NetworkCommand::isNextCommandInChain(NetworkCommand& command)
 {
-    uint32_t commandChainID = net::read_int32(_networkCommand, 12);
+    uint32_t commandChainID = net::read_uint32(_networkCommand, 12);
     uint8_t commandIndexInChain = _networkCommand[23];
     if (command._indexOfLastCommandInChain + 1 == commandIndexInChain and
         command._commandChainID == commandChainID) {
@@ -223,7 +237,7 @@ bool NetworkCommand::isNextCommandInChain(NetworkCommand& command)
         return false;
     }
 }
-bool NetworkCommand::isCommandFull()
+bool NetworkCommand::isCommandFull() const
 {
     switch (_commandType)
     {
@@ -238,15 +252,15 @@ bool NetworkCommand::isCommandFull()
     }
 }
 
-uint8_t NetworkCommand::getCommandType() 
+uint8_t NetworkCommand::getCommandType() const 
 { 
     return _commandType;
 }
-uint8_t NetworkCommand::getOperationType() 
+uint8_t NetworkCommand::getOperationType() const 
 {
     return _operationType;
 }
-uint16_t NetworkCommand::getEventCode() 
+uint16_t NetworkCommand::getEventCode() const 
 { 
     return _eventCode;
 }
@@ -257,7 +271,7 @@ void NetworkCommand::push_back(uint8_t element)
 }
 uint16_t NetworkCommand::size()
 {
-    return _networkCommand.size();
+    return static_cast<uint16_t>(_networkCommand.size());
 }
 void NetworkCommand::clear()
 {

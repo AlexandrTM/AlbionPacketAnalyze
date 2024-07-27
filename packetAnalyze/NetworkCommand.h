@@ -31,15 +31,15 @@ public:
     void printCommandInOneString(size_t regionStart, size_t regionEnd);
 
     void fillFragmentedCommand(NetworkCommand command);
-    uint32_t findCommandChainID();
+    uint32_t findCommandChainID() const;
     bool isLastCommandInChain();
     bool isFirstCommandInChain();
     bool isNextCommandInChain(NetworkCommand& command);
-    bool isCommandFull();
+    bool isCommandFull() const;
 
-    uint8_t getCommandType();
-    uint8_t getOperationType();
-    uint16_t getEventCode();
+    uint8_t getCommandType() const;
+    uint8_t getOperationType() const;
+    uint16_t getEventCode() const;
 
     uint16_t size();
     void push_back(uint8_t element);

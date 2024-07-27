@@ -15,11 +15,11 @@ public:
 
 private:
     GLFWwindow* _window;
-    bool framebufferResized;
+    bool _framebufferResized;
     std::vector<std::size_t> _amountOfSameCommands;
-    Tins::IPv4Range albionIPRange = Tins::IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
-    Tins::NetworkInterface iface = Tins::NetworkInterface::default_interface();
-    Tins::Sniffer sniffer = Tins::Sniffer(iface.name());
+    Tins::IPv4Range _albionIPRange = Tins::IPv4Range::from_mask("5.188.125.0", "5.188.125.255");
+    Tins::NetworkInterface _iface = Tins::NetworkInterface::default_interface();
+    Tins::Sniffer _sniffer = Tins::Sniffer(_iface.name());
 
     NetworkPacket _packet;
     std::vector<NetworkCommand> _fragmentedCommandBuffer;

@@ -1,10 +1,22 @@
 #include "pch.h"
 #include "Auction.h"
 
-uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
-uint16_t numOfRows = 4;
+void Auction::findProductName(NetworkCommand& command, DataLayout& dataLayout)
+{
+	std::ofstream auctionAverageValues;
+
+	auctionAverageValues.open("auctionAverageValues.txt", std::ofstream::app);
+	if (auctionAverageValues.is_open()) {
+		auctionAverageValues.close();
+	}
+	else {
+		std::cout << "auctionAverageValues is not opened" << "\n";
+	}
+}
 
 //size_t counter = 0;
+uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
+uint16_t numOfRows = 4;
 NetworkCommand commandBuffer;
 void Auction::findAuctionAverageValues(NetworkCommand& command)
 {
@@ -37,20 +49,20 @@ void Auction::findAuctionAverageValues(NetworkCommand& command)
 
 				uint8_t soldAmountDataTypeSize = soldAmountFragment._dataType._dataTypeSize;
 				if (soldAmountDataTypeSize == 4) {
-					soldAmount = net::read_int32(command, soldAmountFragment._offset + i * 4);
+					soldAmount = net::read_uint32(command, soldAmountFragment._offset + i * 4);
 				}
 				else if (soldAmountDataTypeSize == 2) {
-					soldAmount = net::read_int16(command, soldAmountFragment._offset + i * 2);
+					soldAmount = net::read_uint16(command, soldAmountFragment._offset + i * 2);
 				}
 				else if (soldAmountDataTypeSize == 1) {
-					soldAmount = net::read_int8(command, soldAmountFragment._offset + i);
+					soldAmount = net::read_uint8(command, soldAmountFragment._offset + i);
 				}
 				else if (soldAmountDataTypeSize == 8) {
-					soldAmount = net::read_int64(command, soldAmountFragment._offset + i * 8);
+					soldAmount = net::read_uint64(command, soldAmountFragment._offset + i * 8);
 				}
-				soldVolume = net::read_int64(command, soldVolumeFragment._offset + i * 8) / 1e+4;
+				soldVolume = net::read_uint64(command, soldVolumeFragment._offset + i * 8) / 1e+4;
 				averagePrice = (double_t)soldVolume / soldAmount;
-				date = net::read_int64(command, dateFragment._offset + i * 8) / 1e+7;
+				date = net::read_uint64(command, dateFragment._offset + i * 8) / 1e+7;
 
 				auctionData[i].push_back(std::numberToString(soldAmount));
 				auctionData[i].push_back(std::numberToString(averagePrice));
@@ -59,17 +71,17 @@ void Auction::findAuctionAverageValues(NetworkCommand& command)
 			}
 			//std::cout << auctionData[auctionData.size() - 1][3] << "\n";
 
-			size_t idx = 3;
+			size_t IDOfSortingRow = 3;
 			std::sort(auctionData.begin(), auctionData.end(),
-				[idx](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-					return std::stoull(a.at(idx)) < std::stoull(b.at(idx));
+				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
 				});
 
 			addEmptyEntries(auctionData);
 
 			std::sort(auctionData.begin(), auctionData.end(),
-				[idx](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-					return std::stoull(a.at(idx)) < std::stoull(b.at(idx));
+				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
 				});
 
 			for (size_t i = 0; i < numOfRows; i++) {

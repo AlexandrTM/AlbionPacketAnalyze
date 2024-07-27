@@ -61,16 +61,16 @@ Player::Player(NetworkCommand& rawPlayer)
 
 	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
 	if (idSize == 1) {
-		_id = net::read_int8(rawPlayer, _dataLayout.findFragment(0)._offset);
+		_id = net::read_uint8(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 2) {
-		_id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
+		_id = net::read_uint16(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 4) {
-		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+		_id = net::read_uint32(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 8) {
-		_id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+		_id = net::read_uint32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
 	}
 	_positionX = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset);
 	_positionY = net::read_float32(rawPlayer, _dataLayout.findFragment(13)._offset + 4);
@@ -87,16 +87,16 @@ Player Player::playerMove(NetworkCommand& rawPlayer)
 
 	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
 	if (idSize == 1) {
-		id = net::read_int8(rawPlayer, _dataLayout.findFragment(0)._offset);
+		id = net::read_uint8(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 2) {
-		id = net::read_int16(rawPlayer, _dataLayout.findFragment(0)._offset);
+		id = net::read_uint16(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 4) {
-		id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset);
+		id = net::read_uint32(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
 	if (idSize == 8) {
-		id = net::read_int32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
+		id = net::read_uint32(rawPlayer, _dataLayout.findFragment(0)._offset + 4);
 	}
 	positionX = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 9);
 	positionY = net::read_float32big(rawPlayer, _dataLayout.findFragment(1)._offset + 13);

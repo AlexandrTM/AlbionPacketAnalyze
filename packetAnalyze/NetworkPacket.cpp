@@ -45,7 +45,7 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
 void NetworkPacket::findPacketTime(std::vector<uint8_t> rawPacket)
 {
     if (rawPacket.size() >= 8) {
-        _packetTime = net::read_int32(rawPacket, 4);
+        _packetTime = net::read_uint32(rawPacket, 4);
     }
     else {
         _packetTime = 0;
