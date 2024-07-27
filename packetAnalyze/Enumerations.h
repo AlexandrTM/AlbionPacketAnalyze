@@ -6,14 +6,14 @@ enum operationType: uint8_t
     not_defined = 0,
     operationRequest = 2,
     operationResponse = 3,
-    event = 4
+    event = 4,
 };
 enum commandType: uint8_t
 {
     something = 1,
     reliable = 6,
     unreliable = 7,
-    fragmented = 8
+    fragmented = 8,
 };
 enum operationCode: uint16_t
 {
@@ -69,6 +69,7 @@ enum dataType : uint16_t
     int8_string = 115,
     int8_list = 120,
     dictionary = 121,
+    uint8_list = 125,
 
 };
 

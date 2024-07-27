@@ -7,11 +7,19 @@ public:
 	FragmentedNetworkCommand();
 	FragmentedNetworkCommand(NetworkCommand& networkCommand);
 
+	using iterator = std::vector<NetworkCommand>::iterator;
+
+	iterator begin();
+	iterator end();
+	iterator erase(iterator it);
+
 	bool isCommandFull() const;
 	bool isNextCommandInChain(NetworkCommand& a, NetworkCommand& b) const;
 	void sort();
+	void connectFragments();
 
 	inline void push_back(NetworkCommand& networkCommand);
+	NetworkCommand& operator[](size_t elementIndex);
 	const NetworkCommand& operator[](size_t elementIndex) const;
 
 private:
