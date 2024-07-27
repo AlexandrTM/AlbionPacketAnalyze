@@ -83,14 +83,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         //std::cout << _eventCode << "\n";
-        DataLayout _dataLayout{};
+        /*DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);
-        //_dataLayout.printInfo(*this);
-        /*if (_eventCode == operationCode::auctionAverageValues) {
+        _dataLayout.printInfo(*this);*/
+        if (_eventCode == operationCode::auctionAverageValues) {
             DataLayout _dataLayout{};
             _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
-        }*/
+            //_dataLayout.printInfo(*this);
+        }
         //switch (_eventCode) 
         //{
         //case operationCode::move:
@@ -217,25 +217,14 @@ void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEn
     std::cout.unsetf(std::ios::hex);
 }
 
+void NetworkCommand::endFragmentedCommand()
+{
+    _commandType = commandType::fragmented;
+    //std::cout << "operationType: " << (unsigned)_operationType << "\n";
+    _eventCode = findEventCode(_networkCommand);
+    //std::cout << "eventCode: " << (unsigned)_eventCode << "\n";
+}
 
-//void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
-//{
-//    /*if (command.isFirstCommandInChain()) {
-//        *this += command;
-//    }
-//    else */if (command.isNextCommandInChain(*this)) {
-//        *this += NetworkCommand(command, 32);
-//        _indexOfLastCommandInChain += 1;
-//
-//        if (command.isLastCommandInChain()) {
-//            _commandType = commandType::fragmented;
-//            _operationType = findOperationType(command._networkCommand);
-//            _isCommandFull = true;
-//            _eventCode = findEventCode(command._networkCommand);
-//            _indexOfLastCommandInChain = 0;
-//        }
-//    }
-//}
 uint8_t NetworkCommand::findCommandIndexInChain(std::vector<uint8_t>& rawCommand) const
 {
     if (_commandType == commandType::fragmented) {
@@ -254,27 +243,6 @@ uint32_t NetworkCommand::findCommandChainID(std::vector<uint8_t>& rawCommand) co
         return 0;
     }
 }
-bool NetworkCommand::isLastCommandInChain()
-{
-    uint8_t commandsNumInChain = _networkCommand[19];
-    uint8_t commandIndexInChain = _networkCommand[23];
-    if (commandsNumInChain == commandIndexInChain + 1) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-bool NetworkCommand::isFirstCommandInChain()
-{
-    uint8_t commandIndexInChain = _networkCommand[23];
-    if (commandIndexInChain == 0) {
-        return true;
-    }
-    else {  
-        return false;
-    }
-}
 
 uint8_t NetworkCommand::getCommandIndexInChain() const
 {
@@ -282,7 +250,7 @@ uint8_t NetworkCommand::getCommandIndexInChain() const
 }
 uint32_t NetworkCommand::getCommandChainID() const
 {
-    return this->_commandChainID;
+    return _commandChainID;
 }
 uint8_t NetworkCommand::getCommandType() const 
 { 

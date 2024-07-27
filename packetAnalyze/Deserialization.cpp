@@ -151,6 +151,7 @@ void DataFragment::printInfo(NetworkCommand& command) const
 HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const
 {
+    // take dicionaty into account
     size_t fragmentLength =
         (_offset + _dataType._size * _numOfEntries) - 
         (_offset - _dataType._headerSize - 1) + 3;
@@ -179,7 +180,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     //std::cout << "dataType size: " << (unsigned)_dataType._size << " ";
     // fragment payload
     SetConsoleTextAttribute(consoleHandle, 7 | FOREGROUND_INTENSITY);
-    //command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
+    command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
     SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
     //std::cout << fragmentLength << "\n";
@@ -249,7 +250,9 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     DataFragment dataFragment;
 
     std::cout << "num of fragments: " << (unsigned)numOfFragments << " " << "\n";
-    command.printCommandInOneString();
+    //if (numOfFragments == 0) {
+        command.printCommandInOneString();
+    //}
 
 
     for (size_t i = 0; i < numOfFragments; i++) {
@@ -291,11 +294,6 @@ void DataLayout::findDataLayout(NetworkCommand& command)
         dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
         offset += dataTypeHeaderSize;
 
-        std::cout <<
-            "size: " << (unsigned)dataTypeSize << " " <<
-            "header size: " << (unsigned)dataTypeHeaderSize << " " <<
-            "num of entries: " << (unsigned)numOfEntries << "\n";
-
         dataFragment = DataFragment(
                                     fragmentID, 
                                     offset,
@@ -303,13 +301,19 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                                     DataType(dataTypeSize, dataTypeHeaderSize, dataType)
                                     );
 
-        /*if (dataType == dataType::int16) {
+        /*if (dataType == dataType::int16_list) {
             std::cout << "dataTypeSize: " << (unsigned)dataTypeSize << 
                 " numOfEntries: " << numOfEntries << " ";
             std::cout << "sizeOfData: " << dataTypeSize * numOfEntries << "\n";
         }*/
         sizeOfData = dataTypeSize * numOfEntries;
         offset += sizeOfData;
+
+        std::cout <<
+            "size: "           << (unsigned)dataTypeSize       << " " <<
+            "header size: "    << (unsigned)dataTypeHeaderSize << " " <<
+            "num of entries: " << (unsigned)numOfEntries       << " " <<
+            "size of data: "   << (unsigned)sizeOfData         << "\n";
 
         _dataLayout.push_back(dataFragment);
     }
