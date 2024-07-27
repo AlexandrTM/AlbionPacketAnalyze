@@ -80,6 +80,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //}
     }
     if (_operationType == operationType::operationResponse) {
+        DataLayout _dataLayout{};
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         //std::cout << _eventCode << "\n";
@@ -109,6 +110,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
             Auction::findAuctionAverageValues(*this);
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
             //counter += 1;
             //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();
@@ -356,7 +359,7 @@ uint8_t NetworkCommand::findOperationType(std::vector<uint8_t>& rawCommand) cons
 uint16_t NetworkCommand::findEventCode(std::vector<uint8_t>& rawCommand) const
 {
     if (rawCommand.size() >= 4) {
-        if (rawCommand[rawCommand.size() - 3] == dataType::int16_list) {
+        if (rawCommand[rawCommand.size() - 3] == dataType::int16) {
             return ((rawCommand[rawCommand.size() - 2] << 8) |
                 rawCommand[rawCommand.size() - 1]) & 0x03ff;
         }

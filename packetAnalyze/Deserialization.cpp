@@ -15,11 +15,9 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
         return 1;
     case dataType::int8_list:
         return 1;
-    case dataType::uint8_list:
-        return 1;
     case dataType::int8_string:
         return 1;
-    case dataType::int16_list:
+    case dataType::int16:
         return 2;
     case dataType::float32:
         return 4;
@@ -39,7 +37,7 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::uint8:
         return 1;
-    case dataType::int16_list:
+    case dataType::int16:
         return 1;
     case dataType::float32:
         return 1;
@@ -52,8 +50,6 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
     case dataType::int8_string:
         return 3;
     case dataType::dictionary:
-        return 4;
-    case dataType::uint8_list:
         return 3;
     default:
         break;
@@ -87,7 +83,7 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
         return 1;
     case dataType::uint8:
         return 1;
-    case dataType::int16_list:
+    case dataType::int16:
         return 1;
     case dataType::float32:
         return 1;
@@ -100,8 +96,6 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
     case dataType::int8_string:
         return (command[offset + 1] << 8) | command[offset + 2];
     case dataType::dictionary:
-        return (command[offset + 1] << 8) | command[offset + 2];
-    case dataType::uint8_list:
         return (command[offset + 1] << 8) | command[offset + 2];
     default:
         break;
@@ -204,7 +198,7 @@ T DataLayout::readDataFragmentEntry(NetworkCommand& command, size_t fragmentID)
             {
             case dataType::int8:
                 entry = NetworkCommand::read_byteInt(command, offset);
-            case dataType::int16_list:
+            case dataType::int16:
                 entry = NetworkCommand::read_shortInt(command, offset);
             case dataType::int32:
                 entry = NetworkCommand::read_int32(command, offset);
@@ -243,14 +237,13 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 
     uint8_t dataType;
     uint8_t dataTypeSize;
-    uint8_t dataTypeHeaderSize;
+    uint8_t dataTypeHeaderSize = 0;
     uint16_t numOfEntries;
     uint16_t sizeOfData = 0;
 
     DataFragment dataFragment;
 
     std::cout << "num of fragments: " << (unsigned)numOfFragments << " " << "\n";
-
 
     for (size_t i = 0; i < numOfFragments; i++) {
         fragmentID = command[offset];
@@ -262,8 +255,10 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             std::cout << "numOfEntries: " << numOfEntries << " ";
         }*/
 
+        dataTypeHeaderSize = 0;
         if (dataType == dataType::dictionary) { 
             offset += 3;
+            dataTypeHeaderSize = 3;
             dataType = command[offset]; 
             if (dataType == dataType::int8_string) {
 
@@ -275,7 +270,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                                                 fragmentID,
                                                 offset,
                                                 sizeOfData,
-                                                DataType(1, 3, dataType::int8_string)
+                                                DataType(1, 6, dataType::int8_string)
                                                 );
 
                     _dataLayout.push_back(dataFragment);
@@ -288,8 +283,8 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             }
         }
         dataTypeSize = DataType::getDataTypeSize(dataType);
-        dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
-        offset += dataTypeHeaderSize;
+        dataTypeHeaderSize += DataType::getDataTypeHeaderSize(dataType);
+        offset += DataType::getDataTypeHeaderSize(dataType);
 
         dataFragment = DataFragment(
                                     fragmentID, 
@@ -307,6 +302,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
         offset += sizeOfData;
 
         std::cout <<
+            "data type: "      << (unsigned)dataType           << " " <<
             "size: "           << (unsigned)dataTypeSize       << " " <<
             "header size: "    << (unsigned)dataTypeHeaderSize << " " <<
             "num of entries: " << (unsigned)numOfEntries       << " " <<
@@ -316,7 +312,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     }
 
     //if (numOfFragments == 0) {
-    command.printCommandInOneString();
+    //command.printCommandInOneString();
     //}
 }
 DataLayout::DataLayout(std::vector<DataFragment> dataFragments)

@@ -63,13 +63,12 @@ enum dataType : uint16_t
     int8 = 98,
     float32 = 102,
     int32 = 105,
-    int16_list = 107,
+    int16 = 107,
     int64 = 108,
     uint8 = 111,
     int8_string = 115,
     int8_list = 120,
     dictionary = 121,
-    uint8_list = 125,
 
 };
 
