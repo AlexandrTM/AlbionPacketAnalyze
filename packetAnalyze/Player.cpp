@@ -59,7 +59,7 @@ Player::Player(NetworkCommand& rawPlayer)
 	_dataLayout.findDataLayout(rawPlayer);
 	//_dataLayout.printInfo();
 
-	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
+	uint8_t idSize = _dataLayout.findFragment(0)._dataType._size;
 	if (idSize == 1) {
 		_id = net::read_uint8(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}
@@ -85,7 +85,7 @@ Player Player::playerMove(NetworkCommand& rawPlayer)
 	DataLayout _dataLayout{};
 	_dataLayout.findDataLayout(rawPlayer);
 
-	uint8_t idSize = _dataLayout.findFragment(0)._dataType._dataTypeSize;
+	uint8_t idSize = _dataLayout.findFragment(0)._dataType._size;
 	if (idSize == 1) {
 		id = net::read_uint8(rawPlayer, _dataLayout.findFragment(0)._offset);
 	}

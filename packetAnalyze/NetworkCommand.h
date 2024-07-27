@@ -10,7 +10,6 @@ private:
     uint8_t _operationType;
     uint16_t _eventCode;
 
-    bool _isCommandFull;
     int16_t _indexOfLastCommandInChain;
     uint32_t _commandChainID;
 
@@ -27,15 +26,14 @@ public:
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);
-    void printCommandInOneString();
-    void printCommandInOneString(size_t regionStart, size_t regionEnd);
+    void printCommandInOneString(bool lineBreak = true);
+    void printCommandInOneString(size_t regionStart, size_t regionEnd, bool lineBreak = true);
 
     void fillFragmentedCommand(NetworkCommand command);
     uint32_t findCommandChainID(std::vector<uint8_t>& rawCommand) const;
     bool isLastCommandInChain();
     bool isFirstCommandInChain();
     bool isNextCommandInChain(NetworkCommand& command);
-    bool isCommandFull() const;
 
     uint8_t getCommandType() const;
     uint8_t getOperationType() const;

@@ -7,13 +7,15 @@ public:
 	FragmentedNetworkCommand();
 	FragmentedNetworkCommand(NetworkCommand& networkCommand);
 
-	inline void push_back(NetworkCommand& networkCommand);
+	bool isCommandFull() const;
 
+	inline void push_back(NetworkCommand& networkCommand);
 	const NetworkCommand& operator[](size_t elementIndex) const;
 
 private:
 	std::vector<NetworkCommand> _fragmentedNetworkCommand;
 
+	bool _isCommandFull;
 };
 
 inline void FragmentedNetworkCommand::push_back(NetworkCommand& networkCommand)

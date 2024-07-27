@@ -8,7 +8,6 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
     _networkCommand = rawCommand;
     _commandType = findCommandType(rawCommand);
     _operationType = findOperationType(rawCommand);
-    _isCommandFull = isCommandFull();
     _eventCode = findEventCode(rawCommand);
     _indexOfLastCommandInChain = 0;
     _commandChainID = findCommandChainID(rawCommand);
@@ -18,7 +17,6 @@ NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
     _networkCommand = { command._networkCommand.begin() + regionStart, command._networkCommand.end() };
     _commandType = findCommandType(command._networkCommand);
     _operationType = findOperationType(command._networkCommand);
-    _isCommandFull = isCommandFull();
     _eventCode = findEventCode(command._networkCommand);
     _indexOfLastCommandInChain = 0;
     _commandChainID = findCommandChainID(command._networkCommand);
@@ -29,7 +27,6 @@ NetworkCommand::NetworkCommand()
     _commandType = 0;
     _operationType = 0;
     _eventCode = 0;
-    _isCommandFull = false;
     _indexOfLastCommandInChain = 0;
     _commandChainID = 0;
 }
@@ -38,37 +35,43 @@ EntityList _entityList{};
 size_t counter = 0;
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
-    //this->printCommandInOneString();
     if (_operationType == operationType::event) {
-        switch (_eventCode)
-        {
-        case eventCode::harvestableObjectList:
-            _entityList._harvestableList.update(HarvestableList(*this)); 
-            break;
-        case eventCode::harvestableObject:
-            _entityList._harvestableList.update(Harvestable(*this)); 
-            break;
-        case eventCode::harvestableChangeState:
-            _entityList._harvestableList.updateState(*this); 
-            break;
-        case eventCode::newPlayer:
-            _entityList._playerList.newPlayer(Player(*this)); 
-            break;
-        case eventCode::playerLeave:
-           _entityList._playerList.playerLeave(Player(*this)); 
-           break;
-        case 65:
-            _entityList._playerList.update(Player::playerMove(*this)); 
-            break;
-        case 64:
-            _entityList._playerList.update(Player::playerMove(*this)); 
-            break;
-        default:
-            break;
+        if (_eventCode == eventCode::newPlayer) {
+            DataLayout _dataLayout{};
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
+            //this->printCommandInOneString();
         }
-        if (_networkCommand.size() == 67) {
-            _entityList._playerList.update(Player::playerMove(*this));
-        }
+        //switch (_eventCode)
+        //{
+        //case eventCode::harvestableObjectList:
+        //    _entityList._harvestableList.update(HarvestableList(*this)); 
+        //    break;
+        //case eventCode::harvestableObject:
+        //    _entityList._harvestableList.update(Harvestable(*this)); 
+        //    break;
+        //case eventCode::harvestableChangeState:
+        //    _entityList._harvestableList.updateState(*this); 
+        //    break;
+        //case eventCode::newPlayer:
+        //    _entityList._playerList.newPlayer(Player(*this)); 
+        //    break;
+        //case eventCode::playerLeave:
+        //   _entityList._playerList.playerLeave(Player(*this)); 
+        //   break;
+        //case 65:
+        //    _entityList._playerList.update(Player::playerMove(*this)); 
+        //    break;
+        //case 64:
+        //    _entityList._playerList.update(Player::playerMove(*this)); 
+        //    break;
+        //default:
+        //    break;
+        //}
+        //if (_networkCommand.size() == 67) {
+        //    //this->printCommandInOneString();
+        //    _entityList._playerList.update(Player::playerMove(*this));
+        //}
     }
     if (_operationType == operationType::operationResponse) {
         std::chrono::steady_clock::time_point start;
@@ -77,10 +80,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         switch (_eventCode) 
         {
         case operationCode::move:
-            //_entityList._player = PlayerSelf(*this);
+            _entityList._player = PlayerSelf(*this);
             break;
         case operationCode::changeLocation:
-            //_entityList.changeLocation(); 
+            _entityList.changeLocation(); 
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
@@ -124,7 +127,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    //_entityList.draw(window);
+    _entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
@@ -157,7 +160,7 @@ void NetworkCommand::printCommand(size_t regionStart, size_t regionEnd)
     }
     std::cout.unsetf(std::ios::hex);
 }
-void NetworkCommand::printCommandInOneString()
+void NetworkCommand::printCommandInOneString(bool lineBreak)
 {
     std::cout.setf(std::ios::hex, std::ios::basefield);
     for (size_t i = 0; i < _networkCommand.size(); i++)
@@ -166,41 +169,49 @@ void NetworkCommand::printCommandInOneString()
             std::cout << "0";
         std::cout << unsigned(_networkCommand[i]);
     }
-    std::cout << "\n";
+    if (lineBreak) {
+        std::cout << "\n";
+    }
+    else {}
     std::cout.unsetf(std::ios::hex);
 }
-void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd)
+void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd, 
+    bool lineBreak)
 {
     std::cout.setf(std::ios::hex, std::ios::basefield);
     for (size_t i = regionStart; i < regionEnd; i++)
     {
-        if (_networkCommand[i] < 16)
+        if (_networkCommand[i] < 16) {
             std::cout << "0";
+        }
         std::cout << unsigned(_networkCommand[i]);
     }
-    std::cout << "\n";
+    if (lineBreak) {
+        std::cout << "\n";
+    }
+    else {}
     std::cout.unsetf(std::ios::hex);
 }
 
 
-void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
-{
-    /*if (command.isFirstCommandInChain()) {
-        *this += command;
-    }
-    else */if (command.isNextCommandInChain(*this)) {
-        *this += NetworkCommand(command, 32);
-        _indexOfLastCommandInChain += 1;
-
-        if (command.isLastCommandInChain()) {
-            _commandType = commandType::fragmented;
-            _operationType = findOperationType(command._networkCommand);
-            _isCommandFull = true;
-            _eventCode = findEventCode(command._networkCommand);
-            _indexOfLastCommandInChain = 0;
-        }
-    }
-}
+//void NetworkCommand::fillFragmentedCommand(NetworkCommand command)
+//{
+//    /*if (command.isFirstCommandInChain()) {
+//        *this += command;
+//    }
+//    else */if (command.isNextCommandInChain(*this)) {
+//        *this += NetworkCommand(command, 32);
+//        _indexOfLastCommandInChain += 1;
+//
+//        if (command.isLastCommandInChain()) {
+//            _commandType = commandType::fragmented;
+//            _operationType = findOperationType(command._networkCommand);
+//            _isCommandFull = true;
+//            _eventCode = findEventCode(command._networkCommand);
+//            _indexOfLastCommandInChain = 0;
+//        }
+//    }
+//}
 uint32_t NetworkCommand::findCommandChainID(std::vector<uint8_t>& rawCommand) const
 {
     if (_commandType == commandType::fragmented) {
@@ -243,20 +254,6 @@ bool NetworkCommand::isNextCommandInChain(NetworkCommand& command)
         return false;
     }
 }
-bool NetworkCommand::isCommandFull() const
-{
-    switch (_commandType)
-    {
-    case commandType::reliable:
-        return true;
-    case commandType::unreliable:
-        return true;
-    case commandType::fragmented:
-        return _isCommandFull;
-    default:
-        return false;
-    }
-}
 
 uint32_t NetworkCommand::getCommandChainID() const
 {
@@ -289,7 +286,6 @@ void NetworkCommand::clear()
     _commandType = 0;
     _operationType = 0;
     _eventCode = 0;
-    _isCommandFull = false;
 }
 
 uint8_t& NetworkCommand::operator[](size_t elementIndex)
@@ -350,20 +346,15 @@ uint8_t NetworkCommand::findOperationType(std::vector<uint8_t>& rawCommand) cons
 }
 uint16_t NetworkCommand::findEventCode(std::vector<uint8_t>& rawCommand) const
 {
-    if (_isCommandFull == true) {
-        if (rawCommand[rawCommand.size() - 3] == dataType::int16) {
-            //this->printCommandInOneString();
-            return ((rawCommand[rawCommand.size() - 2] << 8) |
-                rawCommand[rawCommand.size() - 1]) & 0x03ff;
-        }
-        /*else if (_commandType == commandType::unreliable and rawCommand.size() == 67) {
-            return rawCommand[rawCommand.size() - 1] & 0x000f;
-        }*/
-        else {
-            return rawCommand[rawCommand.size() - 1];
-        }
+    if (rawCommand[rawCommand.size() - 3] == dataType::int16) {
+        //this->printCommandInOneString();
+        return ((rawCommand[rawCommand.size() - 2] << 8) |
+            rawCommand[rawCommand.size() - 1]) & 0x03ff;
     }
+    /*else if (_commandType == commandType::unreliable and rawCommand.size() == 67) {
+        return rawCommand[rawCommand.size() - 1] & 0x000f;
+    }*/
     else {
-        return 0;
+        return rawCommand[rawCommand.size() - 1];
     }
 };

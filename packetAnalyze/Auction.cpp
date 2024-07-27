@@ -47,7 +47,7 @@ void Auction::findAuctionAverageValues(NetworkCommand& command)
 				double_t averagePrice = 0;
 				uint64_t date = 0;
 
-				uint8_t soldAmountDataTypeSize = soldAmountFragment._dataType._dataTypeSize;
+				uint8_t soldAmountDataTypeSize = soldAmountFragment._dataType._size;
 				if (soldAmountDataTypeSize == 4) {
 					soldAmount = net::read_uint32(command, soldAmountFragment._offset + i * 4);
 				}

@@ -26,6 +26,10 @@ void FragmentedCommandsBuffer::addCommandFragment(NetworkCommand& networkCommand
     }
 }
 
+FragmentedNetworkCommand& FragmentedCommandsBuffer::operator[](size_t elementIndex)
+{
+    return _fragmentedCommandsBuffer[elementIndex];
+}
 const FragmentedNetworkCommand& FragmentedCommandsBuffer::operator[](size_t elementIndex) const
 {
     return _fragmentedCommandsBuffer[elementIndex];

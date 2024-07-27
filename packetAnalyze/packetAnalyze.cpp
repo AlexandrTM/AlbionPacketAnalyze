@@ -357,29 +357,33 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
     for (size_t i = 0; i < _packet.size(); i++)
     {
         //_packet[i].printCommandInOneString(), std::cout << "\n";
-        if (_packet[i].getCommandType() == commandType::fragmented) {
-            if (_fragmentedCommandsBuffer.isNewFragmentedCommand(_packet[i])) {
-                _fragmentedCommandsBuffer.push_back(FragmentedNetworkCommand(_packet[i]));
-            }
-            else {
-                _fragmentedCommandsBuffer.addCommandFragment(_packet[i]);
-                
-            }
-            /*if (isfullcommand) {
-                for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
-                    _fragmentedCommandsBuffer[j].fillFragmentedCommand(_packet[i]);
-                    if (_fragmentedCommandsBuffer[j].isCommandFull()) {
-                        _fragmentedCommandsBuffer[j].analyzeCommand(_window);
-                        _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
-                        break;
-                    }
-                    if (_fragmentedCommandsBuffer.size() > 0 and
-                        j == _fragmentedCommandsBuffer.size() - 1) {
-                        std::cout << "true" << "\n";
-                    }
-                }
-            }*/
-        }
+        //if (_packet[i].getCommandType() == commandType::fragmented) {
+        //    if (_fragmentedCommandsBuffer.isNewFragmentedCommand(_packet[i])) {
+        //        _fragmentedCommandsBuffer.push_back(FragmentedNetworkCommand(_packet[i]));
+        //    }
+        //    else {
+        //        _fragmentedCommandsBuffer.addCommandFragment(_packet[i]);
+        //    }
+        //    for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
+        //        if (_fragmentedCommandsBuffer[j].isCommandFull()) {
+
+        //        }
+        //    }
+        //    /*if (isfullcommand) {
+        //        for (size_t j = 0; j < _fragmentedCommandsBuffer.size(); j++) {
+        //            _fragmentedCommandsBuffer[j].fillFragmentedCommand(_packet[i]);
+        //            if (_fragmentedCommandsBuffer[j].isCommandFull()) {
+        //                _fragmentedCommandsBuffer[j].analyzeCommand(_window);
+        //                _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
+        //                break;
+        //            }
+        //            if (_fragmentedCommandsBuffer.size() > 0 and
+        //                j == _fragmentedCommandsBuffer.size() - 1) {
+        //                std::cout << "true" << "\n";
+        //            }
+        //        }
+        //    }*/
+        //}
         if (_packet[i].getCommandType() == commandType::reliable
          or _packet[i].getCommandType() == commandType::unreliable) {
 

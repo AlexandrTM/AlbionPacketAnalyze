@@ -87,8 +87,8 @@ struct net
 
 struct DataType
 {
-    uint8_t _dataTypeSize;
-    uint8_t _dataTypeHeaderSize;
+    uint8_t _size;
+    uint8_t _headerSize;
     uint8_t _dataType;
 
     DataType();
@@ -116,7 +116,8 @@ struct DataFragment
 
     DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
     DataFragment();
-    void printInfo();
+    void printInfo(NetworkCommand& command) const;
+    void printFragmentInfo(NetworkCommand& command) const;
 };
 
 
@@ -141,7 +142,7 @@ public:
     DataLayout(std::vector<DataFragment> dataFragments);
     DataLayout();
 
-    void printInfo();
+    void printInfo(NetworkCommand& command) const;
 
     size_t size();
     DataFragment operator[](size_t elementIndex);

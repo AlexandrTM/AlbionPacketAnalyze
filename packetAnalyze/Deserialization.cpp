@@ -58,14 +58,14 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
 
 DataType::DataType()
 {
-    _dataTypeSize = 0;
-    _dataTypeHeaderSize = 0;
+    _size = 0;
+    _headerSize = 0;
     _dataType = 0;
 }
 DataType::DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType)
 {
-    _dataTypeSize = dataTypeSize;
-    _dataTypeHeaderSize = dataTypeHeaderSize;
+    _size = dataTypeSize;
+    _headerSize = dataTypeHeaderSize;
     _dataType = dataType;
 }
 
@@ -135,9 +135,21 @@ DataFragment::DataFragment()
     _numOfEntries = 0;
     _dataType = {};
 }
-void DataFragment::printInfo()
+void DataFragment::printInfo(NetworkCommand& command) const
 {
-    std::cout << (unsigned)_fragmentID << " " << (unsigned)_offset << "\n";
+    size_t commandSizeLength = std::to_string(command.size()).length();
+    std::cout << "id: " << std::setw(commandSizeLength) << (unsigned)_fragmentID << " "
+              << "of: " << std::setw(commandSizeLength) << (unsigned)_offset << " ";
+}
+void DataFragment::printFragmentInfo(NetworkCommand& command) const
+{
+    command.printCommandInOneString(_offset - 1 - _dataType._headerSize, 
+        _offset - _dataType._headerSize, false);
+    std::cout << " ";
+    command.printCommandInOneString(_offset - _dataType._headerSize, _offset, false);
+    std::cout << " ";
+    command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
+    std::cout << " ";
 }
 
 
@@ -189,6 +201,7 @@ DataFragment DataLayout::findFragment(uint8_t fragmentID)
 void DataLayout::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
+    //command.printCommandInOneString(offset, command.size());
     uint8_t numOfFragments = command[offset];
     offset += 1;
 
@@ -262,11 +275,20 @@ DataLayout::DataLayout()
     _dataLayout = {};
 }
 
-void DataLayout::printInfo()
+void DataLayout::printInfo(NetworkCommand& command) const
 {
-    for (size_t i = 0; i < _dataLayout.size(); i++) {
-        _dataLayout[i].printInfo();
+    /*for (size_t i = 0; i < _dataLayout.size(); i++) {
+        if (i % 4 == 0 and i > 0 and i != _dataLayout.size() - 1) {
+            std::cout << "\n";
+        }
+        _dataLayout[i].printInfo(command);
     }
+    std::cout << "\n";*/
+    for (size_t i = 0; i < _dataLayout.size(); i++) {
+        _dataLayout[i].printFragmentInfo(command);
+        std::cout << "\n";
+    }
+    std::cout << "\n";
 }
 
 size_t DataLayout::size()
