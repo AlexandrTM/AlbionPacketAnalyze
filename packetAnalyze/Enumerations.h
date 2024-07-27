@@ -3,12 +3,14 @@
 
 enum operationType: uint8_t
 {
+    not_defined = 0,
     operationRequest = 2,
     operationResponse = 3,
     event = 4
 };
 enum commandType: uint8_t
 {
+    something = 1,
     reliable = 6,
     unreliable = 7,
     fragmented = 8
@@ -27,6 +29,7 @@ enum operationCode: uint16_t
 };
 enum eventCode : uint16_t
 {
+    none = 0,
     playerLeave = 1,
     playerMove = 2,
     healthUpdate = 6,
@@ -60,7 +63,7 @@ enum dataType : uint16_t
     int8 = 98,
     float32 = 102,
     int32 = 105,
-    int16 = 107,
+    int16_list = 107,
     int64 = 108,
     uint8 = 111,
     int8_string = 115,

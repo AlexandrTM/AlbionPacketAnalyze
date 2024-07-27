@@ -10,12 +10,14 @@ private:
     uint8_t _operationType;
     uint16_t _eventCode;
 
-    int16_t _indexOfLastCommandInChain;
     uint32_t _commandChainID;
+    uint8_t _commandIndexInChain;
 
+    uint8_t findCommandIndexInChain(std::vector<uint8_t>& rawCommand) const;
     uint8_t findCommandType(std::vector<uint8_t>& rawCommand) const;
     uint8_t findOperationType(std::vector<uint8_t>& rawCommand) const;
     uint16_t findEventCode(std::vector<uint8_t>& rawCommand) const;
+
 
 public:
     NetworkCommand(std::vector<uint8_t> rawCommand);
@@ -39,6 +41,7 @@ public:
     uint8_t getOperationType() const;
     uint16_t getEventCode() const;
     uint32_t getCommandChainID() const;
+    uint8_t getCommandIndexInChain() const;
 
     uint16_t size();
     void push_back(uint8_t element);

@@ -8,6 +8,8 @@ public:
 	FragmentedNetworkCommand(NetworkCommand& networkCommand);
 
 	bool isCommandFull() const;
+	bool isNextCommandInChain(NetworkCommand& a, NetworkCommand& b) const;
+	void sort();
 
 	inline void push_back(NetworkCommand& networkCommand);
 	const NetworkCommand& operator[](size_t elementIndex) const;

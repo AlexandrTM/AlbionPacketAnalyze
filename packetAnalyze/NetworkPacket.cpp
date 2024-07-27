@@ -11,12 +11,12 @@ NetworkPacket::NetworkPacket()
 void NetworkPacket::addCommandsFromPacket(std::vector<uint8_t> rawPacket)
 {
     uint8_t commandsNumInPacket = rawPacket[3];
-    ptrdiff_t stringPosition = _packetHeaderSize;
+    ptrdiff_t offset = _packetHeaderSize;
     for (uint8_t i = 0; i < commandsNumInPacket; i++) {
-        uint16_t commandLength = (rawPacket[stringPosition + 6] << 8) + rawPacket[stringPosition + 7];
-        _networkPacket.push_back(NetworkCommand({ rawPacket.begin() + stringPosition,
-                                    rawPacket.begin() + stringPosition + commandLength }));
-        stringPosition += commandLength;
+        uint16_t commandLength = (rawPacket[offset + 6] << 8) + rawPacket[offset + 7];
+        _networkPacket.push_back(NetworkCommand({ rawPacket.begin() + offset,
+                                    rawPacket.begin() + offset + commandLength }));
+        offset += commandLength;
     }
 }
 NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket)

@@ -17,7 +17,7 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
         return 1;
     case dataType::int8_string:
         return 1;
-    case dataType::int16:
+    case dataType::int16_list:
         return 2;
     case dataType::float32:
         return 4;
@@ -37,7 +37,7 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::uint8:
         return 1;
-    case dataType::int16:
+    case dataType::int16_list:
         return 1;
     case dataType::float32:
         return 1;
@@ -83,7 +83,7 @@ uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataTyp
         return 1;
     case dataType::uint8:
         return 1;
-    case dataType::int16:
+    case dataType::int16_list:
         return 1;
     case dataType::float32:
         return 1;
@@ -141,6 +141,7 @@ void DataFragment::printInfo(NetworkCommand& command) const
     std::cout << "id: " << std::setw(commandSizeLength) << (unsigned)_fragmentID << " "
               << "of: " << std::setw(commandSizeLength) << (unsigned)_offset << " ";
 }
+
 HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const
 {
@@ -149,7 +150,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
         (_offset - _dataType._headerSize - 1) + 3;
 
     currentPrintPosition += fragmentLength;
-    if (currentPrintPosition > 48) {
+    if (currentPrintPosition > 40) {
         std::cout << "\n";
         currentPrintPosition = 0;
     }
@@ -165,6 +166,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     command.printCommandInOneString(_offset - _dataType._headerSize, _offset, false);
     SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
+    //std::cout << "dataType size: " << (unsigned)_dataType._size << " ";
     // fragment payload
     SetConsoleTextAttribute(consoleHandle, 7 | FOREGROUND_INTENSITY);
     command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
@@ -191,7 +193,7 @@ T DataLayout::readDataFragmentEntry(NetworkCommand& command, size_t fragmentID)
             {
             case dataType::int8:
                 entry = NetworkCommand::read_byteInt(command, offset);
-            case dataType::int16:
+            case dataType::int16_list:
                 entry = NetworkCommand::read_shortInt(command, offset);
             case dataType::int32:
                 entry = NetworkCommand::read_int32(command, offset);
@@ -244,6 +246,9 @@ void DataLayout::findDataLayout(NetworkCommand& command)
         dataType = command[offset];
 
         numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+        /*if (dataType == dataType::int16) {
+            std::cout << "numOfEntries: " << numOfEntries << " ";
+        }*/
 
         if (dataType == dataType::dictionary) { 
             offset += 3;
@@ -281,6 +286,11 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                                     DataType(dataTypeSize, dataTypeHeaderSize, dataType)
                                     );
 
+        /*if (dataType == dataType::int16) {
+            std::cout << "dataTypeSize: " << (unsigned)dataTypeSize << 
+                " numOfEntries: " << numOfEntries << " ";
+            std::cout << "sizeOfData: " << dataTypeSize * numOfEntries << "\n";
+        }*/
         sizeOfData = dataTypeSize * numOfEntries;
         offset += sizeOfData;
 
@@ -315,7 +325,7 @@ void DataLayout::printInfo(NetworkCommand& command) const
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         _dataLayout[i].printFragmentInfo(command, currentPrintPosition);
     }
-    std::cout << "\n";
+    std::cout << "\n\n";
 }
 
 size_t DataLayout::size()
