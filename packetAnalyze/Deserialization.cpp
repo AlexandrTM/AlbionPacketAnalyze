@@ -141,15 +141,36 @@ void DataFragment::printInfo(NetworkCommand& command) const
     std::cout << "id: " << std::setw(commandSizeLength) << (unsigned)_fragmentID << " "
               << "of: " << std::setw(commandSizeLength) << (unsigned)_offset << " ";
 }
-void DataFragment::printFragmentInfo(NetworkCommand& command) const
+HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const
 {
-    command.printCommandInOneString(_offset - 1 - _dataType._headerSize, 
+    size_t fragmentLength =
+        (_offset + _dataType._size * _numOfEntries) - 
+        (_offset - _dataType._headerSize - 1) + 3;
+
+    currentPrintPosition += fragmentLength;
+    if (currentPrintPosition > 48) {
+        std::cout << "\n";
+        currentPrintPosition = 0;
+    }
+
+    // fragment id
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    command.printCommandInOneString(_offset - _dataType._headerSize - 1,
         _offset - _dataType._headerSize, false);
+    SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
+    // fragment data type
+    SetConsoleTextAttribute(consoleHandle, 6);
     command.printCommandInOneString(_offset - _dataType._headerSize, _offset, false);
+    SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
+    // fragment payload
+    SetConsoleTextAttribute(consoleHandle, 7 | FOREGROUND_INTENSITY);
     command.printCommandInOneString(_offset, _offset + _dataType._size * _numOfEntries, false);
+    SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
+    //std::cout << fragmentLength << "\n";
 }
 
 
@@ -284,9 +305,15 @@ void DataLayout::printInfo(NetworkCommand& command) const
         _dataLayout[i].printInfo(command);
     }
     std::cout << "\n";*/
+
+    // num of fragments
+    std::cout << "num of fragments: ";
+    std::cout << (unsigned)command[_dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2];
+    std::cout << "\n";
+
+    size_t currentPrintPosition = 0;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
-        _dataLayout[i].printFragmentInfo(command);
-        std::cout << "\n";
+        _dataLayout[i].printFragmentInfo(command, currentPrintPosition);
     }
     std::cout << "\n";
 }

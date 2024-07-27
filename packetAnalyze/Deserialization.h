@@ -117,7 +117,7 @@ struct DataFragment
     DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
     DataFragment();
     void printInfo(NetworkCommand& command) const;
-    void printFragmentInfo(NetworkCommand& command) const;
+    void printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const;
 };
 
 
