@@ -22,7 +22,7 @@ enum operationCode: uint16_t
     auctionSellOrders = 76,
     auctionBuyOrders = 77,
     auctionGetFinishedOrders = 84,
-    auctionAverageValues = 90,
+    auctionAverageValues = 89,
 
     getCharacterEquipment = 137,
 

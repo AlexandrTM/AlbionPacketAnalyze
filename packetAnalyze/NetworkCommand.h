@@ -15,11 +15,8 @@ public:
     void printCommandInOneString(bool lineBreak = true);
     void printCommandInOneString(size_t regionStart, size_t regionEnd, bool lineBreak = true);
 
-    void fillFragmentedCommand(NetworkCommand command);
+    void endFragmentedCommand();
     uint32_t findCommandChainID(std::vector<uint8_t>& rawCommand) const;
-    bool isLastCommandInChain();
-    bool isFirstCommandInChain();
-    bool isNextCommandInChain(NetworkCommand& command);
 
     uint8_t getCommandType() const;
     uint8_t getOperationType() const;

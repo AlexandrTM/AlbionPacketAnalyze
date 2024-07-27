@@ -358,6 +358,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
     {
         //_packet[i].printCommandInOneString();
         if (_packet[i].getCommandType() == commandType::fragmented) {
+            //_packet[i].printCommandInOneString();
             if (_fragmentedCommandsBuffer.isNewFragmentedCommand(_packet[i])) {
                 _fragmentedCommandsBuffer.push_back(FragmentedNetworkCommand(_packet[i]));
             }
@@ -366,10 +367,13 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
             }
             for (size_t j = 0; j < _fragmentedCommandsBuffer.size();) {
                 if (_fragmentedCommandsBuffer[j].isCommandFull()) {
+                    //std::cout << _fragmentedCommandsBuffer.size() << "\n";
                     _fragmentedCommandsBuffer[j].sort();
                     _fragmentedCommandsBuffer[j].connectFragments();
+                    _fragmentedCommandsBuffer[j][0].endFragmentedCommand();
                     _fragmentedCommandsBuffer[j][0].analyzeCommand(_window);
                     _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
+                    //std::cout << _fragmentedCommandsBuffer.size() << "\n";
                 }
                 else {
                     j++;
