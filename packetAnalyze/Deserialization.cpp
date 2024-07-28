@@ -214,7 +214,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     std::cout << 
         "size:" << (unsigned)command.size() << " " <<
         "num of fragments: " << (unsigned)numOfFragments << " " << "\n";
-    command.printCommandInOneString(offset, command.size());
+    //command.printCommandInOneString(offset, command.size());
     offset += 1;
 
     uint8_t fragmentID = 0;
@@ -248,62 +248,110 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             offset += 3;
             dataTypeHeaderSize += 3;
             dataType = command[offset];
+
             //processDictionary(command, fragmentID, offset, numOfEntries, dataTypeHeaderSize, 0);
-            if (dataType == dataType::int8_list) {
-                if (numOfEntries == 0) {
-                    offset += 1;
-                    dataTypeHeaderSize += 1;
-                    sizeOfData = 0;
+            if (numOfEntries == 0) {
+                offset += 1;
+                dataTypeHeaderSize += 1;
+                sizeOfData = 0;
 
-                    dataFragment = DataFragment(
-                        fragmentID,
-                        offset,
-                        sizeOfData,
-                        DataType(1, dataTypeHeaderSize, dataType::int8_string)
-                    );
+                dataFragment = DataFragment(
+                    fragmentID,
+                    offset,
+                    sizeOfData,
+                    DataType(1, dataTypeHeaderSize, dataType::int8_string)
+                );
 
-                    _dataLayout.push_back(dataFragment);
-                }
-                else {
-                    numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+                _dataLayout.push_back(dataFragment);
+            }
+            else if (dataType == dataType::dictionary) {
+                uint16_t nestedNumOfEntries = DataFragment::findNumOfEntries(
+                    command, dataType, offset);
+
+                offset += 3;
+                dataTypeHeaderSize += 3;
+                dataType = command[offset];
+                if (dataType == dataType::float32) {
                     dataTypeHeaderSize += DataType::getDataTypeHeaderSize(dataType);
-                    sizeOfData = numOfEntries;
+                    dataTypeSize = DataType::getDataTypeSize(dataType);
+                    offset += DataType::getDataTypeHeaderSize(dataType);
+                    for (size_t i = 0; i < numOfEntries; i++) {
+                        dataFragment = DataFragment(
+                            fragmentID,
+                            offset,
+                            nestedNumOfEntries,
+                            DataType(dataTypeSize, 
+                                i == 0 ? dataTypeHeaderSize : 3, dataType::int8_string)
+                        );
 
-                    dataFragment = DataFragment(
-                        fragmentID,
-                        offset,
-                        sizeOfData,
-                        DataType(1, dataTypeHeaderSize, dataType::int8_string)
-                    );
+                        _dataLayout.push_back(dataFragment);
 
-                    _dataLayout.push_back(dataFragment);
+                        sizeOfData = dataTypeSize * nestedNumOfEntries;
+                        if (i > 0) {
+                            sizeOfData += 3;
+                        }
+                        offset += sizeOfData;
+                    }
                 }
             }
-            if (dataType == dataType::int8_string) {
+            else if (dataType == dataType::int8_list || dataType == dataType::int8_string) {
+                uint16_t nestedNumOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+                uint8_t nestedDataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
+                dataTypeHeaderSize += DataType::getDataTypeHeaderSize(dataType);
+
                 offset += 1;
                 for (size_t i = 0; i < numOfEntries; i++) {
-                    offset += 2;
-                    dataTypeHeaderSize += DataType::getDataTypeHeaderSize(dataType);
+                    offset += nestedDataTypeHeaderSize - 1;
+                    sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - nestedDataTypeHeaderSize);
+
                     dataFragment = DataFragment(
-                                                fragmentID,
-                                                offset,
-                                                sizeOfData,
-                                                DataType(1, dataTypeHeaderSize, dataType::int8_string)
-                                                );
+                        fragmentID,
+                        offset,
+                        nestedNumOfEntries,
+                        DataType(1, i == 0 ? dataTypeHeaderSize : nestedDataTypeHeaderSize - 1, dataType)
+                    );
 
                     _dataLayout.push_back(dataFragment);
-
-                    //std::cout << "size of data " << sizeOfData << "\n";
-                    sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - 3);
+                    /*if (i > 0) {
+                        sizeOfData += nestedDataTypeHeaderSize - 1;
+                    }*/
                     offset += sizeOfData;
+
+                    /*std::cout <<
+                        "offset: "         << (unsigned)dataFragment._offset << " " <<
+                        std::hex <<
+                        "fragment id: "    << (unsigned)fragmentID           << " " <<
+                        "data type: "      << (unsigned)dataType             << " " <<
+                        std::dec <<
+                        "size: "           << (unsigned)dataTypeSize         << " " <<
+                        "header size: "    << (unsigned)dataTypeHeaderSize   << " " <<
+                        "num of entries: " << (unsigned)numOfEntries         << " " <<
+                        "size of data: "   << (unsigned)sizeOfData           << "\n";*/
                 }
-                continue;
+            }
+            else {
+                dataTypeHeaderSize += DataType::getDataTypeHeaderSize(dataType);
+                dataTypeSize = DataType::getDataTypeSize(dataType);
+                offset += DataType::getDataTypeHeaderSize(dataType);
+
+                dataFragment = DataFragment(
+                    fragmentID,
+                    offset,
+                    numOfEntries,
+                    DataType(dataTypeSize, dataTypeHeaderSize, dataType::int8_string)
+                );
+
+                _dataLayout.push_back(dataFragment);
+
+                //std::cout << "size of data " << sizeOfData << "\n";
+                sizeOfData = dataTypeSize * numOfEntries;
+                offset += sizeOfData;
             }
         }
         else {
             dataTypeSize = DataType::getDataTypeSize(dataType);
             dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
-            offset += dataTypeHeaderSize;
+            offset += DataType::getDataTypeHeaderSize(dataType);
 
             dataFragment = DataFragment(
                 fragmentID,
