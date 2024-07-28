@@ -80,18 +80,13 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //}
     }
     if (_operationType == operationType::operationResponse) {
-        DataLayout _dataLayout{};
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
-        //std::cout << _eventCode << "\n";
-        /*DataLayout _dataLayout{};
+        std::cout << "event code: " << _eventCode << "\n";
+        DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
-        if (_eventCode == operationCode::auctionAverageValues) {
-            /*DataLayout _dataLayout{};
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
-        }
+        _dataLayout.printInfo(*this);
+        //this->printCommandInOneString();
         switch (_eventCode) 
         {
         case operationCode::move:
@@ -109,9 +104,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::findAuctionAverageValues(*this);
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
+            //Auction::findAuctionAverageValues(*this);
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo(*this);
             //counter += 1;
             //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();

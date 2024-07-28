@@ -299,7 +299,7 @@ bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket)
         const IP& ip = sniffedPacket->rfind_pdu<IP>();
         const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
-        if (_albionIPRange.contains(ip.src_addr()) and (udp.sport() == 5056 /*or udp.dport() == 5056*/)) {
+        if (/*_albionIPRange.contains(ip.src_addr()) and */(udp.sport() == 5056 /*or udp.dport() == 5056*/)) {
             RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
             RawNetworkPacket packet;
             readRawPacket(rawPacket, packet);

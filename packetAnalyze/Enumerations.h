@@ -15,7 +15,7 @@ enum commandType: uint8_t
     unreliable = 7,
     fragmented = 8,
 };
-enum operationCode: uint16_t
+enum operationCode : uint16_t
 {
     move = 21,
     changeLocation = 35,
@@ -25,6 +25,7 @@ enum operationCode: uint16_t
     auctionAverageValues = 89,
 
     getCharacterEquipment = 137,
+    getGoldPrices = 242,
 
 };
 enum eventCode : uint16_t

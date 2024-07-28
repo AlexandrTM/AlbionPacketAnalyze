@@ -132,12 +132,14 @@ private:
     std::vector<DataFragment> _dataLayout;
 
 public:
-    DataFragment findFragment(uint8_t fragmentID);
+    DataFragment findFragment(uint8_t fragmentID) const;
 
     template<typename T>
     T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);
 
     void findDataLayout(NetworkCommand& command);
+    void processDictionary(NetworkCommand& command, uint8_t& fragmentID, ptrdiff_t& offset, 
+        uint16_t numOfEntries, uint8_t& dataTypeHeaderSize, size_t index);
 
     DataLayout(std::vector<DataFragment> dataFragments);
     DataLayout();
