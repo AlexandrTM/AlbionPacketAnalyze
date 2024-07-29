@@ -104,6 +104,7 @@ void EntityList::drawHarvestables()
             harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                             _harvestableList[i]._positionY);
             
+
             glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
             colorizeHarvestableEnchantment(_harvestableList[i]);

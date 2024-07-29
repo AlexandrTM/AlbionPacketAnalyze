@@ -93,14 +93,19 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _dataLayout.printInfo(*this);*/
             _entityList._playerList.update(Player::playerMove(*this));
         }
+        else {
+            /*DataLayout _dataLayout{};
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
+        }
     }
     if (_operationType == operationType::operationResponse) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         //std::cout << "event code: " << _eventCode << "\n";
-        //DataLayout _dataLayout{};
-        //_dataLayout.findDataLayout(*this);
-        //_dataLayout.printInfo(*this);
+        DataLayout _dataLayout{};
+        /*_dataLayout.findDataLayout(*this);
+        _dataLayout.printInfo(*this);*/
         //this->printCommandInOneString();
         switch (_eventCode) 
         {
@@ -111,10 +116,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._player = PlayerSelf(*this);
             break;
         case operationCode::changeLocation:
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             _entityList.changeLocation(); 
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
             break;
         case operationCode::auctionBuyOrders:
             break;
@@ -167,7 +176,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         _dataLayout.printInfo(*this);*/
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    _entityList.draw(window);
+    //_entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
@@ -200,9 +209,11 @@ void NetworkCommand::printCommand(size_t regionStart, size_t regionEnd)
     }
     std::cout.unsetf(std::ios::hex);
 }
-void NetworkCommand::printCommandInOneString(bool lineBreak)
+void NetworkCommand::printCommandInOneString(bool lineBreak, bool isHex)
 {
-    std::cout.setf(std::ios::hex, std::ios::basefield);
+    if (isHex) {
+        std::cout.setf(std::ios::hex, std::ios::basefield);
+    }
     for (size_t i = 0; i < _networkCommand.size(); i++)
     {
         if (_networkCommand[i] < 16)
@@ -213,24 +224,38 @@ void NetworkCommand::printCommandInOneString(bool lineBreak)
         std::cout << "\n";
     }
     else {}
-    std::cout.unsetf(std::ios::hex);
+    if (isHex) {
+        std::cout.unsetf(std::ios::hex);
+    }
 }
 void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd, 
-    bool lineBreak)
+    bool lineBreak, bool isHex)
 {
-    std::cout.setf(std::ios::hex, std::ios::basefield);
-    for (size_t i = regionStart; i < regionEnd; i++)
-    {
-        if (_networkCommand[i] < 16) {
-            std::cout << "0";
+    if (isHex) {
+        std::cout.setf(std::ios::hex, std::ios::basefield);
+        for (size_t i = regionStart; i < regionEnd; i++)
+        {
+            if (_networkCommand[i] < 16) {
+                std::cout << "0";
+            }
+            std::cout << unsigned(_networkCommand[i]);
         }
-        std::cout << unsigned(_networkCommand[i]);
+        if (lineBreak) {
+            std::cout << "\n";
+        }
+        else {}
+        std::cout.unsetf(std::ios::hex);
     }
-    if (lineBreak) {
-        std::cout << "\n";
+    else {
+        for (size_t i = regionStart; i < regionEnd; i++)
+        {
+            std::cout << unsigned(_networkCommand[i]);
+        }
+        if (lineBreak) {
+            std::cout << "\n";
+        }
+        else {}
     }
-    else {}
-    std::cout.unsetf(std::ios::hex);
 }
 
 void NetworkCommand::endFragmentedCommand()

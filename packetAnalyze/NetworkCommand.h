@@ -12,8 +12,9 @@ public:
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);
-    void printCommandInOneString(bool lineBreak = true);
-    void printCommandInOneString(size_t regionStart, size_t regionEnd, bool lineBreak = true);
+    void printCommandInOneString(bool lineBreak = true, bool isHex = true);
+    void printCommandInOneString(size_t regionStart, size_t regionEnd, 
+        bool lineBreak = true, bool isHex = true);
 
     void endFragmentedCommand();
     uint32_t findCommandChainID(std::vector<uint8_t>& rawCommand) const;

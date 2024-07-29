@@ -153,9 +153,12 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     ptrdiff_t endOffset = _offset + _dataType._size * _numOfEntries;
     size_t fragmentLength = endOffset - startOffset + 3;
 
-    /*std::cout << "size: " << (unsigned)_dataType._size << " " <<
+    std::cout << 
+        "data type:" << (unsigned)_dataType._dataType << " " <<
+        "size: " << (unsigned)_dataType._size << " " <<
         "header size: " << (unsigned)_dataType._headerSize << " " <<
-        "num of entries: " << (unsigned)_numOfEntries << "\n";*/
+        "offset: " << (unsigned)_offset << " " <<
+        "num of entries: " << (unsigned)_numOfEntries << "\n";
     
     currentPrintPosition += fragmentLength;
     if (currentPrintPosition > 40) {
@@ -184,6 +187,15 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     //std::cout << "dataType size: " << (unsigned)_dataType._size << " ";
     // fragment payload
     SetConsoleTextAttribute(consoleHandle, 7 | FOREGROUND_INTENSITY);
+
+    /*if (_dataType._dataType == dataType::int8_string) {
+        for (size_t i = _offset; i < endOffset; i++) {
+            std::cout << (unsigned char)command[i];
+        }
+    }
+    else {
+        command.printCommandInOneString(_offset, endOffset, false);
+    }*/
     command.printCommandInOneString(_offset, endOffset, false);
     SetConsoleTextAttribute(consoleHandle, 7);
     std::cout << " ";
@@ -312,7 +324,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                         dataFragment = DataFragment(
                             fragmentID,
                             offset,
-                            nestedNumOfEntries,
+                            sizeOfData,
                             DataType(1, i == 0 ? dataTypeHeaderSize : nestedDataTypeHeaderSize - 1, dataType)
                         );
 
@@ -489,10 +501,10 @@ DataLayout::DataLayout()
 void DataLayout::printInfo(NetworkCommand& command) const
 {
     // num of fragments
-    /*std::cout << "num of fragments: ";
-    std::cout << (unsigned)command[_dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2];
-    std::cout << "\n";*/
-
+    uint16_t numOfFragmensOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
+    std::cout << 
+        "num of fragments: " << (unsigned)command[numOfFragmensOffset] << " " <<
+        "event code: " << command.getEventCode() << "\n";
     size_t currentPrintPosition = 0;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         _dataLayout[i].printFragmentInfo(command, currentPrintPosition);

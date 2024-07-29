@@ -19,27 +19,50 @@ struct HarvestableFilter
 
 struct HarvestableListFilter
 {
+    /*everything*/
+    //std::vector<HarvestableFilter> _harvestableListFilter = {
+    //    HarvestableFilter(/*wood*/
+    //        {1,2,3,4,5,6,7,8},
+    //        {0,0,0,0,0,0,0,0},
+    //        {0,0,0,0,0,0,0,0}),
+    //    HarvestableFilter(/*rock*/
+    //        {1,2,3,4,5,6,7,8},
+    //        {0,0,0,0,0,0,0,0},
+    //        {0,0,0,0,0,0,0,0}),
+    //    HarvestableFilter(/*fiber*/
+    //        {1,2,3,4,5,6,7,8},
+    //        {0,0,0,0,0,0,0,0},
+    //        {0,0,0,0,0,0,0,0}),
+    //    HarvestableFilter(/*hide*/
+    //        {1,2,3,4,5,6,7,8},
+    //        {0,0,0,0,0,0,0,0},
+    //        {0,0,0,0,0,0,0,0}),
+    //    HarvestableFilter(/*ore*/
+    //        {1,2,3,4,5,6,7,8},
+    //        {0,0,0,0,0,0,0,0},
+    //        {0,0,0,0,0,0,0,0}),
+    //    HarvestableFilter(/*other*/)
+    //};
+
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
             {4,5,6,7,8},
-            {1,1,1,0,0},
-            {1,1,1,0,0}),
+            {2,1,0,0,0},
+            {0,0,0,0,0}),
         HarvestableFilter(/*rock*/
-            {4,5},
-            {1,1},
-            {1,1}),
+            {4,5,6,7,8},
+            {2,1,0,0,0},
+            {0,0,0,0,0}),
         HarvestableFilter(/*fiber*/
             {4,5,6,7,8},
-            {2,1,1,0,0},
-            {1,1,1,0,0}),
+            {2,1,0,0,0},
+            {0,0,0,0,0}),
         HarvestableFilter(/*hide*/
-            /*{4},
-            {1},
-            {1}*/),
+            ),
         HarvestableFilter(/*ore*/
-            {4},
-            {1},
-            {1}),
+            {4,5,6,7,8},
+            {1,1,0,0,0},
+            {0,0,0,0,0}),
         HarvestableFilter(/*other*/)
     };
 
