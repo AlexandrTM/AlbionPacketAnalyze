@@ -1,25 +1,6 @@
 #include "pch.h"
 
 float_t _pixelsInMeter = 45.5;
-
-HarvestableFilter::HarvestableFilter(std::vector<uint8_t> trackingTiers,
-                                     std::vector<uint8_t> trackingEnchantments,
-                                     std::vector<uint8_t> trackingCharges)
-{
-    _trackingTiers = trackingTiers;
-    _trackingEnchantments = trackingEnchantments;
-    _trackingCharges = trackingCharges;
-}
-HarvestableFilter::HarvestableFilter()
-{
-    _trackingTiers =        {};
-    _trackingEnchantments = {};
-    _trackingCharges =      {};
-}
-size_t HarvestableListFilter::size()
-{
-    return _harvestableListFilter.size();
-}
 HarvestableFilter& HarvestableListFilter::operator[](size_t elementIndex)
 {
     return _harvestableListFilter[elementIndex];

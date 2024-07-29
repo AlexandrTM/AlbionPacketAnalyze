@@ -1,5 +1,27 @@
 #include "pch.h"
 
+// *****************************************************************************
+// ============================== HarvestableFilter ============================
+// *****************************************************************************
+
+HarvestableFilter::HarvestableFilter(std::vector<uint8_t> trackingTiers,
+	std::vector<uint8_t> trackingEnchantments,
+	std::vector<uint8_t> trackingCharges)
+{
+	_trackingTiers = trackingTiers;
+	_trackingEnchantments = trackingEnchantments;
+	_trackingCharges = trackingCharges;
+}
+HarvestableFilter::HarvestableFilter()
+{
+	_trackingTiers = {};
+	_trackingEnchantments = {};
+	_trackingCharges = {};
+}
+size_t HarvestableListFilter::size()
+{
+	return _harvestableListFilter.size();
+}
 
 // *****************************************************************************
 // ============================== Harvestable ==================================
@@ -73,10 +95,14 @@ Harvestable::Harvestable(uint32_t id, uint8_t type, uint8_t tier,
 
 void Harvestable::printInfo()
 {
-	std::cout << std::setw(5) << (unsigned)_id << " " << (unsigned)_type << " " <<
-				 (unsigned)_tier << " " << (unsigned)_enchantment << " " <<
-		std::setw(3) << (unsigned)_charges << " " <<
-		std::setw(8) << _positionX << " " << std::setw(8) << _positionY << "\n";
+	std::cout << std::setw(5) << 
+		(unsigned)_id		   << " " << 
+		(unsigned)_type		   << " " <<
+		(unsigned)_tier		   << " " << 
+		(unsigned)_enchantment << " " << std::setw(3) << 
+		(unsigned)_charges	   << " " << std::setw(8) << 
+		_positionX			   << " " << std::setw(8) << 
+		_positionY			   << "\n";
 }
 
 

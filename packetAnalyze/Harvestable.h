@@ -1,6 +1,51 @@
 #ifndef HARVESTABLE_H
 #define HARVESTABLE_H
 
+// *****************************************************************************
+// ============================== HarvestableFilter ============================
+// *****************************************************************************
+
+struct HarvestableFilter
+{
+    std::vector<uint8_t> _trackingTiers;
+    std::vector<uint8_t> _trackingEnchantments;
+    std::vector<uint8_t> _trackingCharges;
+
+    HarvestableFilter(std::vector<uint8_t> trackingTiers,
+        std::vector<uint8_t> trackingEnchantments,
+        std::vector<uint8_t> trackingCharges);
+    HarvestableFilter();
+};
+
+struct HarvestableListFilter
+{
+    std::vector<HarvestableFilter> _harvestableListFilter = {
+        HarvestableFilter(/*wood*/
+            {4,5,6,7,8},
+            {1,1,1,0,0},
+            {1,1,1,0,0}),
+        HarvestableFilter(/*rock*/
+            {4,5},
+            {1,1},
+            {1,1}),
+        HarvestableFilter(/*fiber*/
+            {4,5,6,7,8},
+            {2,1,1,0,0},
+            {1,1,1,0,0}),
+        HarvestableFilter(/*hide*/
+            /*{4},
+            {1},
+            {1}*/),
+        HarvestableFilter(/*ore*/
+            {4},
+            {1},
+            {1}),
+        HarvestableFilter(/*other*/)
+    };
+
+    size_t size();
+    HarvestableFilter& operator[](size_t elementIndex);
+};
 
 // *****************************************************************************
 // ============================== Harvestable ==================================

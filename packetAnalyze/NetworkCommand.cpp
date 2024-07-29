@@ -39,7 +39,13 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         std::cout << "operationType: " << (unsigned)_operationType << "\n";
     }*/
     //this->printCommandInOneString();
+    //std::cout << "event code: " << _eventCode << "\n";
     if (_operationType == operationType::event) {
+        //DataLayout _dataLayout{};
+        /*if (_eventCode == operationCode::move) {
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
+        }*/
         //if (_eventCode == eventCode::newPlayer) {
         //    _entityList._playerList.newPlayer(Player(*this));
         //    DataLayout _dataLayout{};
@@ -47,53 +53,65 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //    _dataLayout.printInfo(*this);
         //    //this->printCommandInOneString();
         //}
-        
-        //switch (_eventCode)
-        //{
-        //case eventCode::harvestableObjectList:
-        //    _entityList._harvestableList.update(HarvestableList(*this)); 
-        //    break;
-        //case eventCode::harvestableObject:
-        //    _entityList._harvestableList.update(Harvestable(*this)); 
-        //    break;
-        //case eventCode::harvestableChangeState:
-        //    _entityList._harvestableList.updateState(*this); 
-        //    break;
-        //case eventCode::newPlayer:
-        //    _entityList._playerList.newPlayer(Player(*this)); 
-        //    break;
-        //case eventCode::playerLeave:
-        //   _entityList._playerList.playerLeave(Player(*this)); 
-        //   break;
-        //case 65:
-        //    _entityList._playerList.update(Player::playerMove(*this)); 
-        //    break;
-        //case 64:
-        //    _entityList._playerList.update(Player::playerMove(*this)); 
-        //    break;
-        //default:
-        //    break;
-        //}
-        //if (_networkCommand.size() == 67) {
-        //    //this->printCommandInOneString();
-        //    _entityList._playerList.update(Player::playerMove(*this));
-        //}
+        /*std::cout << "event code: " << _eventCode << "\n";
+        DataLayout _dataLayout{};
+        _dataLayout.findDataLayout(*this);
+        _dataLayout.printInfo(*this);*/
+        switch (_eventCode)
+        {
+        case eventCode::harvestableObjectList:
+            _entityList._harvestableList.update(HarvestableList(*this)); 
+            break;
+        case eventCode::harvestableObject:
+            _entityList._harvestableList.update(Harvestable(*this)); 
+            break;
+        case eventCode::harvestableChangeState:
+            _entityList._harvestableList.updateState(*this); 
+            break;
+        case eventCode::newPlayer:
+            _entityList._playerList.newPlayer(Player(*this)); 
+            break;
+        case eventCode::playerLeave:
+            _entityList._playerList.playerLeave(Player(*this)); 
+            break;
+        case eventCode::playerMove:
+            //_entityList._playerList.update(Player::playerMove(*this)); 
+            break;
+        case 65:
+            _entityList._playerList.update(Player::playerMove(*this)); 
+            break;
+        case 66:
+            _entityList._playerList.update(Player::playerMove(*this));
+            break;
+        default:
+            break;
+        }
+        if (_networkCommand.size() == 67 and _networkCommand[66] & (2 << 0)) {
+            //this->printCommandInOneString();
+            /*DataLayout _dataLayout{};
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
+            _entityList._playerList.update(Player::playerMove(*this));
+        }
     }
     if (_operationType == operationType::operationResponse) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
-        std::cout << "event code: " << _eventCode << "\n";
-        DataLayout _dataLayout{};
-        _dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);
+        //std::cout << "event code: " << _eventCode << "\n";
+        //DataLayout _dataLayout{};
+        //_dataLayout.findDataLayout(*this);
+        //_dataLayout.printInfo(*this);
         //this->printCommandInOneString();
         switch (_eventCode) 
         {
         case operationCode::move:
-            //_entityList._player = PlayerSelf(*this);
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
+            //this->printCommandInOneString();
+            _entityList._player = PlayerSelf(*this);
             break;
         case operationCode::changeLocation:
-            //_entityList.changeLocation(); 
+            _entityList.changeLocation(); 
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
@@ -104,9 +122,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            //Auction::findAuctionAverageValues(*this);
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo(*this);
+            /*Auction::findAuctionAverageValues(*this);
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             //counter += 1;
             //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();
@@ -123,14 +141,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     }
     if (_operationType == operationType::operationRequest) {
         //this->printCommandInOneString();
-        /*DataLayout _dataLayout{};
-        _dataLayout.findDataLayout(*this);
+        //DataLayout _dataLayout{};
+        /*_dataLayout.findDataLayout(*this);
         _dataLayout.printInfo(*this);*/
         switch (_eventCode)
         {
         case operationCode::move:
-            /*_entityList._player.update(*this);
-            std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";*/
+            _entityList._player.update(*this);
+            //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
             break;
         case operationCode::auctionBuyOrders:
             /*DataLayout dataLayout;
@@ -149,7 +167,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         _dataLayout.printInfo(*this);*/
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    //_entityList.draw(window);
+    _entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
