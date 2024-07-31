@@ -117,7 +117,8 @@ struct DataFragment
     DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
     DataFragment();
     void printInfo(NetworkCommand& command) const;
-    void printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition) const;
+    void printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition, 
+        bool printPayload = true) const;
 };
 
 
@@ -144,7 +145,7 @@ public:
     DataLayout(std::vector<DataFragment> dataFragments);
     DataLayout();
 
-    void printInfo(NetworkCommand& command) const;
+    void printInfo(NetworkCommand& command, bool printPayload = true) const;
 
     size_t size();
     DataFragment operator[](size_t elementIndex);

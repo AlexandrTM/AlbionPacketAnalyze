@@ -144,6 +144,7 @@
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
     <ClCompile Include="Harvestable.cpp" />
+    <ClCompile Include="MapCluster.cpp" />
     <ClCompile Include="namespace_std.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
     <ClCompile Include="NetworkPacket.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
     <ClInclude Include="Harvestable.h" />
+    <ClInclude Include="MapCluster.h" />
     <ClInclude Include="namespace_std.h" />
     <ClInclude Include="NetworkCommand.h" />
     <ClInclude Include="NetworkPacket.h" />

@@ -138,8 +138,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case operationCode::getClusterMapInfo:
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
+            MapCluster::findClusterData(*this);
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             //this->printCommandInOneString();
             break;
         default:

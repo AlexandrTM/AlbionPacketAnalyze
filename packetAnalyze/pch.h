@@ -25,10 +25,13 @@
 #include "FragmentedCommandsBuffer.h"
 #include "NetworkPacket.h"
 #include "Deserialization.h"
+
 #include "Auction.h"
+#include "MapCluster.h"
 #include "Harvestable.h"
 #include "Player.h"
 #include "Entity.h"
+
 #include "PacketAnalyze.h"
 
 #endif // PCH_H
