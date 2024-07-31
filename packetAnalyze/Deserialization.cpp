@@ -153,12 +153,12 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
     ptrdiff_t endOffset = _offset + _dataType._size * _numOfEntries;
     size_t fragmentLength = endOffset - startOffset + 3;
 
-    std::cout << 
+    /*std::cout << 
         "data type:" << (unsigned)_dataType._dataType << " " <<
         "size: " << (unsigned)_dataType._size << " " <<
         "header size: " << (unsigned)_dataType._headerSize << " " <<
         "offset: " << (unsigned)_offset << " " <<
-        "num of entries: " << (unsigned)_numOfEntries << "\n";
+        "num of entries: " << (unsigned)_numOfEntries << "\n";*/
     
     currentPrintPosition += fragmentLength;
     if (currentPrintPosition > 40) {
@@ -293,6 +293,10 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                         dataTypeSize = DataType::getDataTypeSize(dataType);
                         offset += DataType::getDataTypeHeaderSize(dataType);
                         for (size_t i = 0; i < numOfEntries; i++) {
+                            if (i > 0) {
+                                offset += 3;
+                            }
+
                             dataFragment = DataFragment(
                                 fragmentID,
                                 offset,
@@ -304,9 +308,6 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                             _dataLayout.push_back(dataFragment);
 
                             sizeOfData = dataTypeSize * nestedNumOfEntries;
-                            if (i > 0) {
-                                sizeOfData += 3;
-                            }
                             offset += sizeOfData;
                         }
                     }
@@ -504,7 +505,8 @@ void DataLayout::printInfo(NetworkCommand& command) const
     uint16_t numOfFragmensOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
     std::cout << 
         "num of fragments: " << (unsigned)command[numOfFragmensOffset] << " " <<
-        "event code: " << command.getEventCode() << "\n";
+        "event code: " << command.getEventCode() << " " <<
+        "size: " << command.size() << "\n";
     size_t currentPrintPosition = 0;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         _dataLayout[i].printFragmentInfo(command, currentPrintPosition);

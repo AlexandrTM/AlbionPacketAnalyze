@@ -1,7 +1,7 @@
 #include "pch.h"
 
-std::vector<size_t> nnCodes = {};
-std::vector<size_t> nCodes = {};
+std::vector<uint16_t> nnCodes = {};
+std::vector<uint16_t> nCodes = { 21};
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
 {
@@ -39,22 +39,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         std::cout << "operationType: " << (unsigned)_operationType << "\n";
     }*/
     //this->printCommandInOneString();
-    //std::cout << "event code: " << _eventCode << "\n";
     if (_operationType == operationType::event) {
-        //DataLayout _dataLayout{};
-        /*if (_eventCode == operationCode::move) {
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
-        }*/
-        //if (_eventCode == eventCode::newPlayer) {
-        //    _entityList._playerList.newPlayer(Player(*this));
-        //    DataLayout _dataLayout{};
-        //    _dataLayout.findDataLayout(*this);
-        //    _dataLayout.printInfo(*this);
-        //    //this->printCommandInOneString();
-        //}
-        /*std::cout << "event code: " << _eventCode << "\n";
-        DataLayout _dataLayout{};
+        /*DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);
         _dataLayout.printInfo(*this);*/
         switch (_eventCode)
@@ -102,10 +88,14 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     if (_operationType == operationType::operationResponse) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
-        //std::cout << "event code: " << _eventCode << "\n";
         DataLayout _dataLayout{};
-        /*_dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
+        //if (this->size() != 67 and !std::isElementInVector(nCodes, _eventCode)) {
+        //    DataLayout _dataLayout{};
+        //    _dataLayout.findDataLayout(*this);
+        //    _dataLayout.printInfo(*this);
+        //    /*std::cout << "event code: " << _eventCode << "\n";
+        //    this->printCommandInOneString();*/
+        //}
         //this->printCommandInOneString();
         switch (_eventCode) 
         {
@@ -122,12 +112,20 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo(*this);
             break;
         case operationCode::auctionBuyOrders:
             break;
-        case operationCode::auctionGetFinishedOrders:
+        case operationCode::auctionFinishedOrders: // non standard format
+            //this->printCommandInOneString();
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
+            break;
+        case operationCode::auctionMyOwnAuctions: // non standard format
+            /*this->printCommandInOneString();
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
@@ -139,7 +137,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
-        case 88:
+        case operationCode::getClusterMapInfo:
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
             //this->printCommandInOneString();
             break;
         default:
