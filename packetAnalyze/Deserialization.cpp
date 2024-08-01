@@ -215,6 +215,9 @@ DataFragment DataLayout::findFragment(uint8_t fragmentID) const
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
+            while (_dataLayout[i]._dataType._dataType == dataType::dictionary) {
+                i += 1;
+            }
             return _dataLayout[i];
         }
     }

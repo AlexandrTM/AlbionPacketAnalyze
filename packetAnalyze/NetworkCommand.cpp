@@ -129,16 +129,16 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            /*Auction::findAuctionAverageValues(*this);
+            Auction::findAuctionAverageValues(*this);
             _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+            _dataLayout.printInfo(*this);
             //counter += 1;
             //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case operationCode::getClusterMapInfo:
-            MapCluster::findClusterData(*this);
+            //MapCluster::findClusterData(*this);
             /*_dataLayout.findDataLayout(*this);
             _dataLayout.printInfo(*this);*/
             //this->printCommandInOneString();
