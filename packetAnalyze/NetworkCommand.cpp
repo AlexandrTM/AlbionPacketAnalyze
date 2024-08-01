@@ -130,8 +130,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
             Auction::findAuctionAverageValues(*this);
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             //counter += 1;
             //std::cout << counter << "\n";
             //stop = std::chrono::high_resolution_clock::now();
