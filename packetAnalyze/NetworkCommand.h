@@ -17,12 +17,12 @@ public:
         bool lineBreak = true, bool isHex = true);
 
     void endFragmentedCommand();
-    uint32_t findCommandChainID(std::vector<uint8_t>& rawCommand) const;
+    uint32_t findCommandID(std::vector<uint8_t>& rawCommand) const;
 
     uint8_t getCommandType() const;
     uint8_t getOperationType() const;
     uint16_t getEventCode() const;
-    uint32_t getCommandChainID() const;
+    uint32_t getCommandID() const;
     uint8_t getCommandIndexInChain() const;
 
     uint16_t size();
@@ -42,7 +42,7 @@ private:
     uint8_t _operationType;
     uint16_t _eventCode;
 
-    uint32_t _commandChainID;
+    uint32_t _commandID;
     uint8_t _commandIndexInChain;
 
     uint8_t findCommandIndexInChain(std::vector<uint8_t>& rawCommand) const;

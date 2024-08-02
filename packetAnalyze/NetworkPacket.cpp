@@ -23,6 +23,15 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
 {
     NetworkPacket networkPacket;
 
+    /*std::cout.setf(std::ios::hex, std::ios::basefield);
+    for (size_t i = 0; i < _packetHeaderSize; i++) {
+        if (rawPacket[i] < 16)
+            std::cout << "0";
+        std::cout << (unsigned)rawPacket[i];
+    }
+    std::cout << "\n";
+    std::cout.unsetf(std::ios::hex);*/
+
     uint8_t commandsNumInPacket = rawPacket[3];
     ptrdiff_t offset = _packetHeaderSize;
     for (uint8_t i = 0; i < commandsNumInPacket; i++) {

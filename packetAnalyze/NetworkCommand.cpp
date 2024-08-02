@@ -10,7 +10,7 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
     _operationType = findOperationType(rawCommand);
     _eventCode = findEventCode(rawCommand);
     _commandIndexInChain = findCommandIndexInChain(rawCommand);
-    _commandChainID = findCommandChainID(rawCommand);
+    _commandID = findCommandID(rawCommand);
 }
 NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
 {
@@ -19,7 +19,7 @@ NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
     _operationType = findOperationType(command._networkCommand);
     _eventCode = findEventCode(command._networkCommand);
     _commandIndexInChain = findCommandIndexInChain(command._networkCommand);
-    _commandChainID = findCommandChainID(command._networkCommand);
+    _commandID = findCommandID(command._networkCommand);
 }
 NetworkCommand::NetworkCommand() 
 {
@@ -28,7 +28,7 @@ NetworkCommand::NetworkCommand()
     _operationType = 0;
     _eventCode = 0;
     _commandIndexInChain = 0;
-    _commandChainID = 0;
+    _commandID = 0;
 }
 
 EntityList _entityList{};
@@ -38,7 +38,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     /*if (_operationType != operationType::event) {
         std::cout << "operationType: " << (unsigned)_operationType << "\n";
     }*/
-    //this->printCommandInOneString();
+    /*if (_commandType == commandType::unreliable and this->size() >= 20) {
+        this->printCommandInOneString((size_t)0, 20);
+    }*/
     if (_operationType == operationType::event) {
         /*DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);
@@ -89,6 +91,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         DataLayout _dataLayout{};
+        /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
+                     "event code: " << _eventCode << "\n";*/
         //if (this->size() != 67 and !std::isElementInVector(nCodes, _eventCode)) {
         //    DataLayout _dataLayout{};
         //    _dataLayout.findDataLayout(*this);
@@ -129,18 +133,13 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::findAuctionAverageValues(*this);
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
-            //counter += 1;
-            //std::cout << counter << "\n";
+            Auction::findAuctionAverageValues(*this, ";");
+            //this->printCommandInOneString((size_t)0, 40);
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case operationCode::getClusterMapInfo:
             //MapCluster::findClusterData(*this);
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
             //this->printCommandInOneString();
             break;
         default:
@@ -276,10 +275,13 @@ uint8_t NetworkCommand::findCommandIndexInChain(std::vector<uint8_t>& rawCommand
         return 0;
     }
 }
-uint32_t NetworkCommand::findCommandChainID(std::vector<uint8_t>& rawCommand) const
+uint32_t NetworkCommand::findCommandID(std::vector<uint8_t>& rawCommand) const
 {
     if (_commandType == commandType::fragmented) {
         return net::read_uint32(rawCommand, 12);
+    }
+    else if (_commandType == commandType::reliable) {
+        return net::read_uint32(rawCommand, 8);
     }
     else {
         return 0;
@@ -290,9 +292,9 @@ uint8_t NetworkCommand::getCommandIndexInChain() const
 {
     return _commandIndexInChain;
 }
-uint32_t NetworkCommand::getCommandChainID() const
+uint32_t NetworkCommand::getCommandID() const
 {
-    return _commandChainID;
+    return _commandID;
 }
 uint8_t NetworkCommand::getCommandType() const 
 { 
@@ -344,8 +346,8 @@ bool NetworkCommand::operator!=(NetworkCommand& command)
 }
 bool NetworkCommand::operator==(NetworkCommand& command)
 {
-    uint32_t commandChainID1 = this->findCommandChainID(command._networkCommand);
-    uint32_t commandChainID2 = command.findCommandChainID(command._networkCommand);
+    uint32_t commandChainID1 = this->findCommandID(command._networkCommand);
+    uint32_t commandChainID2 = command.findCommandID(command._networkCommand);
 
     if (commandChainID1 == commandChainID2) {
         return true;

@@ -20,8 +20,8 @@ FragmentedCommandsBuffer::iterator FragmentedCommandsBuffer::erase(iterator it) 
 bool FragmentedCommandsBuffer::isNewFragmentedCommand(NetworkCommand& networkCommand) const
 {
     for (size_t i = 0; i < _fragmentedCommandsBuffer.size(); i++) {
-        if (_fragmentedCommandsBuffer[i][0].getCommandChainID() ==
-            networkCommand.getCommandChainID()) {
+        if (_fragmentedCommandsBuffer[i][0].getCommandID() ==
+            networkCommand.getCommandID()) {
             return false;
         }
     }
@@ -31,7 +31,7 @@ bool FragmentedCommandsBuffer::isNewFragmentedCommand(NetworkCommand& networkCom
 void FragmentedCommandsBuffer::addCommandFragment(NetworkCommand& networkCommand)
 {
     for (size_t i = 0; i < _fragmentedCommandsBuffer.size(); i++) {
-        if (_fragmentedCommandsBuffer[i][0].getCommandChainID() == networkCommand.getCommandChainID()) {
+        if (_fragmentedCommandsBuffer[i][0].getCommandID() == networkCommand.getCommandID()) {
             _fragmentedCommandsBuffer[i].push_back(networkCommand);
             break;
         }

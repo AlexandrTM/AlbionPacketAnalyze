@@ -289,7 +289,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                         fragmentID,
                         offset,
                         sizeOfData,
-                        DataType(1, dataTypeHeaderSize, dataType::int8_string)
+                        DataType(1, dataTypeHeaderSize, dataType)
                     );
 
                     _dataLayout.push_back(dataFragment);

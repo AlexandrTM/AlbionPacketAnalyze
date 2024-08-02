@@ -17,90 +17,99 @@ void Auction::findProductName(NetworkCommand& command, DataLayout& dataLayout)
 //size_t counter = 0;
 uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
 uint16_t numOfColumns = 4;
-//NetworkCommand commandBuffer;
+uint32_t previousCommandID = 0;
 
-void Auction::findAuctionAverageValues(NetworkCommand& command)
+void Auction::findAuctionAverageValues(NetworkCommand& command, std::string dataSeparator)
 {
-	//if (commandBuffer != command) {
+	if (previousCommandID != command.getCommandID()) {
 
-	//counter += 1;
-	//std::cout << counter << "\n";
-	DataLayout dataLayout;
-	dataLayout.findDataLayout(command);
+		//counter += 1;
+		//std::cout << counter << "\n";
+		DataLayout dataLayout;
+		dataLayout.findDataLayout(command);
+		//dataLayout.printInfo(command);
+		//command.printCommandInOneString();
 
-	std::ofstream auctionAverageValues;
+		//std::cout << net::read_uint32(command, dataLayout.findFragment(255)._offset) << "\n";
 
-	auctionAverageValues.open("auctionAverageValues.txt", std::ofstream::app);
-	if (auctionAverageValues.is_open()) {
+		std::ofstream auctionAverageValues;
 
-		DataFragment soldAmountFragment = dataLayout.findFragment(0);
-		DataFragment soldVolumeFragment = dataLayout.findFragment(1);
-		DataFragment dateFragment = dataLayout.findFragment(2);
+		auctionAverageValues.open("auctionAverageValues.csv", std::ofstream::app);
+		if (auctionAverageValues.is_open()) {
 
-		uint16_t numOfEntries = soldAmountFragment._numOfEntries;
+			DataFragment soldAmountFragment = dataLayout.findFragment(0);
+			DataFragment soldVolumeFragment = dataLayout.findFragment(1);
+			DataFragment dateFragment = dataLayout.findFragment(2);
 
-		std::vector<std::vector<std::string>> auctionData(numOfEntries, 
-			std::vector<std::string>(numOfColumns));
+			uint16_t numOfEntries = soldAmountFragment._numOfEntries;
 
-		for (size_t i = 0; i < numOfEntries; i++) {
+			std::vector<std::vector<std::string>> auctionData(numOfEntries, 
+				std::vector<std::string>(numOfColumns));
 
-			uint32_t soldAmount = 0;
-			uint64_t soldVolume = 0;
-			double_t averagePrice = 0;
-			uint64_t date = 0;
+			for (size_t i = 0; i < numOfEntries; i++) {
 
-			uint8_t soldAmountDataTypeSize = soldAmountFragment._dataType._size;
-			if (soldAmountDataTypeSize == 4) {
-				soldAmount = net::read_uint32(command, soldAmountFragment._offset + i * 4);
+				uint32_t soldAmount = 0;
+				uint64_t soldVolume = 0;
+				double_t averagePrice = 0;
+				uint64_t date = 0;
+
+				uint8_t soldAmountDataTypeSize = soldAmountFragment._dataType._size;
+				if (soldAmountDataTypeSize == 4) {
+					soldAmount = net::read_uint32(command, soldAmountFragment._offset + i * 4);
+				}
+				else if (soldAmountDataTypeSize == 2) {
+					soldAmount = net::read_uint16(command, soldAmountFragment._offset + i * 2);
+				}
+				else if (soldAmountDataTypeSize == 1) {
+					soldAmount = net::read_uint8(command, soldAmountFragment._offset + i);
+				}
+				else if (soldAmountDataTypeSize == 8) {
+					soldAmount = net::read_uint64(command, soldAmountFragment._offset + i * 8);
+				}
+
+				uint8_t soldVolumeDataTypeSize = soldVolumeFragment._dataType._size;
+				if (soldVolumeDataTypeSize == 8) {
+					soldVolume = net::read_uint64(command, soldVolumeFragment._offset + i * 8) / 1e+4;
+				}
+				else if (soldVolumeDataTypeSize == 4) {
+					soldVolume = net::read_uint32(command, soldVolumeFragment._offset + i * 4) / 1e+4;
+				}
+				averagePrice = soldAmount > 0 ? (double_t)soldVolume / soldAmount : 0;
+				date = net::read_uint64(command, dateFragment._offset + i * 8) / 1e+7;
+
+				auctionData[i][0] = std::numberToString(soldAmount);
+				auctionData[i][1] = std::numberToString(averagePrice);
+				auctionData[i][2] = std::numberToString(soldVolume);
+				auctionData[i][3] = std::numberToString(date);
 			}
-			else if (soldAmountDataTypeSize == 2) {
-				soldAmount = net::read_uint16(command, soldAmountFragment._offset + i * 2);
-			}
-			else if (soldAmountDataTypeSize == 1) {
-				soldAmount = net::read_uint8(command, soldAmountFragment._offset + i);
-			}
-			else if (soldAmountDataTypeSize == 8) {
-				soldAmount = net::read_uint64(command, soldAmountFragment._offset + i * 8);
-			}
-			soldVolume = net::read_uint64(command, soldVolumeFragment._offset + i * 8) / 1e+4;
-			averagePrice = soldAmount > 0 ? (double_t)soldVolume / soldAmount : 0;
-			date = net::read_uint64(command, dateFragment._offset + i * 8) / 1e+7;
+			//std::cout << auctionData[auctionData.size() - 1][3] << "\n";
 
-			auctionData[i][0] = std::numberToString(soldAmount);
-			auctionData[i][1] = std::numberToString(averagePrice);
-			auctionData[i][2] = std::numberToString(soldVolume);
-			auctionData[i][3] = std::numberToString(date);
+			size_t IDOfSortingRow = 3;
+			std::sort(auctionData.begin(), auctionData.end(),
+				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
+				});
+
+			addEmptyEntries(auctionData);
+
+			std::sort(auctionData.begin(), auctionData.end(),
+				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
+				});
+
+			for (size_t i = 0; i < numOfColumns; i++) {
+				for (size_t j = 0; j < auctionData.size(); j++) {
+					auctionAverageValues << auctionData[j][i] << dataSeparator;
+				}
+				auctionAverageValues << "\n";
+			}
+			auctionAverageValues.close();
 		}
-		//std::cout << auctionData[auctionData.size() - 1][3] << "\n";
-
-		size_t IDOfSortingRow = 3;
-		std::sort(auctionData.begin(), auctionData.end(),
-			[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-				return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
-			});
-
-		addEmptyEntries(auctionData);
-
-		std::sort(auctionData.begin(), auctionData.end(),
-			[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-				return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
-			});
-
-		for (size_t i = 0; i < numOfColumns; i++) {
-			for (size_t j = 0; j < auctionData.size(); j++) {
-				auctionAverageValues << auctionData[j][i] << ",";
-			}
-			auctionAverageValues << "\n";
+		else {
+			std::cout << "auctionAverageValues is not opened" << "\n";
 		}
-		auctionAverageValues.close();
 	}
-	else {
-		std::cout << "auctionAverageValues is not opened" << "\n";
-	}
-	//}
-
-	//command.printCommandInOneString();
-	//commandBuffer = command;
+	previousCommandID = command.getCommandID();
 }
 
 void Auction::addEmptyEntries(std::vector<std::vector<std::string>>& auctionData) 
