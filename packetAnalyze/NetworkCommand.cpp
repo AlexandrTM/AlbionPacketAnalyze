@@ -109,11 +109,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //this->printCommandInOneString();
             _entityList._player = PlayerSelf(*this);
             break;
-        case operationCode::changeLocation:
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
-            _entityList.changeLocation(); 
-            break;
+        /*case operationCode::changeLocation: // other player changing location not only me
+            _entityList.changeLocation(*this); 
+            break;*/
         case operationCode::auctionSellOrders:
             //this->printCommandInOneString();
             //_dataLayout.findDataLayout(*this);
@@ -133,7 +131,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case operationCode::auctionAverageValues:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::findAuctionAverageValues(*this, ";");
+            Auction::findAuctionAverageValues(*this, ",");
             //this->printCommandInOneString((size_t)0, 40);
             //stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
@@ -159,6 +157,11 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._player.update(*this);
             //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
             break;
+        case operationCode::changeLocation:
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
+            _entityList.changeLocation(*this);
+            break;
         case operationCode::auctionBuyOrders:
             /*DataLayout dataLayout;
             dataLayout.findDataLayout(*this);
@@ -176,7 +179,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         _dataLayout.printInfo(*this);*/
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
-    //_entityList.draw(window);
+    _entityList.draw(window);
 }
 
 void NetworkCommand::printCommand()
