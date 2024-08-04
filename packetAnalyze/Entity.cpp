@@ -13,7 +13,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
-    drawPlayers();
+    //drawPlayers();
 
     glfwSwapBuffers(window);
 }
@@ -46,8 +46,29 @@ bool EntityList::filterHarvestable(Harvestable harvestable)
     }
     return false;
 }
-void EntityList::changeLocation()
+uint32_t currentLocationID = 0;
+void EntityList::changeLocation(NetworkCommand& command)
 {
+    /*DataLayout dataLayout{};
+    dataLayout.findDataLayout(command);
+    dataLayout.printInfo(command);
+
+    DataFragment locationIDFragment = dataLayout.findFragment(0);
+    uint8_t locationIDSize = locationIDFragment._dataType._size;
+    uint32_t newLocationID = 0;
+    if 
+        (locationIDSize == 2) { newLocationID = net::read_uint16(command, locationIDFragment._offset); }
+    else if 
+        (locationIDSize == 4) { newLocationID = net::read_uint32(command, locationIDFragment._offset); }
+    else if
+        (locationIDSize == 1) { newLocationID = net::read_uint8(command, locationIDFragment._offset); }
+    std::cout << "location ID: " << newLocationID << "\n";
+
+    Location::update(
+        _locations, 
+        _harvestableList, _playerList, 
+        newLocationID
+    );*/
     _harvestableList = {};
     _playerList = {};
 
@@ -107,7 +128,7 @@ void EntityList::drawHarvestables()
 
             glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
-            colorizeHarvestableEnchantment(_harvestableList[i]);
+            colorizeHarvestable(_harvestableList[i]);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
             glEnd();
 
@@ -123,6 +144,41 @@ void EntityList::drawHarvestables()
     glPointSize(2);
     glColor3f(0.85, 0.85, 0.85);
     DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)45 / 400, 25);
+}
+
+std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)
+{
+    switch (enchantment)
+    {
+    case 0:
+        return { 0.7f, 0.7f, 0.7f }; break;
+    case 1:
+        return { 0.34f, 0.82f, 0.54f }; break;
+    case 2:
+        return { 0.27f, 0.54f, 0.92f }; break;
+    case 3:
+        return { 0.75f, 0.65f, 0.93f }; break;
+    case 4:
+        return { 0.88f, 0.92f, 0.64f }; break;
+    default:
+        return { 1, 0, 1 }; break;
+    }
+}
+void EntityList::colorizeHarvestable(Harvestable harvestable)
+{
+    std::vector<GLfloat> color = returnEnchantmentColor(harvestable._enchantment);
+
+    if (harvestable._charges == 0) {
+        for (size_t i = 0; i < color.size(); i++) {
+            color[i] /= 1.6f;
+        }
+    }
+    else {
+        for (size_t i = 0; i < color.size(); i++) {
+            color[i] += (harvestable._tier - 4) * 0.033f;
+        }
+    }
+    glColor3f(color[0], color[1], color[2]);
 }
 
 void EntityList::drawPlayers()
@@ -163,46 +219,12 @@ void EntityList::drawPlayers()
         }
     }
 }
-
-std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)
-{
-    switch (enchantment)
-    {
-    case 0:
-        return { 0.7f, 0.7f, 0.7f }; break;
-    case 1:
-        return { 0.34f, 0.82f, 0.54f }; break;
-    case 2:
-        return { 0.27f, 0.54f, 0.92f }; break;
-    case 3:
-        return { 0.75f, 0.65f, 0.93f }; break;
-    case 4:
-        return { 0.88f, 0.92f, 0.64f }; break;
-    default:
-        return { 1, 0, 1 }; break;
-    }
-}
-void EntityList::colorizeHarvestableEnchantment(Harvestable harvestable)
-{
-    std::vector<GLfloat> color = returnEnchantmentColor(harvestable._enchantment);
-    
-    if (harvestable._charges == 0) {
-        for (size_t i = 0; i < color.size(); i++) {
-            color[i] /= 1.6f;
-        }
-    }
-    else {
-        for (size_t i = 0; i < color.size(); i++) {
-            color[i] += (harvestable._tier - 4) * 0.033f;
-        }
-    }
-    glColor3f(color[0], color[1], color[2]);
-}
-void EntityList::colorizeHarvestableTier(Harvestable harvestable, size_t chargeID)
+void EntityList::colorizeHarvestableCharge(Harvestable harvestable, size_t chargeID)
 {
     glColor3f(0.55 + 0.04f * chargeID, 0.4 + 0.04f * chargeID, 0.5 + 0.04f * chargeID);
 }
-void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, std::vector<float> playerCoords)
+void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, 
+    std::vector<float> playerCoords)
 {
     float_t chargeSize = 12;
     glPointSize(chargeSize);
@@ -216,7 +238,7 @@ void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvest
     uint8_t charges = harvestable._charges;
 
     for (size_t j = 0; j < charges; j++) {
-        colorizeHarvestableTier(harvestable, j);
+        colorizeHarvestableCharge(harvestable, j);
 
         x = (harvestableCoords[0] - playerCoords[0]) * _pixelsInMeter;
         y = (harvestableCoords[1] - playerCoords[1]) * _pixelsInMeter;
@@ -261,3 +283,38 @@ float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
+
+// **************************************************************************
+// ============================== Location ==================================
+// **************************************************************************
+
+
+Location::Location(uint16_t locationID, HarvestableList harvestableList, PlayerList playerList)
+{
+    _locationID = locationID;
+    _harvestableList = harvestableList;
+    _playerList = playerList;
+}
+
+void Location::update(
+    std::vector<Location>& locations, 
+    HarvestableList& currentHarvestableList, PlayerList& currentPlayerList, 
+    uint16_t newLocationID)
+{
+    if (locations.size() == 0) {
+        locations.push_back(Location(newLocationID, HarvestableList(), PlayerList()));
+        currentHarvestableList = {};
+        currentPlayerList = {};
+    }
+    else {
+        for (size_t i = 0; i < locations.size(); i++) {
+            if (locations[i]._locationID == newLocationID) {
+                currentHarvestableList = locations[i]._harvestableList;
+                currentPlayerList = locations[i]._playerList;
+                return;
+            }
+        }
+        currentHarvestableList = {};
+        currentPlayerList = {};
+    }
+}
