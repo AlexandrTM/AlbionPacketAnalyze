@@ -101,19 +101,18 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         DataLayout _dataLayout{};
+        /*_dataLayout.findDataLayout(*this);
+        _dataLayout.printInfo(*this);*/
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << _eventCode << "\n";*/
-        //if (_eventCode == 2) {
-        //    _dataLayout.findDataLayout(*this);
-        //    _dataLayout.printInfo(*this);
-        //    //this->printCommandInOneString();
-        //}
+        if (_eventCode == 2) {
+            //this->printCommandInOneString();
+        }
         switch (_eventCode) 
         {
         case operationCode::joinLocation:
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);
-            //this->printCommandInOneString();
+            Location::changeLocation(*this, _entityList._locations, 
+                _entityList._harvestableList, _entityList._playerList);
             break;
         case operationCode::move:
             /*_dataLayout.findDataLayout(*this);

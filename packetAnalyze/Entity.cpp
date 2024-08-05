@@ -13,7 +13,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
-    drawPlayers();
+    //drawPlayers();
 
     glfwSwapBuffers(window);
 }
@@ -69,8 +69,6 @@ void EntityList::changeLocation(NetworkCommand& command)
         _harvestableList, _playerList, 
         newLocationID
     );*/
-    _harvestableList = {};
-    _playerList = {};
 
     if (abs(_player._positionX) >= abs(_player._positionY)) {
         _player._positionX = _player._positionX * -1;
@@ -295,25 +293,39 @@ Location::Location(uint16_t locationID, HarvestableList harvestableList, PlayerL
     _playerList = playerList;
 }
 
-void Location::update(
+void Location::changeLocation(
+    NetworkCommand& command,
     std::vector<Location>& locations, 
-    HarvestableList& currentHarvestableList, PlayerList& currentPlayerList, 
-    uint16_t newLocationID)
+    HarvestableList& currentHarvestableList, PlayerList& currentPlayerList)
 {
-    if (locations.size() == 0) {
-        locations.push_back(Location(newLocationID, HarvestableList(), PlayerList()));
-        currentHarvestableList = {};
-        currentPlayerList = {};
+    DataLayout dataLayout{};
+    dataLayout.findDataLayout(command);
+    //_dataLayout.printInfo(*this);
+    DataFragment locationFromFragment = dataLayout.findFragment(65);
+    DataFragment locationToFragment = dataLayout.findFragment(8);
+    std::string locationFrom = "";
+    std::string locationTo = "";
+    for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
+        locationFrom += (unsigned)command[locationFromFragment._offset + i];
     }
-    else {
-        for (size_t i = 0; i < locations.size(); i++) {
-            if (locations[i]._locationID == newLocationID) {
-                currentHarvestableList = locations[i]._harvestableList;
-                currentPlayerList = locations[i]._playerList;
-                return;
-            }
+    for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
+        locationTo += (unsigned)command[locationToFragment._offset + i];
+    }
+    std::cout << "from: " << locationFrom << " -> " << "to: " << locationTo << "\n";
+
+    for (size_t i = 0; i < locations.size(); i++) {
+        //std::cout << locations[i]._locationID << " : " << std::stoi(locationTo) << "\n";
+        if (locations[i]._locationID == std::stoi(locationTo)) {
+            locations.push_back(Location(
+                std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
+            currentHarvestableList = locations[i]._harvestableList;
+            currentPlayerList = {};
+            //currentPlayerList = locations[i]._playerList;
+            return;
         }
-        currentHarvestableList = {};
-        currentPlayerList = {};
     }
+    locations.push_back(Location(
+        std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
+    currentHarvestableList = {};
+    currentPlayerList = {};
 }
