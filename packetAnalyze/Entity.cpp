@@ -49,27 +49,6 @@ bool EntityList::filterHarvestable(Harvestable harvestable)
 uint32_t currentLocationID = 0;
 void EntityList::changeLocation(NetworkCommand& command)
 {
-    /*DataLayout dataLayout{};
-    dataLayout.findDataLayout(command);
-    dataLayout.printInfo(command);
-
-    DataFragment locationIDFragment = dataLayout.findFragment(0);
-    uint8_t locationIDSize = locationIDFragment._dataType._size;
-    uint32_t newLocationID = 0;
-    if 
-        (locationIDSize == 2) { newLocationID = net::read_uint16(command, locationIDFragment._offset); }
-    else if 
-        (locationIDSize == 4) { newLocationID = net::read_uint32(command, locationIDFragment._offset); }
-    else if
-        (locationIDSize == 1) { newLocationID = net::read_uint8(command, locationIDFragment._offset); }
-    std::cout << "location ID: " << newLocationID << "\n";
-
-    Location::update(
-        _locations, 
-        _harvestableList, _playerList, 
-        newLocationID
-    );*/
-
     if (abs(_player._positionX) >= abs(_player._positionY)) {
         _player._positionX = _player._positionX * -1;
     }
@@ -311,14 +290,28 @@ void Location::changeLocation(
     for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
         locationTo += (unsigned)command[locationToFragment._offset + i];
     }
-    std::cout << "from: " << locationFrom << " -> " << "to: " << locationTo << "\n";
 
+    auto timeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char timeBuffer[30];
+    ctime_s(timeBuffer, sizeof(timeBuffer), &timeNow);
+    std::cout <<
+        "from: " << locationFrom << " -> " <<
+        "to: "   << locationTo << "\n" <<
+                    timeBuffer << "\n";
+
+    std::sort(currentHarvestableList.begin(), currentHarvestableList.end(), 
+        [](const Harvestable& a, const Harvestable& b) {
+            return a._id < b._id;
+        });
+
+    currentHarvestableList.printInfo();
     for (size_t i = 0; i < locations.size(); i++) {
         //std::cout << locations[i]._locationID << " : " << std::stoi(locationTo) << "\n";
         if (locations[i]._locationID == std::stoi(locationTo)) {
             locations.push_back(Location(
                 std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
             currentHarvestableList = locations[i]._harvestableList;
+            //locations[i].printInfo();
             currentPlayerList = {};
             //currentPlayerList = locations[i]._playerList;
             return;
@@ -328,4 +321,9 @@ void Location::changeLocation(
         std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
     currentHarvestableList = {};
     currentPlayerList = {};
+}
+
+void Location::printInfo()
+{
+    _harvestableList.printInfo();
 }

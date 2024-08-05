@@ -100,14 +100,14 @@ Harvestable::Harvestable(uint32_t id, uint8_t type, uint8_t tier,
 void Harvestable::printInfo()
 {
 	std::cout << 
-		"id: "			<< std::setw(6) << (unsigned)_id		  << " " <<
+		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
 		"type: "		<< std::setw(2) << (unsigned)_type		  << " " <<
 		std::setw(7)    << getHarvestableTextType(_type)		  << " " <<
 		"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " <<
 		"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " <<
 		"charges: "     << std::setw(2) << (unsigned)_charges	  << " " <<
-		"x: "			<< std::setw(5) << _positionX			  << " " <<
-		"y: "			<< std::setw(5) << _positionY			  << "\n";
+		"x: "			<< std::setw(6) << _positionX			  << " " <<
+		"y: "			<< std::setw(6) << _positionY			  << "\n";
 }
 std::string Harvestable::getHarvestableTextType(uint8_t type)
 {
@@ -210,6 +210,7 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 
 void HarvestableList::printInfo()
 {
+	std::cout << "Num of harvestables: " << _harvestableList.size() << "\n";
 	for (size_t i = 0; i < _harvestableList.size(); i++) {
 		_harvestableList[i].printInfo();
 	}
@@ -247,6 +248,13 @@ void HarvestableList::update(HarvestableList harvestableList)
 	for (size_t i = 0; i < harvestableList.size(); i++) {
 		this->update(harvestableList[i]);
 	}
+}
+HarvestableList::iterator HarvestableList::begin() {
+	return _harvestableList.begin();
+}
+
+HarvestableList::iterator HarvestableList::end() {
+	return _harvestableList.end();
 }
 Harvestable& HarvestableList::operator[](size_t elementIndex)
 {

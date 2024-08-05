@@ -46,17 +46,13 @@ struct HarvestableListFilter
 
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
-            { 1, 2, 3, 4, 5, 6, 7, 8 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 }),
+            ),
         HarvestableFilter(/*rock*/
-            { 1, 2, 3, 4, 5, 6, 7, 8 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 }),
+            ),
         HarvestableFilter(/*fiber*/
-            { 1, 2, 3, 4, 5, 6, 7, 8 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0 }),
+            { 4, 5 },
+            { 1, 1 },
+            { 0, 0 }),
         HarvestableFilter(/*hide*/
             ),
         HarvestableFilter(/*ore*/
@@ -110,23 +106,25 @@ struct Harvestable
 // *****************************************************************************
 
 
-class HarvestableList
+struct HarvestableList
 {
-private:
 	std::vector<Harvestable> _harvestableList;
 
-public:
+    using iterator = std::vector<Harvestable>::iterator;
+
 	HarvestableList();
 	HarvestableList(NetworkCommand& harvestableRawList);
 
-	void updateState(NetworkCommand& updateState);
-
 	void printInfo();
 
-	void clear();
-	size_t size();
+    void updateState(NetworkCommand& updateState);
 	void update(Harvestable harvestable);
 	void update(HarvestableList harvestableList);
+
+    void clear();
+    size_t size();
+    iterator begin();
+    iterator end();
 
 	Harvestable& operator[](size_t elementIndex);
 	HarvestableList& operator+=(HarvestableList harvestableList);

@@ -19,6 +19,8 @@ struct Location
         std::vector<Location>& locations,
         HarvestableList& currentHarvestableList, PlayerList& currentPlayerList
     );
+
+    void printInfo();
 };
 
 
