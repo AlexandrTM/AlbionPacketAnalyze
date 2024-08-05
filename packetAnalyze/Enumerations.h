@@ -17,6 +17,7 @@ enum commandType: uint8_t
 };
 enum operationCode : uint16_t
 {
+    joinLocation = 2,
     move = 21,
     changeLocation = 35,
     auctionSellOrders = 75,
@@ -41,11 +42,12 @@ enum eventCode : uint16_t
     harvestableObjectList = 39,
     harvestableObject = 40,
     newSilverObject = 43,
+    newBuilding = 45,
     harvestableChangeState = 46,
     harvestStart = 55,
     harvestFinished = 57,
     equipmentChanged = 85,
-    newMob = 117,
+    newMob = 123,
     newRandomDungeonExit = 307,
 
 };
@@ -54,7 +56,7 @@ enum resourceType : uint8_t
 {
     WOOD = 0,
     ROCK = 6,
-    FIBER = 11,
+    FIBER = 12,
     HIDE = 15,
     ORE = 23,
     OTHER = 28,
@@ -63,6 +65,7 @@ enum resourceType : uint8_t
 // header size, type size, num of entries
 enum dataType : uint16_t
 {
+    nested = 68, // actually some nested type
     int8 = 98,
     float32 = 102,
     int32 = 105,

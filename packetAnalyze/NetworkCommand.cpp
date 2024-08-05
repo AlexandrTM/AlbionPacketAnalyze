@@ -1,7 +1,7 @@
 #include "pch.h"
 
 std::vector<uint16_t> nnCodes = {};
-std::vector<uint16_t> nCodes = { 21};
+std::vector<uint16_t> nCodes = { /*38, 37, 36, 35, 34, 33, 32, 41, 42, 44*/ };
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
 {
@@ -34,7 +34,12 @@ NetworkCommand::NetworkCommand()
 EntityList _entityList{};
 size_t counter = 0;
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
-{   
+{
+    DataLayout _dataLayout{};
+    if (std::isElementInVector(nCodes, _eventCode)) {
+        _dataLayout.findDataLayout(*this);
+        _dataLayout.printInfo(*this);
+    }
     /*if (_operationType != operationType::event) {
         std::cout << "operationType: " << (unsigned)_operationType << "\n";
     }*/
@@ -42,16 +47,17 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         this->printCommandInOneString((size_t)0, 20);
     }*/
     if (_operationType == operationType::event) {
-        /*DataLayout _dataLayout{};
-        _dataLayout.findDataLayout(*this);
+        DataLayout _dataLayout{};
+        /*_dataLayout.findDataLayout(*this);
         _dataLayout.printInfo(*this);*/
+        
         switch (_eventCode)
         {
         case eventCode::harvestableObjectList:
-            _entityList._harvestableList.update(HarvestableList(*this)); 
+            _entityList._harvestableList.update(HarvestableList(*this));
             break;
         case eventCode::harvestableObject:
-            _entityList._harvestableList.update(Harvestable(*this)); 
+            _entityList._harvestableList.update(Harvestable(*this));
             break;
         case eventCode::harvestableChangeState:
             _entityList._harvestableList.updateState(*this); 
@@ -70,6 +76,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             break;
         case 66:
             _entityList._playerList.update(Player::playerMove(*this));
+            break;
+        case eventCode::newMob:
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             break;
         default:
             break;
@@ -93,16 +103,18 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         DataLayout _dataLayout{};
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << _eventCode << "\n";*/
-        //if (this->size() != 67 and !std::isElementInVector(nCodes, _eventCode)) {
-        //    DataLayout _dataLayout{};
+        //if (_eventCode == 2) {
         //    _dataLayout.findDataLayout(*this);
         //    _dataLayout.printInfo(*this);
-        //    /*std::cout << "event code: " << _eventCode << "\n";
-        //    this->printCommandInOneString();*/
+        //    //this->printCommandInOneString();
         //}
-        //this->printCommandInOneString();
         switch (_eventCode) 
         {
+        case operationCode::joinLocation:
+            _dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);
+            //this->printCommandInOneString();
+            break;
         case operationCode::move:
             /*_dataLayout.findDataLayout(*this);
             _dataLayout.printInfo(*this);*/
@@ -137,6 +149,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case operationCode::getClusterMapInfo:
+            /*_dataLayout.findDataLayout(*this);
+            _dataLayout.printInfo(*this);*/
             //MapCluster::findClusterData(*this);
             //this->printCommandInOneString();
             break;
@@ -148,9 +162,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     }
     if (_operationType == operationType::operationRequest) {
         //this->printCommandInOneString();
-        //DataLayout _dataLayout{};
-        /*_dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
+        /*DataLayout _dataLayout{};
+        _dataLayout.findDataLayout(*this);
+        _dataLayout.printInfo(*this, false);*/
         switch (_eventCode)
         {
         case operationCode::move:

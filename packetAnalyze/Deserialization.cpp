@@ -25,6 +25,8 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
         return 4;
     case dataType::int64:
         return 8;
+    case dataType::nested:
+        return 0;
     case dataType::dictionary:
         return 0;
     default:
@@ -48,12 +50,45 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::int64:
         return 1;
+    case dataType::nested:
+        return 1;
     case dataType::int8_list:
         return 5;
     case dataType::int8_string:
         return 3;
     case dataType::dictionary:
         return 3;
+    default:
+        std::cout << "new data type!" << "\n";
+        return 1;
+        break;
+    }
+}
+
+uint16_t DataType::getNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset)
+{
+    switch (dataType)
+    {
+    case dataType::int8:
+        return 1;
+    case dataType::uint8:
+        return 1;
+    case dataType::int16:
+        return 1;
+    case dataType::float32:
+        return 1;
+    case dataType::int32:
+        return 1;
+    case dataType::int64:
+        return 1;
+    case dataType::nested:
+        return (command[offset + 3] << 8) | command[offset + 4];;
+    case dataType::int8_list:
+        return (command[offset + 3] << 8) | command[offset + 4];
+    case dataType::int8_string:
+        return (command[offset + 1] << 8) | command[offset + 2];
+    case dataType::dictionary:
+        return (command[offset + 1] << 8) | command[offset + 2];
     default:
         return 0;
         break;
@@ -77,35 +112,6 @@ DataType::DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dat
 // **************************************************************************
 // ============================== DataFragment ==============================
 // **************************************************************************
-
-
-uint16_t DataFragment::findNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset)
-{
-    switch (dataType)
-    {
-    case dataType::int8:
-        return 1;
-    case dataType::uint8:
-        return 1;
-    case dataType::int16:
-        return 1;
-    case dataType::float32:
-        return 1;
-    case dataType::int32:
-        return 1;
-    case dataType::int64:
-        return 1;
-    case dataType::int8_list:
-        return (command[offset + 3] << 8) | command[offset + 4];
-    case dataType::int8_string:
-        return (command[offset + 1] << 8) | command[offset + 2];
-    case dataType::dictionary:
-        return (command[offset + 1] << 8) | command[offset + 2];
-    default:
-        return 0;
-        break;
-    }
-}
 ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
 {
     switch (command.getCommandType())
@@ -260,7 +266,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             offset += 1;
             dataType = command[offset];
 
-            numOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+            numOfEntries = DataType::getNumOfEntries(command, dataType, offset);
             /*if (dataType == dataType::int16) {
                 std::cout << "numOfEntries: " << numOfEntries << " ";
             }*/
@@ -295,7 +301,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     _dataLayout.push_back(dataFragment);
                 }
                 else if (dataType == dataType::dictionary) {
-                    uint16_t nestedNumOfEntries = DataFragment::findNumOfEntries(
+                    uint16_t nestedNumOfEntries = DataType::getNumOfEntries(
                         command, dataType, offset);
                     offset += 3;
                     dataTypeHeaderSize = 3;
@@ -334,14 +340,14 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     }
                 }
                 else if (dataType == dataType::int8_list || dataType == dataType::int8_string) {
-                    uint16_t nestedNumOfEntries = DataFragment::findNumOfEntries(command, dataType, offset);
+                    uint16_t nestedNumOfEntries = DataType::getNumOfEntries(command, dataType, offset);
                     uint8_t nestedDataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
                     dataTypeHeaderSize = DataType::getDataTypeHeaderSize(dataType);
 
                     offset += 1;
                     for (size_t i = 0; i < numOfEntries; i++) {
                         offset += nestedDataTypeHeaderSize - 1;
-                        sizeOfData = DataFragment::findNumOfEntries(command, dataType, offset - nestedDataTypeHeaderSize);
+                        sizeOfData = DataType::getNumOfEntries(command, dataType, offset - nestedDataTypeHeaderSize);
 
                         dataFragment = DataFragment(
                             fragmentID,
@@ -383,6 +389,39 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     sizeOfData = dataTypeSize * numOfEntries;
                     offset += sizeOfData;
                 }
+            }
+            else if (dataType == dataType::nested) {
+                numOfEntries = DataType::getNumOfEntries(command, dataType, offset);
+
+                offset += 1;
+                              dataType     = command[offset];
+                              dataTypeSize = DataType::getDataTypeSize(dataType);
+                uint8_t nestedDataType     = command[offset + 1];
+                uint8_t nestedDataTypeSize = DataType::getDataTypeSize(nestedDataType);
+
+                sizeOfData = 
+                    dataTypeSize + 
+                    numOfEntries * nestedDataTypeSize +
+                    (numOfEntries > 0 ? dataTypeSize : 0);
+
+                dataFragment = DataFragment(
+                    fragmentID,
+                    offset,
+                    numOfEntries,
+                    DataType(nestedDataTypeSize, dataTypeSize, dataType::nested)
+                );
+                std::cout <<
+                    "offset: "         << (unsigned)dataFragment._offset << " " <<
+                    std::hex <<
+                    "fragment id: "    << (unsigned)fragmentID           << " " <<
+                    "data type: "      << (unsigned)dataType             << " " <<
+                    std::dec <<
+                    "size: "           << (unsigned)dataTypeSize         << " " <<
+                    "header size: "    << (unsigned)dataTypeHeaderSize   << " " <<
+                    "num of entries: " << (unsigned)numOfEntries         << " " <<
+                    "size of data: "   << (unsigned)sizeOfData           << "\n";
+
+                offset += sizeOfData;
             }
             else {
                 dataTypeSize = DataType::getDataTypeSize(dataType);
