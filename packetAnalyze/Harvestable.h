@@ -50,9 +50,9 @@ struct HarvestableListFilter
         HarvestableFilter(/*rock*/
             ),
         HarvestableFilter(/*fiber*/
-            {1,2,3,4},
-            {0,0,0,1},
-            {0,0,0,0}),
+            { 4, 5 },
+            { 1, 1 },
+            { 0, 0 }),
         HarvestableFilter(/*hide*/
             ),
         HarvestableFilter(/*ore*/
@@ -60,9 +60,11 @@ struct HarvestableListFilter
         HarvestableFilter(/*other*/)
     };
 
-    /*{ 3, 4, 5, 6, 7, 8 },
-    { 0,2,1,0,0,0 },
-    { 0,0,0,0,0,0 }*/
+    /*
+    { 4, 5, 6, 7, 8 },
+    { 2, 1, 0, 0, 0 },
+    { 0, 0, 0, 0, 0 }
+    */
 
     size_t size();
     HarvestableFilter& operator[](size_t elementIndex);
@@ -90,6 +92,7 @@ struct Harvestable
 	Harvestable(NetworkCommand& harvestableRaw);
 
 	void printInfo();
+    static std::string getHarvestableTextType(uint8_t type);
 };
 
 

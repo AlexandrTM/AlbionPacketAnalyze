@@ -13,7 +13,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
-    //drawPlayers();
+    drawPlayers();
 
     glfwSwapBuffers(window);
 }
@@ -125,7 +125,6 @@ void EntityList::drawHarvestables()
             harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
                                                             _harvestableList[i]._positionY);
             
-
             glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
             colorizeHarvestable(_harvestableList[i]);
@@ -246,7 +245,7 @@ void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvest
                                         playerCoords[0], playerCoords[1]);
         mapCoords = convertToMapCoordinates(x, y);
 
-        if (distance > 16 and distance < 50) {
+        if (distance > 10 and distance < 50) {
             glVertex2f(mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / 400,
                 mapCoords[1] / distance * 8.5f + 0.24f);
         }

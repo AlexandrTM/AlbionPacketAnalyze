@@ -96,6 +96,7 @@ struct DataType
 
     static uint8_t getDataTypeSize(uint8_t dataType);
     static uint8_t getDataTypeHeaderSize(uint8_t dataType);
+    static uint16_t getNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset);
 };
 
 
@@ -112,7 +113,6 @@ struct DataFragment
     DataType _dataType;
 
     static ptrdiff_t findFragmentsNumOffset(NetworkCommand& command);
-    static uint16_t findNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset);
 
     DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
     DataFragment();
