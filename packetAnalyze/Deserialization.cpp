@@ -410,7 +410,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     numOfEntries,
                     DataType(nestedDataTypeSize, dataTypeSize, dataType::nested)
                 );
-                std::cout <<
+                /*std::cout <<
                     "offset: "         << (unsigned)dataFragment._offset << " " <<
                     std::hex <<
                     "fragment id: "    << (unsigned)fragmentID           << " " <<
@@ -419,7 +419,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     "size: "           << (unsigned)dataTypeSize         << " " <<
                     "header size: "    << (unsigned)dataTypeHeaderSize   << " " <<
                     "num of entries: " << (unsigned)numOfEntries         << " " <<
-                    "size of data: "   << (unsigned)sizeOfData           << "\n";
+                    "size of data: "   << (unsigned)sizeOfData           << "\n";*/
 
                 offset += sizeOfData;
             }

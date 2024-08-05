@@ -14,10 +14,10 @@ struct Location
     PlayerList _playerList = {};
 
     Location(uint16_t locationID, HarvestableList harvestableList, PlayerList playerList);
-    static void update(
+    static void changeLocation(
+        NetworkCommand& command,
         std::vector<Location>& locations,
-        HarvestableList& currentHarvestableList, PlayerList& currentPlayerList,
-        uint16_t newLocationID
+        HarvestableList& currentHarvestableList, PlayerList& currentPlayerList
     );
 };
 
