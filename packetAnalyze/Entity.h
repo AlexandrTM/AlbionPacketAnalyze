@@ -9,11 +9,11 @@
 
 struct Location
 {
-    uint16_t _locationID = 0;
+    std::string _locationID = "";
     HarvestableList _harvestableList = {};
     PlayerList _playerList = {};
 
-    Location(uint16_t locationID, HarvestableList harvestableList, PlayerList playerList);
+    Location(std::string locationID, HarvestableList harvestableList, PlayerList playerList);
     static void changeLocation(
         NetworkCommand& command,
         std::vector<Location>& locations,

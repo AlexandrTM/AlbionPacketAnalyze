@@ -57,7 +57,7 @@ enum resourceType : uint8_t
     WOOD = 0,
     ROCK = 6,
     FIBER = 12,
-    HIDE = 15,
+    HIDE = 17,
     ORE = 23,
     OTHER = 28,
 };
