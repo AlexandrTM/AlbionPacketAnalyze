@@ -13,7 +13,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
-    //drawPlayers();
+    drawPlayers();
 
     glfwSwapBuffers(window);
 }
@@ -265,7 +265,7 @@ float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 // **************************************************************************
 
 
-Location::Location(uint16_t locationID, HarvestableList harvestableList, PlayerList playerList)
+Location::Location(std::string locationID, HarvestableList harvestableList, PlayerList playerList)
 {
     _locationID = locationID;
     _harvestableList = harvestableList;
@@ -307,9 +307,9 @@ void Location::changeLocation(
     currentHarvestableList.printInfo();
     for (size_t i = 0; i < locations.size(); i++) {
         //std::cout << locations[i]._locationID << " : " << std::stoi(locationTo) << "\n";
-        if (locations[i]._locationID == std::stoi(locationTo)) {
+        if (locations[i]._locationID == locationTo) {
             locations.push_back(Location(
-                std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
+                locationFrom, currentHarvestableList, currentPlayerList));
             currentHarvestableList = locations[i]._harvestableList;
             //locations[i].printInfo();
             currentPlayerList = {};
@@ -318,7 +318,7 @@ void Location::changeLocation(
         }
     }
     locations.push_back(Location(
-        std::stoi(locationFrom), currentHarvestableList, currentPlayerList));
+        locationFrom, currentHarvestableList, currentPlayerList));
     currentHarvestableList = {};
     currentPlayerList = {};
 }
