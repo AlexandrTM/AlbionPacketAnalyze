@@ -13,7 +13,8 @@ void EntityList::draw(GLFWwindow* window)
 
     drawWindowFrame();
     drawHarvestables();
-    drawPlayers();
+    //drawPlayers();
+    drawMobs();
 
     glfwSwapBuffers(window);
 }
@@ -66,9 +67,10 @@ void EntityList::clear()
 EntityList::EntityList()
 {
     _harvestableList = {};
-
-    _player = {};
-    _playerList = {};
+    _player          = {};
+    _playerList      = {};
+    _mobList         = {};
+    _locationList    = {};
 }
 
 void EntityList::drawWindowFrame()
@@ -195,6 +197,21 @@ void EntityList::drawPlayers()
         }
     }
 }
+void EntityList::drawMobs()
+{
+    for (size_t i = 0; i < _mobList.size(); i++) {
+        std::vector<GLfloat> mobCoords = { _mobList[i]._positionX, _mobList[i]._positionY };
+        GLfloat x = mobCoords[0];
+        GLfloat y = mobCoords[1];
+        std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
+
+        glPointSize(5);
+        glBegin(GL_POINTS);
+        glColor3f(0.9, 0.65, 0.65);
+        glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
+        glEnd();
+    }
+}
 void EntityList::colorizeHarvestableCharge(Harvestable harvestable, size_t chargeID)
 {
     glColor3f(0.55 + 0.04f * chargeID, 0.4 + 0.04f * chargeID, 0.5 + 0.04f * chargeID);
@@ -317,8 +334,7 @@ void Location::changeLocation(
             return;
         }
     }
-    locations.push_back(Location(
-        locationFrom, currentHarvestableList, currentPlayerList));
+    locations.push_back(Location(locationFrom, currentHarvestableList, currentPlayerList));
     currentHarvestableList = {};
     currentPlayerList = {};
 }

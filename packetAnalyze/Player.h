@@ -21,9 +21,8 @@ struct Player
 	bool _isVisible;
 
 	Player();
-	Player(uint32_t id, float_t positionX, float_t positionY);
 	Player(NetworkCommand& rawPlayer);
-	static Player playerMove(NetworkCommand& rawPlayer);
+	Player(uint32_t id, float_t positionX, float_t positionY);
 };
 
 class PlayerList
@@ -35,7 +34,7 @@ public:
 	PlayerList();
 	
 	void newPlayer(Player player);
-	void update(Player playerMove);
+	void update(EntityMove playerMove);
 	void playerLeave(Player playerLeave);
 
 	void removePlayer(Player player);

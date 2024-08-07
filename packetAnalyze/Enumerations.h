@@ -4,9 +4,10 @@
 enum operationType: uint8_t
 {
     not_defined = 0,
-    operationRequest = 2,
-    operationResponse = 3,
+    request = 2,
+    response = 3,
     event = 4,
+    binary = 7, // not sure what it is
 };
 enum commandType: uint8_t
 {

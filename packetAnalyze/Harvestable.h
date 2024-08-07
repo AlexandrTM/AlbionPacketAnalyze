@@ -83,12 +83,12 @@ struct HarvestableListFilter
 struct Harvestable
 {
 	uint32_t _id;
-	uint8_t _type;
-	uint8_t _tier;
-	uint8_t _enchantment;
-	float_t _positionX;
-	float_t _positionY;
-	uint8_t _charges;
+	uint8_t  _type;
+	uint8_t  _tier;
+	uint8_t  _enchantment;
+	float_t  _positionX;
+	float_t  _positionY;
+	uint8_t  _charges;
 
 	Harvestable();
 	Harvestable(uint32_t id, uint8_t type, uint8_t tier,

@@ -36,20 +36,13 @@ size_t counter = 0;
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
     DataLayout _dataLayout{};
-    if (std::isElementInVector(nCodes, _eventCode)) {
-        _dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);
-    }
-    /*if (_operationType != operationType::event) {
-        std::cout << "operationType: " << (unsigned)_operationType << "\n";
-    }*/
-    /*if (_commandType == commandType::unreliable and this->size() >= 20) {
-        this->printCommandInOneString((size_t)0, 20);
-    }*/
+    //if (_eventCode == 0) {} // joining server
+    //else if (std::isElementInVector(nCodes, _eventCode)) {
+    //    _dataLayout.findDataLayout(*this);
+    //    _dataLayout.printInfo(*this);
+    //}
     if (_operationType == operationType::event) {
         DataLayout _dataLayout{};
-        /*_dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
         
         switch (_eventCode)
         {
@@ -72,12 +65,17 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         case 65:
-            _entityList._playerList.update(Player::playerMove(*this)); 
+            //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         case 66:
-            _entityList._playerList.update(Player::playerMove(*this));
+            //_entityList._playerList.update(Player::playerMove(*this));
             break;
         case eventCode::newMob:
+            //this->printCommandInOneString();
+            _entityList._mobList.newMob(Mob::Mob(*this));
+            break;
+        case 3:
+            //this->printCommandInOneString();
             /*_dataLayout.findDataLayout(*this);
             _dataLayout.printInfo(*this);*/
             break;
@@ -89,7 +87,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             /*DataLayout _dataLayout{};
             _dataLayout.findDataLayout(*this);
             _dataLayout.printInfo(*this);*/
-            _entityList._playerList.update(Player::playerMove(*this));
+            _entityList._playerList.update(EntityMove::EntityMove(*this));
+            _entityList._mobList.update(EntityMove::EntityMove(*this));
         }
         else {
             /*DataLayout _dataLayout{};
@@ -97,7 +96,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _dataLayout.printInfo(*this);*/
         }
     }
-    if (_operationType == operationType::operationResponse) {
+    if (_operationType == operationType::response) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
         DataLayout _dataLayout{};
@@ -111,8 +110,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         switch (_eventCode) 
         {
         case operationCode::joinLocation:
-            Location::changeLocation(*this, _entityList._locations, 
+            Location::changeLocation(*this, _entityList._locationList, 
                 _entityList._harvestableList, _entityList._playerList);
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo(*this);
             break;
         case operationCode::move:
             /*_dataLayout.findDataLayout(*this);
@@ -148,8 +149,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
             break;
         case operationCode::getClusterMapInfo:
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+            //_dataLayout.findDataLayout(*this);
+            //_dataLayout.printInfo(*this);
             //MapCluster::findClusterData(*this);
             //this->printCommandInOneString();
             break;
@@ -159,7 +160,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         //std::cout << this->getEventCode() << "\n";
         //this->printCommandInOneString();
     }
-    if (_operationType == operationType::operationRequest) {
+    if (_operationType == operationType::request) {
         //this->printCommandInOneString();
         /*DataLayout _dataLayout{};
         _dataLayout.findDataLayout(*this);

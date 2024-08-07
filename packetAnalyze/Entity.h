@@ -25,19 +25,18 @@ struct Location
 
 
 // **************************************************************************
-// ============================== EntityList ==================================
+// ============================== EntityList ================================
 // **************************************************************************
 
 
 struct EntityList
 {
-    HarvestableList _harvestableList;
+    HarvestableList       _harvestableList;
     HarvestableListFilter _harvestableListFilter;
-
-    PlayerSelf _player;
-    PlayerList _playerList;
-
-    std::vector<Location> _locations = {};
+    PlayerSelf            _player;
+    PlayerList            _playerList;
+    MobList               _mobList;
+    std::vector<Location> _locationList;
 
     EntityList();
 
@@ -45,6 +44,7 @@ struct EntityList
     void drawWindowFrame();
     void drawHarvestables();
     void drawPlayers();
+    void drawMobs();
 
     std::vector<GLfloat> returnEnchantmentColor(uint8_t enchantment);
     void colorizeHarvestable(Harvestable harvestable);

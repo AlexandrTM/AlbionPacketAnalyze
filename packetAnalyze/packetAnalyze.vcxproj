@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -141,10 +141,12 @@
     <ClCompile Include="Auction.cpp" />
     <ClCompile Include="Deserialization.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityMove.cpp" />
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="MapCluster.cpp" />
+    <ClCompile Include="Mob.cpp" />
     <ClCompile Include="namespace_std.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
     <ClCompile Include="NetworkPacket.cpp" />
@@ -159,11 +161,13 @@
     <ClInclude Include="Auction.h" />
     <ClInclude Include="Deserialization.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityMove.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="MapCluster.h" />
+    <ClInclude Include="Mob.h" />
     <ClInclude Include="namespace_std.h" />
     <ClInclude Include="NetworkCommand.h" />
     <ClInclude Include="NetworkPacket.h" />
@@ -171,6 +175,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="packetAnalyze.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,10 +26,12 @@
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 
+#include "EntityMove.h"
 #include "Auction.h"
 #include "MapCluster.h"
 #include "Harvestable.h"
 #include "Player.h"
+#include "Mob.h"
 #include "Entity.h"
 
 #include "PacketAnalyze.h"

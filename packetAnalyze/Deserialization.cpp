@@ -117,7 +117,8 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     switch (command.getCommandType())
     {
     case commandType::reliable:
-        if (command.getOperationType() == operationType::operationResponse) {
+        if (command.getOperationType() == operationType::response ||
+            command.getOperationType() == operationType::binary) {
             return 19;
         }
         else {
@@ -128,6 +129,8 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
     case commandType::fragmented:
         return 39;
     default:
+        std::cout << "command type not defined: " << command.getCommandType() << "\n";
+        command.printCommandInOneString();
         return -1;
     }
 }
@@ -203,7 +206,15 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
         else {
             command.printCommandInOneString(_offset, endOffset, false);
         }*/
-        command.printCommandInOneString(_offset, endOffset, false);
+        /*if (_dataType._dataType == dataType::int64) {
+            for (size_t i = 0; i < _numOfEntries; i++) {
+                command.printCommandInOneString(_offset + i * 8, _offset + i * 8 + 8, false);
+                std::cout << " ";
+            }
+        }
+        else {*/
+            command.printCommandInOneString(_offset, endOffset, false);
+        //}
         SetConsoleTextAttribute(consoleHandle, 7);
     }
     std::cout << " ";
@@ -464,7 +475,6 @@ DataLayout::DataLayout()
 
 void DataLayout::printInfo(NetworkCommand& command, bool printPayload) const
 {
-    // num of fragments
     uint16_t numOfFragmensOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
     std::cout << 
         "num of fragments: " << (unsigned)command[numOfFragmensOffset] << " " <<
