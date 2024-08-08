@@ -45,6 +45,7 @@ enum eventCode : uint16_t
     newSilverObject = 43,
     newBuilding = 45,
     harvestableChangeState = 46,
+    mobChangeState = 47,
     harvestStart = 55,
     harvestFinished = 57,
     equipmentChanged = 85,
@@ -61,6 +62,11 @@ enum resourceType : uint8_t
     HIDE = 17,
     ORE = 23,
     OTHER = 28,
+};
+
+enum mopType : uint16_t
+{
+
 };
 
 // header size, type size, num of entries

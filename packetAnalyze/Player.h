@@ -16,13 +16,14 @@ struct PlayerSelf
 struct Player
 {
 	uint32_t _id;
+	uint32_t _health;
 	float_t _positionX;
 	float_t _positionY;
 	bool _isVisible;
 
 	Player();
 	Player(NetworkCommand& rawPlayer);
-	Player(uint32_t id, float_t positionX, float_t positionY);
+	Player(uint32_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible);
 };
 
 class PlayerList
@@ -35,6 +36,7 @@ public:
 	
 	void newPlayer(Player player);
 	void update(EntityMove playerMove);
+	void update(HealthUpdate healthUpdate);
 	void playerLeave(Player playerLeave);
 
 	void removePlayer(Player player);

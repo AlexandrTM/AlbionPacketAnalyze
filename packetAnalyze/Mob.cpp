@@ -3,6 +3,7 @@
 Mob::Mob()
 {
 	_id			 = 0;
+	_category    = 0;
 	_positionX	 = 0;
 	_positionY	 = 0;
 	_health		 = 0;
@@ -12,6 +13,14 @@ Mob::Mob()
 
 Mob::Mob(NetworkCommand& rawMob)
 {
+	_id			 = 0;
+	_category    = 0;
+	_positionX	 = 0;
+	_positionY	 = 0;
+	_health		 = 0;
+	_tier		 = 0;
+	_enchantment = 0;
+
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawMob);
 
@@ -29,39 +38,63 @@ Mob::Mob(NetworkCommand& rawMob)
 	else if 
 		(idSize == 8) { _id = net::read_uint32(rawMob, idFragment._offset + 4); }
 
-	_health    = net::read_float32(rawMob, healthFragment._offset);
-	_positionX = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
-	_positionY = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);
+	_category    = net::read_uint8  (rawMob, dataLayout.findFragment(2)._offset);
+	_health      = net::read_float32(rawMob, healthFragment._offset);
+	_positionX   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
+	_positionY   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);
+	_tier        = net::read_uint8  (rawMob, dataLayout.findFragment(30)._offset);
 
 	/*std::cout << 
-		"x:  "			<< std::setw(6) << _positionX			  << " " <<
-		"y:  "			<< std::setw(6) << _positionY			  << " " << "\n" <<
+		// current position
 		"x1: " << std::setw(6) << net::read_float32(rawMob, dataLayout.findFragment(7)._offset) << " " <<
-		"x2: " << std::setw(6) << net::read_float32(rawMob, dataLayout.findFragment(7)._offset + 4) << "\n";*/
+		"x2: " << std::setw(6) << net::read_float32(rawMob, dataLayout.findFragment(7)._offset + 4) << "\n";
+		// target position
+		_positionX   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
+		_positionY   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);*/
 
-	std::cout << 
-		"some1:  " << net::read_uint16 (rawMob, dataLayout.findFragment(1 )._offset) << " " << "\n" <<
-		"some10: " << net::read_float32(rawMob, dataLayout.findFragment(10)._offset) << " " << "\n" <<
-		"some11: " << net::read_float32(rawMob, dataLayout.findFragment(11)._offset) << " " << "\n" <<
-		"some12: " << net::read_float32(rawMob, dataLayout.findFragment(12)._offset) << " " << "\n" <<
-		"some13: " << net::read_float32(rawMob, dataLayout.findFragment(13)._offset) << " " << "\n" <<
-		"some14: " << net::read_float32(rawMob, dataLayout.findFragment(14)._offset) << " " << "\n" <<
-		"some15: " << net::read_float32(rawMob, dataLayout.findFragment(15)._offset) << " " << "\n" <<
-		"some16: " << net::read_float32(rawMob, dataLayout.findFragment(16)._offset) << " " << "\n" <<
-		"some17: " << net::read_uint32 (rawMob, dataLayout.findFragment(17)._offset) << " " << "\n" <<
-		"some18: " << net::read_float32(rawMob, dataLayout.findFragment(18)._offset) << " " << "\n" <<
-		"some19: " << net::read_float32(rawMob, dataLayout.findFragment(19)._offset) << " " << "\n";
+	//std::cout << 
+	//	"mob type:    " << net::read_uint16 (rawMob, dataLayout.findFragment(1 )._offset) << " " << "\n" <<
+	//	//"rotation angle ? :      " << net::read_float32(rawMob, dataLayout.findFragment(10)._offset) << " " << "\n" <<
+	//	"some11:      " << net::read_float32(rawMob, dataLayout.findFragment(11)._offset) << " " << "\n" <<
+	//	"some12:      " << net::read_float32(rawMob, dataLayout.findFragment(12)._offset) << " " << "\n" <<
+	//	//"health ? :      " << net::read_float32(rawMob, dataLayout.findFragment(13)._offset) << " " << "\n" <<
+	//	//"health ? :      " << net::read_float32(rawMob, dataLayout.findFragment(14)._offset) << " " << "\n" <<
+	//	"some15:      " << net::read_float32(rawMob, dataLayout.findFragment(15)._offset) << " " << "\n" <<
+	//	"some16:      " << net::read_float32(rawMob, dataLayout.findFragment(16)._offset) << " " << "\n" <<
+	//	"some17:      " << net::read_uint32 (rawMob, dataLayout.findFragment(17)._offset) << " " << "\n" <<
+	//	"some18:      " << net::read_float32(rawMob, dataLayout.findFragment(18)._offset) << " " << "\n" <<
+	//	"some19:      " << net::read_float32(rawMob, dataLayout.findFragment(19)._offset) << " " << "\n";
 
-	std::cout << 
-		"id: "			<< std::setw(7) << (unsigned)_id		  << " " << "\n" <<
-		"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " << "\n" <<
-		"health: "      << std::setw(2) << (unsigned)_health	  << " " << "\n" <<
-		"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " << "\n" <<
-		"x: "			<< std::setw(7) << _positionX			  << " " << "\n" <<
-		"y: "			<< std::setw(7) << _positionY			  << " " << "\n" <<
-		"\n";
+	std::cout <<
+		"mob type:    " << net::read_uint16(rawMob, dataLayout.findFragment(1)._offset) << " " 
+		"mob type0:   " << net::read_uint8(rawMob, dataLayout.findFragment(1)._offset) << " "
+		"mob type1:   " << net::read_uint8(rawMob, dataLayout.findFragment(1)._offset + 1) << " "
+		<< "\n";
 
-	dataLayout.printInfo(rawMob);
+
+	//std::cout << 
+	//	"id:          "	<< (unsigned)_id		  << " " << "\n" <<
+	//	"tier:        "	<< (unsigned)_tier		  << " " << "\n" <<
+	//	"health:      " << (unsigned)_health	  << " " << "\n" <<
+	//	"enchantment: " << (unsigned)_enchantment << " " << "\n" <<
+	//	"x:           "	<< _positionX			  << " " << "\n" <<
+	//	"y:           "	<< _positionY			  << " " << "\n" <<
+	//	"\n";
+
+	//dataLayout.printInfo(rawMob);
+}
+
+Mob::Mob(uint32_t id, uint8_t category, 
+	uint32_t health, uint8_t tier, uint8_t enchantment, 
+	float_t positionX, float_t positionY)
+{
+	_id			 = id;
+	_category    = category;
+	_health		 = health;
+	_tier		 = tier;
+	_enchantment = enchantment;
+	_positionX   = positionX;
+	_positionY   = positionX;
 }
 
 void Mob::printInfo()
@@ -84,11 +117,11 @@ void MobList::newMob(Mob mob)
 {
 	for (size_t i = 0; i < _mobList.size(); i++) {
 		if (_mobList[i]._id == mob._id) {
-			_mobList[i]._positionX   = mob._positionX;
-			_mobList[i]._positionY   = mob._positionY;
 			_mobList[i]._health		 = mob._health;
 			_mobList[i]._tier		 = mob._tier;
 			_mobList[i]._enchantment = mob._enchantment;
+			_mobList[i]._positionX   = mob._positionX;
+			_mobList[i]._positionY   = mob._positionY;
 			return;
 		}
 	}
@@ -104,6 +137,51 @@ void MobList::update(EntityMove mobMove)
 			return;
 		}
 	}
+}
+
+void MobList::update(HealthUpdate healthUpdate)
+{
+	for (size_t i = 0; i < _mobList.size(); i++) {
+		if (_mobList[i]._id == healthUpdate._id) {
+			if (healthUpdate._health == 0) {
+				_mobList.erase(_mobList.begin() + i);
+			}
+			else {
+				_mobList[i]._health = healthUpdate._health;
+			}
+			return;
+		}
+	}
+}
+
+void MobList::mobChangeState(NetworkCommand& mobChangeState)
+{
+	uint32_t id = 0;
+	uint8_t enchantment = 0;
+
+	DataLayout dataLayout{};
+	dataLayout.findDataLayout(mobChangeState);
+
+	DataFragment idFragment     = dataLayout.findFragment(0);
+	uint8_t idSize = idFragment._dataType._size;
+	if 
+		(idSize == 1) { id = net::read_uint8 (mobChangeState, idFragment._offset); }
+	else if 
+		(idSize == 2) { id = net::read_uint16(mobChangeState, idFragment._offset); }
+	else if 
+		(idSize == 4) { id = net::read_uint32(mobChangeState, idFragment._offset); }
+	else if 
+		(idSize == 8) { id = net::read_uint32(mobChangeState, idFragment._offset + 4); }
+
+	enchantment = net::read_uint8(mobChangeState, dataLayout.findFragment(1)._offset);
+
+	for (size_t i = 0; i < _mobList.size(); i++) {
+		if (_mobList[i]._id == id) {
+			_mobList[i]._enchantment = enchantment;
+			return;
+		}
+	}
+	// _mobList.push_back(Mob::Mob(id, 0, 0, enchantment, 0, 0)); if isMobComplete
 }
 
 size_t MobList::size()

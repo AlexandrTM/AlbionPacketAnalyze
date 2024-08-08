@@ -91,39 +91,6 @@ void EntityList::drawWindowFrame()
     glEnd();
 }
 
-void EntityList::drawHarvestables()
-{
-    std::vector<GLfloat> playerCoords = { _player._positionX, _player._positionY };
-    std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
-    std::vector<GLfloat> harvestableCoords;
-    std::vector<GLfloat> harvestableMapCoords;
-    for (size_t i = 0; i < _harvestableList.size(); i++) {
-        if (filterHarvestable(_harvestableList[i])) 
-        {
-            harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
-            harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX, 
-                                                            _harvestableList[i]._positionY);
-            
-            glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
-            glBegin(GL_POINTS);
-            colorizeHarvestable(_harvestableList[i]);
-            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
-            glEnd();
-
-            drawCharges(_harvestableList[i], harvestableCoords, playerCoords);
-        }
-    }
-    glPointSize(4);
-    glBegin(GL_POINTS);
-    glColor3f(0, 0.65, 0.9);
-    glVertex3f(playerMapCoords[0], playerMapCoords[1], 0.0f);
-    glEnd();
-
-    glPointSize(2);
-    glColor3f(0.85, 0.85, 0.85);
-    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)45 / 400, 25);
-}
-
 std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)
 {
     switch (enchantment)
@@ -159,6 +126,38 @@ void EntityList::colorizeHarvestable(Harvestable harvestable)
     glColor3f(color[0], color[1], color[2]);
 }
 
+void EntityList::drawHarvestables()
+{
+    std::vector<GLfloat> playerCoords = { _player._positionX, _player._positionY };
+    std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
+    std::vector<GLfloat> harvestableCoords;
+    std::vector<GLfloat> harvestableMapCoords;
+    for (size_t i = 0; i < _harvestableList.size(); i++) {
+        if (filterHarvestable(_harvestableList[i]))
+        {
+            harvestableCoords = { _harvestableList[i]._positionX, _harvestableList[i]._positionY };
+            harvestableMapCoords = convertToMapCoordinates(_harvestableList[i]._positionX,
+                _harvestableList[i]._positionY);
+
+            glPointSize(std::max(pow((float)_harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
+            glBegin(GL_POINTS);
+            colorizeHarvestable(_harvestableList[i]);
+            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
+            glEnd();
+
+            drawCharges(_harvestableList[i], harvestableCoords, playerCoords);
+        }
+    }
+    glPointSize(4);
+    glBegin(GL_POINTS);
+    glColor3f(0, 0.65, 0.9);
+    glVertex3f(playerMapCoords[0], playerMapCoords[1], 0.0f);
+    glEnd();
+
+    glPointSize(2);
+    glColor3f(0.85, 0.85, 0.85);
+    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)45 / 400, 25);
+}
 void EntityList::drawPlayers()
 {
     std::vector<GLfloat> playerSelfCoords = { _player._positionX, _player._positionY };
@@ -199,17 +198,21 @@ void EntityList::drawPlayers()
 }
 void EntityList::drawMobs()
 {
+    // category = 3 // fortpost mobs
+    // category = 255 // most mobs
     for (size_t i = 0; i < _mobList.size(); i++) {
-        std::vector<GLfloat> mobCoords = { _mobList[i]._positionX, _mobList[i]._positionY };
-        GLfloat x = mobCoords[0];
-        GLfloat y = mobCoords[1];
-        std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
+        if (_mobList[i]._enchantment > 0) {
+            std::vector<GLfloat> mobCoords = { _mobList[i]._positionX, _mobList[i]._positionY };
+            GLfloat x = mobCoords[0];
+            GLfloat y = mobCoords[1];
+            std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
 
-        glPointSize(5);
-        glBegin(GL_POINTS);
-        glColor3f(0.9, 0.65, 0.65);
-        glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
-        glEnd();
+            glPointSize(4);
+            glBegin(GL_POINTS);
+            glColor3f(0.8, 0.3, 0.3);
+            glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
+            glEnd();
+        }
     }
 }
 void EntityList::colorizeHarvestableCharge(Harvestable harvestable, size_t chargeID)
@@ -282,17 +285,19 @@ float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 // **************************************************************************
 
 
-Location::Location(std::string locationID, HarvestableList harvestableList, PlayerList playerList)
+Location::Location(std::string locationID, 
+    HarvestableList harvestableList, PlayerList playerList, MobList mobList)
 {
     _locationID = locationID;
     _harvestableList = harvestableList;
     _playerList = playerList;
+    _mobList = mobList;
 }
 
 void Location::changeLocation(
     NetworkCommand& command,
     std::vector<Location>& locations, 
-    HarvestableList& currentHarvestableList, PlayerList& currentPlayerList)
+    HarvestableList& currentHarvestableList, PlayerList& currentPlayerList, MobList& currentMobList)
 {
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
@@ -321,22 +326,29 @@ void Location::changeLocation(
             return a._id < b._id;
         });
 
-    currentHarvestableList.printInfo();
+    //currentHarvestableList.printInfo();
     for (size_t i = 0; i < locations.size(); i++) {
-        //std::cout << locations[i]._locationID << " : " << std::stoi(locationTo) << "\n";
+        //locations[i].printInfo();
         if (locations[i]._locationID == locationTo) {
-            locations.push_back(Location(
-                locationFrom, currentHarvestableList, currentPlayerList));
             currentHarvestableList = locations[i]._harvestableList;
-            //locations[i].printInfo();
-            currentPlayerList = {};
-            //currentPlayerList = locations[i]._playerList;
+            currentPlayerList      = {};
+            currentMobList         = locations[i]._mobList;
+            //currentPlayerList    = locations[i]._playerList;
+            return;
+        }
+        else if (locations[i]._locationID == locationFrom) {
+            locations[i]._harvestableList = currentHarvestableList;
+            locations[i]._playerList      = {};
+            locations[i]._mobList         = currentMobList;
             return;
         }
     }
-    locations.push_back(Location(locationFrom, currentHarvestableList, currentPlayerList));
+    locations.push_back(Location(locationFrom, currentHarvestableList, currentPlayerList, currentMobList));
     currentHarvestableList = {};
-    currentPlayerList = {};
+    currentPlayerList      = {};
+    currentMobList         = {};
+
+    std::cout << "num locations: " << locations.size() << "\n";
 }
 
 void Location::printInfo()

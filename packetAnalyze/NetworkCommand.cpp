@@ -42,10 +42,16 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     //    _dataLayout.printInfo(*this);
     //}
     if (_operationType == operationType::event) {
-        DataLayout _dataLayout{};
+        DataLayout dataLayout{};
         
         switch (_eventCode)
         {
+        case eventCode::healthUpdate:
+            //_entityList._playerList.update(HealthUpdate::HealthUpdate(*this)); // need to add health handling
+            _entityList._mobList.update(HealthUpdate::HealthUpdate(*this));
+            //dataLayout.findDataLayout(*this);
+            //dataLayout.printInfo(*this);
+            break;
         case eventCode::harvestableObjectList:
             _entityList._harvestableList.update(HarvestableList(*this));
             break;
@@ -56,6 +62,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
             _entityList._harvestableList.updateState(*this); 
             break;
         case eventCode::newPlayer:
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
             _entityList._playerList.newPlayer(Player(*this)); 
             break;
         case eventCode::playerLeave:
@@ -64,36 +72,24 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case eventCode::playerMove:
             //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
-        case 65:
+        case eventCode::mobChangeState:
+            _entityList._mobList.mobChangeState(*this);
             //_entityList._playerList.update(Player::playerMove(*this)); 
-            break;
-        case 66:
-            //_entityList._playerList.update(Player::playerMove(*this));
             break;
         case eventCode::newMob:
             //this->printCommandInOneString();
             _entityList._mobList.newMob(Mob::Mob(*this));
             break;
-        case 3:
-            //this->printCommandInOneString();
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
-            break;
         default:
             break;
         }
         if (_networkCommand.size() == 67 and _networkCommand[66] & (2 << 0)) {
-            //this->printCommandInOneString();
-            /*DataLayout _dataLayout{};
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
             _entityList._playerList.update(EntityMove::EntityMove(*this));
-            _entityList._mobList.update(EntityMove::EntityMove(*this));
+            _entityList._mobList   .update(EntityMove::EntityMove(*this));
         }
         else {
-            /*DataLayout _dataLayout{};
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
         }
     }
     if (_operationType == operationType::response) {
@@ -111,7 +107,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         {
         case operationCode::joinLocation:
             Location::changeLocation(*this, _entityList._locationList, 
-                _entityList._harvestableList, _entityList._playerList);
+                _entityList._harvestableList, _entityList._playerList, _entityList._mobList);
             //_dataLayout.findDataLayout(*this);
             //_dataLayout.printInfo(*this);
             break;
@@ -188,9 +184,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     }
     if (_operationType == operationType::not_defined) {
         //this->printCommandInOneString();
-        /*DataLayout _dataLayout{};
-        _dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
+        /*DataLayout dataLayout{};
+        dataLayout.findDataLayout(*this);
+        dataLayout.printInfo(*this);*/
     }
     //std::cout << _entityList._harvestableList.size() << "\n";
     _entityList.draw(window);

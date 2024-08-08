@@ -37,20 +37,24 @@ void PlayerSelf::update(NetworkCommand& rawPlayer)
 
 Player::Player()
 {
-	_id = 0;
+	_id		   = 0;
+	_health    = 0;
 	_positionX = 0;
 	_positionY = 0;
 	_isVisible = false;
 }
-Player::Player(uint32_t id, float_t positionX, float_t positionY)
+Player::Player(uint32_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible)
 {
-	_id = id;
+	_id        = id;
+	_health    = health;
 	_positionX = positionX;
 	_positionY = positionY;
+	_isVisible = isVisible;
 }
-Player::Player(NetworkCommand& rawPlayer)
+Player::Player(NetworkCommand& rawPlayer) // find health
 {
-	_id = 0;
+	_id        = 0;
+	_health    = 0;
 	_positionX = 0;
 	_positionY = 0;
 	_isVisible = true;
@@ -62,24 +66,16 @@ Player::Player(NetworkCommand& rawPlayer)
 	DataFragment idFragment = dataLayout.findFragment(0);
 	uint8_t idSize = idFragment._dataType._size;
 	if 
-		(idSize == 1) { _id = net::read_uint8(rawPlayer, idFragment._offset); }
+		(idSize == 1) { _id = net::read_uint8 (rawPlayer, idFragment._offset); }
 	else if 
 		(idSize == 2) { _id = net::read_uint16(rawPlayer, idFragment._offset); }
 	else if 
 		(idSize == 4) { _id = net::read_uint32(rawPlayer, idFragment._offset); }
 	else if 
 		(idSize == 8) { _id = net::read_uint32(rawPlayer, idFragment._offset + 4); }
+
 	_positionX = net::read_float32(rawPlayer, dataLayout.findFragment(14)._offset);
 	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(14)._offset + 4);
-
-	if ((_positionX == 0   || _positionY == 0  || 
-		_positionX > 800  || _positionY > 800 ||
-		_positionX < -800 || _positionY < -800) && 
-		rawPlayer.getEventCode() != eventCode::playerLeave) {
-		std::cout << "player coords out of bounds: " << 
-			_positionX << " " << _positionY << "\n";
-		rawPlayer.printCommandInOneString();
-	}
 }
 
 PlayerList::PlayerList()
@@ -97,10 +93,22 @@ void PlayerList::update(EntityMove playerMove)
 		}
 	}
 }
+
+void PlayerList::update(HealthUpdate healthUpdate)
+{
+	for (size_t i = 0; i < _playerList.size(); i++) {
+		if (_playerList[i]._id == healthUpdate._id) {
+			_playerList[i]._health = healthUpdate._health;
+			return;
+		}
+	}
+}
+
 void PlayerList::newPlayer(Player player)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
 		if (_playerList[i]._id == player._id) {
+			_playerList[i]._health    = player._health;
 			_playerList[i]._positionX = player._positionX;
 			_playerList[i]._positionY = player._positionY;
 			_playerList[i]._isVisible = true;
@@ -112,9 +120,7 @@ void PlayerList::newPlayer(Player player)
 void PlayerList::playerLeave(Player playerLeave)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
-		if (_playerList[i]._id == playerLeave._id) {/*
-			_playerList[i]._positionX = playerLeave._positionX;
-			_playerList[i]._positionY = playerLeave._positionY;*/
+		if (_playerList[i]._id == playerLeave._id) {
 			_playerList[i]._isVisible = false;
 			return;
 		}
@@ -124,7 +130,7 @@ void PlayerList::removePlayer(Player player)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
 		if (_playerList[i]._id == player._id) {
-			_playerList.erase(std::begin(_playerList) + i);
+			_playerList.erase(_playerList.begin() + i);
 			return;
 		}
 	}

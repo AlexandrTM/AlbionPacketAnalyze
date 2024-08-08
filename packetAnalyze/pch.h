@@ -27,6 +27,7 @@
 #include "Deserialization.h"
 
 #include "EntityMove.h"
+#include "HealthUpdate.h"
 #include "Auction.h"
 #include "MapCluster.h"
 #include "Harvestable.h"

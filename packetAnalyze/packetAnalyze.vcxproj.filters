@@ -67,10 +67,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mob.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="EntityMove.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthUpdate.cpp">
+      <Filter>Source Files\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,11 +122,14 @@
     <ClInclude Include="MapCluster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mob.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EntityMove.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Mob.h">
+      <Filter>Header Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthUpdate.h">
+      <Filter>Header Files\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

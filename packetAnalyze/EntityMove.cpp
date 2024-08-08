@@ -19,7 +19,7 @@ EntityMove::EntityMove(NetworkCommand& entityMove)
     DataFragment idFragment = dataLayout.findFragment(0);
     uint8_t idSize = idFragment._dataType._size;
     if 
-		(idSize == 1) { _id = net::read_uint8(entityMove, idFragment._offset); }
+		(idSize == 1) { _id = net::read_uint8 (entityMove, idFragment._offset); }
 	else if 
 		(idSize == 2) { _id = net::read_uint16(entityMove, idFragment._offset); }
 	else if 

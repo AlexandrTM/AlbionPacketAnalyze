@@ -64,7 +64,6 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         break;
     }
 }
-
 uint16_t DataType::getNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset)
 {
     switch (dataType)
@@ -112,6 +111,8 @@ DataType::DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dat
 // **************************************************************************
 // ============================== DataFragment ==============================
 // **************************************************************************
+
+
 ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
 {
     switch (command.getCommandType())
