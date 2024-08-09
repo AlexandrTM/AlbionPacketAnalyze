@@ -8,6 +8,7 @@ struct Mob
 	uint8_t  _type;
 	uint32_t _health;
 	uint8_t  _tier;
+	uint8_t  _charges;
 	uint8_t  _enchantment;
 	float_t  _positionX;
 	float_t  _positionY;
@@ -15,7 +16,8 @@ struct Mob
 	Mob();
 	Mob(NetworkCommand& rawMob);
 	Mob(uint32_t id, uint8_t category, uint8_t type,
-		uint32_t health, uint8_t  tier, uint8_t enchantment,
+		uint32_t health, 
+		uint8_t  tier, uint8_t enchantment, uint8_t charges,
 		float_t  positionX, float_t  positionY);
 
 	void printInfo();

@@ -64,7 +64,15 @@ enum resourceType : uint8_t
     OTHER = 28,
 };
 
-enum mopType : uint16_t
+enum mopCategory : uint8_t
+{
+    skinnable = 1,
+    basicMob = 5,
+    magicMob = 6,
+    guard = 8,
+};
+
+enum mopType : uint8_t
 {
 
 };

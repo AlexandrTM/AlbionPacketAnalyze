@@ -4,6 +4,9 @@
 
 struct net
 {
+    template<typename T>
+    static T read(NetworkCommand& command, ptrdiff_t offset);
+
     static inline uint8_t read_uint8(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
@@ -44,6 +47,17 @@ struct net
         }
         return 0;
     }
+    static inline uint64_t read_uint64(NetworkCommand& command, ptrdiff_t offset)
+    {
+        if (offset != -1) {
+            uint64_t _dataEntry = 0;
+            for (size_t i = 0; i < 8; i++) {
+                _dataEntry += (static_cast<unsigned __int64>(command[offset + i]) << (8 * (7 - i)));
+            }
+            return _dataEntry;
+        }
+        return 0;
+    }
     static inline float_t read_float32(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != -1) {
@@ -63,17 +77,6 @@ struct net
                 _dataEntry += (command[offset + 3 - i] << (8 * (3 - i)));
             }
             return std::binToFloat(_dataEntry);
-        }
-        return 0;
-    }
-    static inline uint64_t read_uint64(NetworkCommand& command, ptrdiff_t offset)
-    {
-        if (offset != -1) {
-            uint64_t _dataEntry = 0;
-            for (size_t i = 0; i < 8; i++) {
-                _dataEntry += (static_cast<unsigned __int64>(command[offset + i]) << (8 * (7 - i)));
-            }
-            return _dataEntry;
         }
         return 0;
     }
