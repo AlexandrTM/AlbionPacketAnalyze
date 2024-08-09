@@ -64,17 +64,18 @@ void Location::changeLocation(
                 //currentPlayerList    = locations[i]._playerList;
                 break;
             }
-            else if (i == locations.size() - 1) {
-                locations.push_back(Location(locationTo, {}, {}, {}));
-                currentHarvestableList = {};
-                currentPlayerList      = {};
-                currentMobList         = {};
-            }
             if (locations[i]._locationID == locationFrom) {
                 locations[i]._harvestableList = currentHarvestableList;
                 locations[i]._playerList      = {};
                 locations[i]._mobList         = currentMobList;
                 //locations[i]._playerList      = currentPlayerList;
+            }
+            if (i == locations.size() - 1) {
+                locations.push_back(Location(locationTo, {}, {}, {}));
+                currentHarvestableList = {};
+                currentPlayerList      = {};
+                currentMobList         = {};
+                break;
             }
         }
         /*for (size_t i = 0; i < locations.size(); i++) {
@@ -98,8 +99,16 @@ void Location::changeLocation(
 
         std::cout << "num of locations: " << locations.size() << "\n";
         for (size_t i = 0; i < locations.size(); i++) {
-            std::cout << "location id" << i << ": " << locations[i]._locationID << "\n";
-        } std::cout << "\n";
+            std::cout << 
+                "location id" << i << ": " << locations[i]._locationID          << "\n" << 
+                "num of harvestables: " << locations[i]._harvestableList.size() << "\n" << 
+                "num of mobs:         " << locations[i]._mobList.size()         << "\n\n";
+        } 
+
+        std::cout << 
+            "current location:    " << locationTo                    << "\n" <<
+            "num of harvestables: " << currentHarvestableList.size() << "\n" << 
+            "num of mobs:         " << currentMobList.size()         << "\n\n";
     }
 }
 

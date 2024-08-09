@@ -9,8 +9,8 @@ Mob::Mob()
 	_positionY	 = 0;
 	_health		 = 0;
 	_tier		 = 0;
-	_charges     = 0;
 	_enchantment = 0;
+	_charges     = 0;
 }
 
 Mob::Mob(NetworkCommand& rawMob)
@@ -22,8 +22,8 @@ Mob::Mob(NetworkCommand& rawMob)
 	_positionY	 = 0;
 	_health		 = 0;
 	_tier		 = 0;
-	_charges     = 0;
 	_enchantment = 0;
+	_charges     = 0;
 
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawMob);
@@ -72,17 +72,23 @@ Mob::Mob(NetworkCommand& rawMob)
 	//	"some19:      " << net::read_float32(rawMob, dataLayout.findFragment(19)._offset) << " " << "\n";
 	
 
-	if (_category != 8 and _category != 5 and _category != 6) {
+	if (_category != mobCategory::basicMob and
+        _category != mobCategory::magicMob and
+        _category != mobCategory::guard    and
+        _category != mobCategory::mobBlackZone) {
 		float_t some12 = net::read_float32(rawMob, dataLayout.findFragment(12)._offset);
+
 		if (some12 != 0) {
 			std::cout <<
 				// ???
 				"some12: " << some12 << " " << "\n";
 		}
-		
+		std::cout <<
+			"some11: " << net::read_float32(rawMob, dataLayout.findFragment(11)._offset) << "\n" <<
+			"some17: " << net::read_uint32 (rawMob, dataLayout.findFragment(17)._offset) << " " << "\n";
 		this->printInfo();
+		dataLayout.printInfo(rawMob);
 	}
-	//dataLayout.printInfo(rawMob);
 }
 
 Mob::Mob(uint32_t id, uint8_t category, uint8_t type,
@@ -95,8 +101,8 @@ Mob::Mob(uint32_t id, uint8_t category, uint8_t type,
 	_type		 = type;
 	_health		 = health;
 	_tier		 = tier;
-	_charges     = charges;
 	_enchantment = enchantment;
+	_charges     = charges;
 	_positionX   = positionX;
 	_positionY   = positionY;
 }

@@ -7,9 +7,11 @@ struct Mob
 	uint8_t  _category;
 	uint8_t  _type;
 	uint32_t _health;
+
 	uint8_t  _tier;
-	uint8_t  _charges;
 	uint8_t  _enchantment;
+	uint8_t  _charges;
+
 	float_t  _positionX;
 	float_t  _positionY;
 

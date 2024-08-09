@@ -200,10 +200,12 @@ void EntityList::drawPlayers()
 }
 void EntityList::drawMobs()
 {
-    // category = 3 // fortpost mobs
-    // category = 255 // most mobs
     for (size_t i = 0; i < _mobList.size(); i++) {
-        if (_mobList[i]._enchantment > 0) {
+        if (_mobList[i]._category != mobCategory::basicMob and
+            _mobList[i]._category != mobCategory::magicMob and
+            _mobList[i]._category != mobCategory::guard    and
+            _mobList[i]._category != mobCategory::mobBlackZone) {
+
             std::vector<GLfloat> mobCoords = { _mobList[i]._positionX, _mobList[i]._positionY };
             GLfloat x = mobCoords[0];
             GLfloat y = mobCoords[1];
