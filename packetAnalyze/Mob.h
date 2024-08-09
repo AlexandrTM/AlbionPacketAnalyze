@@ -5,6 +5,7 @@ struct Mob
 {
 	uint32_t _id;
 	uint8_t  _category;
+	uint8_t  _type;
 	uint32_t _health;
 	uint8_t  _tier;
 	uint8_t  _enchantment;
@@ -13,7 +14,7 @@ struct Mob
 
 	Mob();
 	Mob(NetworkCommand& rawMob);
-	Mob(uint32_t id, uint8_t category, 
+	Mob(uint32_t id, uint8_t category, uint8_t type,
 		uint32_t health, uint8_t  tier, uint8_t enchantment,
 		float_t  positionX, float_t  positionY);
 

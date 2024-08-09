@@ -4,6 +4,7 @@ Mob::Mob()
 {
 	_id			 = 0;
 	_category    = 0;
+	_type	     = 0;
 	_positionX	 = 0;
 	_positionY	 = 0;
 	_health		 = 0;
@@ -15,6 +16,7 @@ Mob::Mob(NetworkCommand& rawMob)
 {
 	_id			 = 0;
 	_category    = 0;
+	_type	     = 0;
 	_positionX	 = 0;
 	_positionY	 = 0;
 	_health		 = 0;
@@ -38,7 +40,8 @@ Mob::Mob(NetworkCommand& rawMob)
 	else if 
 		(idSize == 8) { _id = net::read_uint32(rawMob, idFragment._offset + 4); }
 
-	_category    = net::read_uint8  (rawMob, dataLayout.findFragment(2)._offset);
+	_category    = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset);
+	_type		 = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset + 1);
 	_health      = net::read_float32(rawMob, healthFragment._offset);
 	_positionX   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
 	_positionY   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);
@@ -67,29 +70,30 @@ Mob::Mob(NetworkCommand& rawMob)
 
 	std::cout <<
 		"mob type:    " << net::read_uint16(rawMob, dataLayout.findFragment(1)._offset) << " " 
-		"mob type0:   " << net::read_uint8(rawMob, dataLayout.findFragment(1)._offset) << " "
-		"mob type1:   " << net::read_uint8(rawMob, dataLayout.findFragment(1)._offset + 1) << " "
+		"mob type0:   " << (unsigned)net::read_uint8 (rawMob, dataLayout.findFragment(1)._offset) << " "
+		"mob type1:   " << (unsigned)net::read_uint8 (rawMob, dataLayout.findFragment(1)._offset + 1) << " "
 		<< "\n";
 
 
-	//std::cout << 
-	//	"id:          "	<< (unsigned)_id		  << " " << "\n" <<
-	//	"tier:        "	<< (unsigned)_tier		  << " " << "\n" <<
-	//	"health:      " << (unsigned)_health	  << " " << "\n" <<
-	//	"enchantment: " << (unsigned)_enchantment << " " << "\n" <<
-	//	"x:           "	<< _positionX			  << " " << "\n" <<
-	//	"y:           "	<< _positionY			  << " " << "\n" <<
-	//	"\n";
+	std::cout << 
+		"id:          "	<< (unsigned)_id		  << " " << "\n" <<
+		"tier:        "	<< (unsigned)_tier		  << " " << "\n" <<
+		"health:      " << (unsigned)_health	  << " " << "\n" <<
+		"enchantment: " << (unsigned)_enchantment << " " << "\n" <<
+		"x:           "	<< _positionX			  << " " << "\n" <<
+		"y:           "	<< _positionY			  << " " << "\n" <<
+		"\n";
 
 	//dataLayout.printInfo(rawMob);
 }
 
-Mob::Mob(uint32_t id, uint8_t category, 
+Mob::Mob(uint32_t id, uint8_t category, uint8_t type,
 	uint32_t health, uint8_t tier, uint8_t enchantment, 
 	float_t positionX, float_t positionY)
 {
 	_id			 = id;
 	_category    = category;
+	_type		 = type;
 	_health		 = health;
 	_tier		 = tier;
 	_enchantment = enchantment;

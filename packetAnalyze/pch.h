@@ -33,6 +33,7 @@
 #include "Harvestable.h"
 #include "Player.h"
 #include "Mob.h"
+#include "Location.h"
 #include "Entity.h"
 
 #include "PacketAnalyze.h"

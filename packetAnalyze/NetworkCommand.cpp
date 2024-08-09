@@ -107,7 +107,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         {
         case operationCode::joinLocation:
             Location::changeLocation(*this, _entityList._locationList, 
-                _entityList._harvestableList, _entityList._playerList, _entityList._mobList);
+                _entityList._harvestableList, _entityList._playerList, _entityList._mobList, false);
             //_dataLayout.findDataLayout(*this);
             //_dataLayout.printInfo(*this);
             break;

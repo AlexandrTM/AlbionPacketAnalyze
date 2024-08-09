@@ -269,7 +269,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
             SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
             std::cout << "offset: " << std::hex << offset << std::dec << " " << offset << "\n";
             command.printCommandInOneString();
-            SetConsoleTextAttribute(consoleHandle, 6);
+            SetConsoleTextAttribute(consoleHandle, 7);
         }
         //std::cout << "start offset: " << offset << " ";
         if (offset < commandSize) {
