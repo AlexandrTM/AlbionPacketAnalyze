@@ -25,9 +25,9 @@ uint8_t DataType::getDataTypeSize(uint8_t dataType)
         return 4;
     case dataType::int64:
         return 8;
-    case dataType::nested:
-        return 0;
     case dataType::dictionary:
+        return 0;
+    case dataType::listOfType:
         return 0;
     default:
         return 1;
@@ -50,13 +50,13 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
         return 1;
     case dataType::int64:
         return 1;
-    case dataType::nested:
-        return 1;
+    case dataType::dictionary:
+        return 4;
     case dataType::int8_list:
         return 5;
     case dataType::int8_string:
         return 3;
-    case dataType::dictionary:
+    case dataType::listOfType:
         return 3;
     default:
         std::cout << "new data type!" << "\n";
@@ -80,13 +80,13 @@ uint16_t DataType::getNumOfEntries(NetworkCommand& command, uint8_t dataType, pt
         return 1;
     case dataType::int64:
         return 1;
-    case dataType::nested:
+    case dataType::dictionary:
         return (command[offset + 3] << 8) | command[offset + 4];;
     case dataType::int8_list:
         return (command[offset + 3] << 8) | command[offset + 4];
     case dataType::int8_string:
         return (command[offset + 1] << 8) | command[offset + 2];
-    case dataType::dictionary:
+    case dataType::listOfType:
         return (command[offset + 1] << 8) | command[offset + 2];
     default:
         return 0;
@@ -233,7 +233,7 @@ DataFragment DataLayout::findFragment(uint8_t fragmentID) const
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
-            while (_dataLayout[i]._dataType._dataType == dataType::dictionary) {
+            while (_dataLayout[i]._dataType._dataType == dataType::listOfType) {
                 i += 1;
             }
             return _dataLayout[i];
@@ -283,7 +283,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 std::cout << "numOfEntries: " << numOfEntries << " ";
             }*/
             
-            if (dataType == dataType::dictionary) {
+            if (dataType == dataType::listOfType) {
                 offset += 3;
                 dataTypeHeaderSize = 3;
                 dataTypeSize = DataType::getDataTypeSize(dataType);
@@ -312,7 +312,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 
                     _dataLayout.push_back(dataFragment);
                 }
-                else if (dataType == dataType::dictionary) {
+                else if (dataType == dataType::listOfType) {
                     uint16_t nestedNumOfEntries = DataType::getNumOfEntries(
                         command, dataType, offset);
                     offset += 3;
@@ -402,7 +402,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     offset += sizeOfData;
                 }
             }
-            else if (dataType == dataType::nested) {
+            else if (dataType == dataType::dictionary) {
                 numOfEntries = DataType::getNumOfEntries(command, dataType, offset);
 
                 offset += 1;
@@ -411,16 +411,13 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 uint8_t nestedDataType     = command[offset + 1];
                 uint8_t nestedDataTypeSize = DataType::getDataTypeSize(nestedDataType);
 
-                sizeOfData = 
-                    dataTypeSize + 
-                    numOfEntries * nestedDataTypeSize +
-                    (numOfEntries > 0 ? dataTypeSize : 0);
+                sizeOfData = 4 + numOfEntries * (dataTypeSize + nestedDataTypeSize);
 
                 dataFragment = DataFragment(
                     fragmentID,
                     offset,
                     numOfEntries,
-                    DataType(nestedDataTypeSize, dataTypeSize, dataType::nested)
+                    DataType(dataTypeSize + nestedDataTypeSize, 4, dataType::dictionary)
                 );
                 /*std::cout <<
                     "offset: "         << (unsigned)dataFragment._offset << " " <<

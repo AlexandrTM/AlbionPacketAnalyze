@@ -27,7 +27,8 @@ void Location::changeLocation(
 {
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
-    //_dataLayout.printInfo(*this);
+    //dataLayout.printInfo(command);
+    //command.printCommandInOneString();
     DataFragment locationFromFragment = dataLayout.findFragment(65);
     DataFragment locationToFragment = dataLayout.findFragment(8);
     std::string locationFrom = "";

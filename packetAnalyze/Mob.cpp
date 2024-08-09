@@ -42,6 +42,7 @@ Mob::Mob(NetworkCommand& rawMob)
 	else if 
 		(idSize == 8) { _id = net::read_uint32(rawMob, idFragment._offset + 4); }
 
+	// not tier of charges actually some kind of mob subtype
 	float_t tierAndCharges = net::read_float32(rawMob, dataLayout.findFragment(11)._offset);
 	float_t preTier = 0;
 
@@ -72,22 +73,19 @@ Mob::Mob(NetworkCommand& rawMob)
 	//	"some19:      " << net::read_float32(rawMob, dataLayout.findFragment(19)._offset) << " " << "\n";
 	
 
-	if (_category != mobCategory::basicMob and
-        _category != mobCategory::magicMob and
-        _category != mobCategory::guard    and
-        _category != mobCategory::mobBlackZone) {
+	if (!isMobKnown(_type, _category)) {
 		float_t some12 = net::read_float32(rawMob, dataLayout.findFragment(12)._offset);
 
 		if (some12 != 0) {
 			std::cout <<
 				// ???
 				"some12: " << some12 << " " << "\n";
+			rawMob.printCommandInOneString();
 		}
 		std::cout <<
-			"some11: " << net::read_float32(rawMob, dataLayout.findFragment(11)._offset) << "\n" <<
-			"some17: " << net::read_uint32 (rawMob, dataLayout.findFragment(17)._offset) << " " << "\n";
+			"some11: " << net::read_float32(rawMob, dataLayout.findFragment(11)._offset) << "\n";
 		this->printInfo();
-		dataLayout.printInfo(rawMob);
+		//dataLayout.printInfo(rawMob);
 	}
 }
 
@@ -110,12 +108,12 @@ Mob::Mob(uint32_t id, uint8_t category, uint8_t type,
 void Mob::printInfo()
 {
 	std::cout << 
-		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
-		"category: "	<< std::setw(3) << (unsigned)_category    << " " <<
+		"health: "      << std::setw(5) << (unsigned)_health	  << " " <<
 		"type: "	    << std::setw(3) << (unsigned)_type        << " " <<
-		"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " <<
-		"charges: "		<< std::setw(2) << (unsigned)_charges	  << " " <<
-		"health: "      << std::setw(7) << (unsigned)_health	  << " " <<
+		"category: "	<< std::setw(2) << (unsigned)_category    << " " <<
+		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
+		//"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " <<
+		//"charges: "		<< std::setw(2) << (unsigned)_charges	  << " " <<
 		"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " <<
 		"x: "			<< std::setw(8) << _positionX			  << " " <<
 		"y: "			<< std::setw(8) << _positionY			  << "\n";

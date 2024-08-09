@@ -127,7 +127,6 @@ void EntityList::colorizeHarvestable(Harvestable harvestable)
     }
     glColor3f(color[0], color[1], color[2]);
 }
-
 void EntityList::drawHarvestables()
 {
     std::vector<GLfloat> playerCoords = { _player._positionX, _player._positionY };
@@ -201,10 +200,7 @@ void EntityList::drawPlayers()
 void EntityList::drawMobs()
 {
     for (size_t i = 0; i < _mobList.size(); i++) {
-        if (_mobList[i]._category != mobCategory::basicMob and
-            _mobList[i]._category != mobCategory::magicMob and
-            _mobList[i]._category != mobCategory::guard    and
-            _mobList[i]._category != mobCategory::mobBlackZone) {
+        if (!isMobKnown(_mobList[i]._type, _mobList[i]._category)) {
 
             std::vector<GLfloat> mobCoords = { _mobList[i]._positionX, _mobList[i]._positionY };
             GLfloat x = mobCoords[0];
