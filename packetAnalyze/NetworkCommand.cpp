@@ -95,7 +95,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     if (_operationType == operationType::response) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
-        DataLayout _dataLayout{};
+        DataLayout dataLayout{};
         /*_dataLayout.findDataLayout(*this);
         _dataLayout.printInfo(*this);*/
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
@@ -108,8 +108,8 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
         case operationCode::joinLocation:
             Location::changeLocation(*this, _entityList._locationList, 
                 _entityList._harvestableList, _entityList._playerList, _entityList._mobList, true);
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo(*this);
+            //dataLayout.findDataLayout(*this);
+            //dataLayout.printInfo(*this);
             break;
         case operationCode::move:
             /*_dataLayout.findDataLayout(*this);

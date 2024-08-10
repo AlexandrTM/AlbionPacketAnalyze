@@ -256,8 +256,6 @@ Harvestable& HarvestableList::operator[](size_t elementIndex)
 }
 HarvestableList& HarvestableList::operator+=(HarvestableList harvestableList)
 {
-	for (size_t i = 0; i < harvestableList.size(); i++) {
-		_harvestableList.push_back(harvestableList[i]);
-	}
+	this->update(harvestableList);
 	return *this;
 }

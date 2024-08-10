@@ -46,65 +46,55 @@ void Location::changeLocation(
         });
 
     //currentHarvestableList.printInfo();
-    if (locations.size() == 0) {
-        locations.push_back(Location(locationFrom,
-            currentHarvestableList, currentPlayerList, currentMobList));
-
+    bool locationToIsNew = true;
+    bool locationFromIsNew = true;
+    for (size_t i = 0; i < locations.size(); i++) {
+        //locations[i].printInfo();
+        if (locations[i]._locationID == locationTo) {
+            currentHarvestableList = locations[i]._harvestableList;
+            currentPlayerList      = PlayerList();
+            currentMobList         = locations[i]._mobList;
+            //currentPlayerList    = locations[i]._playerList;
+            locationToIsNew = false;
+            continue;
+        }
+        if (locations[i]._locationID == locationFrom) {
+            locations[i]._harvestableList = currentHarvestableList;
+            locations[i]._playerList      = PlayerList();
+            locations[i]._mobList         = currentMobList;
+            //locations[i]._playerList      = currentPlayerList;
+            locationFromIsNew = false;
+            continue;
+        }
+    }
+    if (locationToIsNew == true) {
         locations.push_back(Location(locationTo, {}, {}, {}));
         currentHarvestableList = {};
         currentPlayerList      = {};
         currentMobList         = {};
     }
-    else {
-        for (size_t i = 0; i < locations.size(); i++) {
-            //locations[i].printInfo();
-            if (locations[i]._locationID == locationTo) {
-                currentHarvestableList = locations[i]._harvestableList;
-                currentPlayerList      = {};
-                currentMobList         = locations[i]._mobList;
-                //currentPlayerList    = locations[i]._playerList;
-                break;
-            }
-            if (locations[i]._locationID == locationFrom) {
-                locations[i]._harvestableList = currentHarvestableList;
-                locations[i]._playerList      = {};
-                locations[i]._mobList         = currentMobList;
-                //locations[i]._playerList      = currentPlayerList;
-            }
-            if (i == locations.size() - 1) {
-                locations.push_back(Location(locationTo, {}, {}, {}));
-                currentHarvestableList = {};
-                currentPlayerList      = {};
-                currentMobList         = {};
-                break;
-            }
-        }
-        /*for (size_t i = 0; i < locations.size(); i++) {
-            if (locations[i]._locationID == locationFrom) {
-            }
-            else if (i == locations.size() - 1) {
-                locations.push_back(Location(locationFrom,
-                    currentHarvestableList, currentPlayerList, currentMobList));
-            }
-        }*/
+    if (locationFromIsNew == true) {
+        locations.push_back(Location(locationFrom,
+            currentHarvestableList, currentPlayerList, currentMobList));
     }
 
     if (printInfo) {
         auto timeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         char timeBuffer[30];
         ctime_s(timeBuffer, sizeof(timeBuffer), &timeNow);
-        std::cout <<
-            "from: " << locationFrom << " -> " <<
-            "to: " << locationTo << "\n" <<
-            timeBuffer;
 
         std::cout << "num of locations: " << locations.size() << "\n";
         for (size_t i = 0; i < locations.size(); i++) {
             std::cout << 
                 "location id" << i << ": " << locations[i]._locationID          << "\n" << 
-                "num of harvestables: " << locations[i]._harvestableList.size() << "\n" << 
-                "num of mobs:         " << locations[i]._mobList.size()         << "\n\n";
-        } 
+                "num of harvestables: "    << locations[i]._harvestableList.size() << "\n" << 
+                "num of mobs:         "    << locations[i]._mobList.size()         << "\n\n";
+        }
+
+        std::cout <<
+            "from: " << locationFrom << " -> " <<
+            "to: " << locationTo << "\n" <<
+            timeBuffer;
 
         std::cout << 
             "current location:    " << locationTo                    << "\n" <<
