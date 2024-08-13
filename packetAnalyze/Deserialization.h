@@ -141,6 +141,7 @@ public:
     template<typename T>
     T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);
 
+    uint8_t findNumOfFragments(NetworkCommand& command);
     void findDataLayout(NetworkCommand& command);
     void processDictionary(NetworkCommand& command, uint8_t& fragmentID, ptrdiff_t& offset, 
         uint16_t numOfEntries, uint8_t& dataTypeHeaderSize, size_t index);

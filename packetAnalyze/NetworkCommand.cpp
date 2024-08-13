@@ -35,57 +35,66 @@ EntityList _entityList{};
 size_t counter = 0;
 void NetworkCommand::analyzeCommand(GLFWwindow* window)
 {
-    DataLayout _dataLayout{};
+    DataLayout dataLayout{};
     //if (_eventCode == 0) {} // joining server
     //else if (std::isElementInVector(nCodes, _eventCode)) {
     //    _dataLayout.findDataLayout(*this);
     //    _dataLayout.printInfo(*this);
     //}
     if (_operationType == operationType::event) {
-        DataLayout dataLayout{};
-        
         switch (_eventCode)
         {
         case eventCode::healthUpdate:
             //_entityList._playerList.update(HealthUpdate::HealthUpdate(*this)); // need to add health handling
-            _entityList._mobList.update(HealthUpdate::HealthUpdate(*this));
+            _entityList._currentLocation._mobList.update(HealthUpdate::HealthUpdate(*this));
             //dataLayout.findDataLayout(*this);
             //dataLayout.printInfo(*this);
             break;
         case eventCode::harvestableObjectList:
-            _entityList._harvestableList.update(HarvestableList(*this));
+            _entityList._currentLocation._harvestableList.update(HarvestableList(*this));
             break;
         case eventCode::harvestableObject:
-            _entityList._harvestableList.update(Harvestable(*this));
+            _entityList._currentLocation._harvestableList.update(Harvestable(*this));
             break;
         case eventCode::harvestableChangeState:
-            _entityList._harvestableList.updateState(*this); 
+            _entityList._currentLocation._harvestableList.updateState(*this);
+            break;
+        case eventCode::harvestStart:
+            //Harvestable::harvestStart(*this);
+            break;
+        case eventCode::harvestFinished:
+            Harvestable::harvestFinished(*this);
             break;
         case eventCode::newPlayer:
             /*dataLayout.findDataLayout(*this);
             dataLayout.printInfo(*this);*/
-            _entityList._playerList.newPlayer(Player(*this)); 
+            _entityList._currentLocation._playerList.newPlayer(Player(*this));
             break;
         case eventCode::playerLeave:
-            _entityList._playerList.playerLeave(Player(*this)); 
+            _entityList._currentLocation._playerList.playerLeave(Player(*this));
             break;
         case eventCode::playerMove:
             //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         case eventCode::mobChangeState:
-            _entityList._mobList.mobChangeState(*this);
+            _entityList._currentLocation._mobList.mobChangeState(*this);
             //_entityList._playerList.update(Player::playerMove(*this)); 
             break;
         case eventCode::newMob:
-            //this->printCommandInOneString();
-            _entityList._mobList.newMob(Mob::Mob(*this));
+            _entityList._currentLocation._mobList.newMob(Mob::Mob(*this));
             break;
         default:
             break;
         }
         if (_networkCommand.size() == 67 and _networkCommand[66] & (2 << 0)) {
-            _entityList._playerList.update(EntityMove::EntityMove(*this));
-            _entityList._mobList   .update(EntityMove::EntityMove(*this));
+            if (dataLayout.findNumOfFragments(*this) == 2) {
+                _entityList._currentLocation._playerList.update(EntityMove::EntityMove(*this));
+                _entityList._currentLocation._mobList.update(EntityMove::EntityMove(*this));
+            }
+            else {
+                /*dataLayout.findDataLayout(*this);
+                dataLayout.printInfo(*this);*/
+            }
         }
         else {
             /*dataLayout.findDataLayout(*this);
@@ -95,19 +104,15 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window)
     if (_operationType == operationType::response) {
         //std::chrono::steady_clock::time_point start;
         //std::chrono::steady_clock::time_point stop;
-        DataLayout dataLayout{};
-        /*_dataLayout.findDataLayout(*this);
-        _dataLayout.printInfo(*this);*/
+        /*dataLayout.findDataLayout(*this);
+        dataLayout.printInfo(*this);*/
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << _eventCode << "\n";*/
-        if (_eventCode == 2) {
-            //this->printCommandInOneString();
-        }
         switch (_eventCode) 
         {
         case operationCode::joinLocation:
             Location::changeLocation(*this, _entityList._locationList, 
-                _entityList._harvestableList, _entityList._playerList, _entityList._mobList, true);
+                _entityList._currentLocation, true);
             //dataLayout.findDataLayout(*this);
             //dataLayout.printInfo(*this);
             break;

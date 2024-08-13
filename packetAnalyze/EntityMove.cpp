@@ -30,9 +30,9 @@ EntityMove::EntityMove(NetworkCommand& entityMove)
     _positionX = net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 9);
     _positionY = net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 13);
 
-    if (_positionX == 0   || _positionY == 0  ||
-        _positionX > 800  || _positionY > 800 ||
-        _positionX < -800 || _positionY < -800) {
+    if ((_positionX == 0   && _positionY == 0)  ||
+         _positionX > 800  || _positionY > 800 ||
+         _positionX < -800 || _positionY < -800) {
         std::cout << "entity coords out of bounds: " <<
             _positionX << " " << _positionY << "\n";
         entityMove.printCommandInOneString();

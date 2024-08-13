@@ -9,23 +9,26 @@
 
 struct EntityList
 {
-    HarvestableList       _harvestableList;
     HarvestableListFilter _harvestableListFilter;
     PlayerSelf            _player;
-    PlayerList            _playerList;
-    MobList               _mobList;
+    MobListFilter         _mobListFilter;
+    Location              _currentLocation;
     std::vector<Location> _locationList;
 
     EntityList();
 
+    void drawPlayerSelf();
     void drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, std::vector<float> playerCoords);
     void drawWindowFrame();
     void drawHarvestables();
     void drawPlayers();
     void drawMobs();
 
+    bool isMobFiltered(Mob mob);
+    bool isHarvestableFiltered(Harvestable harvestable);
     std::vector<GLfloat> returnEnchantmentColor(uint8_t enchantment);
     void colorizeHarvestable(Harvestable harvestable);
+    void colorizeMob(Mob mob);
     void colorizeHarvestableCharge(Harvestable harvestable, size_t chargeID);
 
     void draw(GLFWwindow* window);
@@ -33,7 +36,6 @@ struct EntityList
     std::vector<GLfloat> convertToMapCoordinates(float_t x, float_t y);
     float_t findDistance(float_t x1, float_t y1, float_t x2, float_t y2);
 
-    bool filterHarvestable(Harvestable harvestable);
     void changeLocation(NetworkCommand& command);
     void clear();
 };

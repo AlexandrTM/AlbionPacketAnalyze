@@ -20,9 +20,7 @@ Location::Location(std::string locationID,
 void Location::changeLocation(
     NetworkCommand& command,
     std::vector<Location>& locations,
-    HarvestableList& currentHarvestableList, 
-    PlayerList& currentPlayerList, 
-    MobList& currentMobList,
+    Location& currentLocation,
     bool printInfo)
 {
     DataLayout dataLayout{};
@@ -40,42 +38,45 @@ void Location::changeLocation(
         locationTo += (unsigned)command[locationToFragment._offset + i];
     }
 
-    std::sort(currentHarvestableList.begin(), currentHarvestableList.end(),
+    /*std::sort(currentHarvestableList.begin(), currentHarvestableList.end(),
         [](const Harvestable& a, const Harvestable& b) {
             return a._id < b._id;
-        });
+        });*/
 
     //currentHarvestableList.printInfo();
     bool locationToIsNew = true;
     bool locationFromIsNew = true;
+    // order is important
+    for (size_t i = 0; i < locations.size(); i++) {
+        if (locations[i]._locationID == locationFrom) {
+            locations[i]._harvestableList = currentLocation._harvestableList;
+            locations[i]._playerList = PlayerList();
+            locations[i]._mobList = currentLocation._mobList;
+            //locations[i]._playerList      = currentPlayerList;
+            locationFromIsNew = false;
+            break;
+        }
+    }
     for (size_t i = 0; i < locations.size(); i++) {
         //locations[i].printInfo();
         if (locations[i]._locationID == locationTo) {
-            currentHarvestableList = locations[i]._harvestableList;
-            currentPlayerList      = PlayerList();
-            currentMobList         = locations[i]._mobList;
+            currentLocation._harvestableList = locations[i]._harvestableList;
+            currentLocation._playerList      = PlayerList();
+            currentLocation._mobList         = locations[i]._mobList;
             //currentPlayerList    = locations[i]._playerList;
             locationToIsNew = false;
-            continue;
+            break;
         }
-        if (locations[i]._locationID == locationFrom) {
-            locations[i]._harvestableList = currentHarvestableList;
-            locations[i]._playerList      = PlayerList();
-            locations[i]._mobList         = currentMobList;
-            //locations[i]._playerList      = currentPlayerList;
-            locationFromIsNew = false;
-            continue;
-        }
-    }
-    if (locationToIsNew == true) {
-        locations.push_back(Location(locationTo, {}, {}, {}));
-        currentHarvestableList = {};
-        currentPlayerList      = {};
-        currentMobList         = {};
     }
     if (locationFromIsNew == true) {
         locations.push_back(Location(locationFrom,
-            currentHarvestableList, currentPlayerList, currentMobList));
+            currentLocation._harvestableList, currentLocation._playerList, currentLocation._mobList));
+    }
+    if (locationToIsNew == true) {
+        locations.push_back(Location(locationTo, {}, {}, {}));
+        currentLocation._harvestableList = {};
+        currentLocation._playerList      = {};
+        currentLocation._mobList         = {};
     }
 
     if (printInfo) {
@@ -98,8 +99,8 @@ void Location::changeLocation(
 
         std::cout << 
             "current location:    " << locationTo                    << "\n" <<
-            "num of harvestables: " << currentHarvestableList.size() << "\n" << 
-            "num of mobs:         " << currentMobList.size()         << "\n\n";
+            "num of harvestables: " << currentLocation._harvestableList.size() << "\n" <<
+            "num of mobs:         " << currentLocation._mobList.size()         << "\n\n";
     }
 }
 

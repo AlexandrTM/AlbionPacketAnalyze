@@ -3,10 +3,10 @@
 
 struct Location
 {
-    std::string _locationID = "";
+    std::string     _locationID      = "";
     HarvestableList _harvestableList = {};
-    PlayerList _playerList = {};
-    MobList _mobList = {};
+    PlayerList      _playerList      = {};
+    MobList         _mobList         = {};
 
     Location();
     Location(std::string locationID,
@@ -14,9 +14,7 @@ struct Location
     static void changeLocation(
         NetworkCommand& command,
         std::vector<Location>& locations,
-        HarvestableList& currentHarvestableList, 
-        PlayerList& currentPlayerList, 
-        MobList& currentMobList,
+        Location& currentLocation,
         bool printInfo
     );
 

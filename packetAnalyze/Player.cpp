@@ -21,6 +21,7 @@ PlayerSelf::PlayerSelf(NetworkCommand& rawPlayer)
 
 	_positionX = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset);
 	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset + 4);
+	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }
 
 void PlayerSelf::update(NetworkCommand& rawPlayer)
@@ -43,7 +44,7 @@ Player::Player()
 	_positionY = 0;
 	_isVisible = false;
 }
-Player::Player(uint32_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible)
+Player::Player(uint64_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible)
 {
 	_id        = id;
 	_health    = health;
@@ -72,7 +73,7 @@ Player::Player(NetworkCommand& rawPlayer) // find health
 	else if 
 		(idSize == 4) { _id = net::read_uint32(rawPlayer, idFragment._offset); }
 	else if 
-		(idSize == 8) { _id = net::read_uint32(rawPlayer, idFragment._offset + 4); }
+		(idSize == 8) { _id = net::read_uint64(rawPlayer, idFragment._offset); }
 
 	_positionX = net::read_float32(rawPlayer, dataLayout.findFragment(14)._offset);
 	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(14)._offset + 4);

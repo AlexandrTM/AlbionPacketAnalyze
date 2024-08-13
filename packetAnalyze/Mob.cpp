@@ -4,7 +4,8 @@ Mob::Mob()
 {
 	_id			 = 0;
 	_category    = 0;
-	_type	     = 0;
+	_typeID	     = 0;
+	_textType    = "";
 	_positionX	 = 0;
 	_positionY	 = 0;
 	_health		 = 0;
@@ -12,12 +13,29 @@ Mob::Mob()
 	_enchantment = 0;
 	_charges     = 0;
 }
+Mob::Mob(uint64_t id, uint8_t category, uint8_t type, std::string textType,
+	uint32_t health,
+	uint8_t tier, uint8_t enchantment, uint8_t charges,
+	float_t positionX, float_t positionY)
+{
+	_id = id;
+	_category = category;
+	_typeID = type;
+	_textType = textType;
+	_health = health;
+	_tier = tier;
+	_enchantment = enchantment;
+	_charges = charges;
+	_positionX = positionX;
+	_positionY = positionY;
+}
 
 Mob::Mob(NetworkCommand& rawMob)
 {
 	_id			 = 0;
 	_category    = 0;
-	_type	     = 0;
+	_typeID	     = 0;
+	_textType    = "";
 	_positionX	 = 0;
 	_positionY	 = 0;
 	_health		 = 0;
@@ -40,20 +58,35 @@ Mob::Mob(NetworkCommand& rawMob)
 	else if 
 		(idSize == 4) { _id = net::read_uint32(rawMob, idFragment._offset); }
 	else if 
-		(idSize == 8) { _id = net::read_uint32(rawMob, idFragment._offset + 4); }
+		(idSize == 8) { _id = net::read_uint64(rawMob, idFragment._offset); }
 
 	// not tier of charges actually some kind of mob subtype
-	float_t tierAndCharges = net::read_float32(rawMob, dataLayout.findFragment(11)._offset);
-	float_t preTier = 0;
+	//float_t tierAndCharges = net::read_float32(rawMob, dataLayout.findFragment(11)._offset);
+	//float_t preTier = 0;
+	//_tier        = std::floor(tierAndCharges);
+	//_charges     = std::modf(tierAndCharges, &preTier) * 10;
 
 	_category    = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset);
-	_type		 = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset + 1);
+	_typeID		 = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset + 1);
 	_health      = net::read_float32(rawMob, healthFragment._offset);
 	_positionX   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
 	_positionY   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);
-	_tier        = std::floor(tierAndCharges);
-	_charges     = std::modf(tierAndCharges, &preTier) * 10;
-	
+
+	//if (_category == mobCategory::resource or
+	//	_category == mobCategory::resourceElemental) {
+	MobDescription mobDescription = getMobDescription(_category, _typeID);
+	_tier = mobDescription._tier;
+	_textType = mobDescription._textType;
+	//}
+	if 
+		((_textType.find("UNCOMMON")  != std::string::npos)) { _enchantment = 1; }
+	else if 
+		((_textType.find("RARE")      != std::string::npos)) { _enchantment = 2; }
+	else if 
+		((_textType.find("EPIC")      != std::string::npos)) { _enchantment = 3; }
+	else if 
+		((_textType.find("LEGENDARY") != std::string::npos)) { _enchantment = 4; }
+
 	/*std::cout << 
 		// current position
 		"x1: " << std::setw(6) << net::read_float32(rawMob, dataLayout.findFragment(7)._offset) << " " <<
@@ -62,8 +95,8 @@ Mob::Mob(NetworkCommand& rawMob)
 		_positionX   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
 		_positionY   = net::read_float32(rawMob, dataLayout.findFragment(8)._offset + 4);*/
 
-		//	"mob type:    " << net::read_uint16 (rawMob, dataLayout.findFragment(1 )._offset) << " " << "\n" <<
-		//	//"rotation angle ? :      " << net::read_float32(rawMob, dataLayout.findFragment(10)._offset) << " " << "\n" <<
+	//	"mob type:    " << net::read_uint16 (rawMob, dataLayout.findFragment(1 )._offset) << " " << "\n" <<
+	//	//"rotation angle ? :      " << net::read_float32(rawMob, dataLayout.findFragment(10)._offset) << " " << "\n" <<
 	//	//"health ? :      " << net::read_float32(rawMob, dataLayout.findFragment(13)._offset) << " " << "\n" <<
 	//	//"health ? :      " << net::read_float32(rawMob, dataLayout.findFragment(14)._offset) << " " << "\n" <<
 	//	"some15:      " << net::read_float32(rawMob, dataLayout.findFragment(15)._offset) << " " << "\n" <<
@@ -72,8 +105,7 @@ Mob::Mob(NetworkCommand& rawMob)
 	//	"some18:      " << net::read_float32(rawMob, dataLayout.findFragment(18)._offset) << " " << "\n" <<
 	//	"some19:      " << net::read_float32(rawMob, dataLayout.findFragment(19)._offset) << " " << "\n";
 	
-
-	if (!isMobKnown(_type, _category)) {
+	if (_textType == "MOB_NOT_FOUND") {
 		float_t some12 = net::read_float32(rawMob, dataLayout.findFragment(12)._offset);
 
 		if (some12 != 0) {
@@ -89,27 +121,11 @@ Mob::Mob(NetworkCommand& rawMob)
 	}
 }
 
-Mob::Mob(uint32_t id, uint8_t category, uint8_t type,
-	uint32_t health, 
-	uint8_t tier, uint8_t enchantment, uint8_t charges,
-	float_t positionX, float_t positionY)
-{
-	_id			 = id;
-	_category    = category;
-	_type		 = type;
-	_health		 = health;
-	_tier		 = tier;
-	_enchantment = enchantment;
-	_charges     = charges;
-	_positionX   = positionX;
-	_positionY   = positionY;
-}
-
 void Mob::printInfo()
 {
 	std::cout << 
 		"health: "      << std::setw(5) << (unsigned)_health	  << " " <<
-		"type: "	    << std::setw(3) << (unsigned)_type        << " " <<
+		"type: "	    << std::setw(3) << (unsigned)_typeID        << " " <<
 		"category: "	<< std::setw(2) << (unsigned)_category    << " " <<
 		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
 		//"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " <<
@@ -117,6 +133,12 @@ void Mob::printInfo()
 		"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " <<
 		"x: "			<< std::setw(8) << _positionX			  << " " <<
 		"y: "			<< std::setw(8) << _positionY			  << "\n";
+	std::cout << 
+		"MobDescription(" << 
+		std::left << std::setw(3) << (unsigned)_typeID << 
+		", " << std::setw(2) << (unsigned)_category << 
+		", " << (unsigned)_tier << 
+		", \"" << _textType << "\")," << "\n\n";	
 }
 
 MobList::MobList()
@@ -163,7 +185,7 @@ void MobList::update(HealthUpdate healthUpdate)
 
 void MobList::mobChangeState(NetworkCommand& mobChangeState)
 {
-	uint32_t id = 0;
+	uint64_t id = 0;
 	uint8_t enchantment = 0;
 
 	DataLayout dataLayout{};
@@ -178,7 +200,7 @@ void MobList::mobChangeState(NetworkCommand& mobChangeState)
 	else if 
 		(idSize == 4) { id = net::read_uint32(mobChangeState, idFragment._offset); }
 	else if 
-		(idSize == 8) { id = net::read_uint32(mobChangeState, idFragment._offset + 4); }
+		(idSize == 8) { id = net::read_uint64(mobChangeState, idFragment._offset); }
 
 	enchantment = net::read_uint8(mobChangeState, dataLayout.findFragment(1)._offset);
 
@@ -198,4 +220,25 @@ size_t MobList::size()
 Mob& MobList::operator[](size_t elementIndex)
 {
 	return _mobList[elementIndex];
+}
+
+MobFilter::MobFilter(std::vector<uint8_t> trackingTiers,
+	std::vector<uint8_t> trackingEnchantments)
+{
+	_trackingTiers = trackingTiers;
+	_trackingEnchantments = trackingEnchantments;
+}
+MobFilter::MobFilter()
+{
+	_trackingTiers = {};
+	_trackingEnchantments = {};
+}
+size_t MobListFilter::size()
+{
+	return _mobListFilter.size();
+}
+
+MobFilter& MobListFilter::operator[](size_t elementIndex)
+{
+	return _mobListFilter[elementIndex];
 }

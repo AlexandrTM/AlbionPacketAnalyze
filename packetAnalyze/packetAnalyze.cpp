@@ -390,12 +390,40 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
     }
 }
 
+void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
+{
+    std::sort(mobDescriptions.begin(), mobDescriptions.end(),
+        [](const MobDescription& a, const MobDescription& b) {
+            if (a._category == b._category) {
+                return a._typeID < b._typeID;
+            }
+            return a._category < b._category;
+        });
+
+    uint8_t previousCategory = 0;
+    for (size_t i = 0; i < mobDescriptions.size(); i++) {
+        if (previousCategory != mobDescriptions[i]._category) {
+            std::cout << "\n";
+            previousCategory = mobDescriptions[i]._category;
+        }
+
+        std::cout <<
+            "MobDescription(" << 
+                    std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
+            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
+            ", "                              << (unsigned)mobDescriptions[i]._tier     <<
+                                       ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
+    }
+}
+
 int main() {
     PacketAnalyze packetAnalyze;
+
+    //sortMobDescriptions(mobDescriptions);
     packetAnalyze.run();
 
     packetAnalyze.outputColorizedNetworkPacket(text);
-
+    
     //for (size_t j = 0; j < 10; j++) {
     //    auto start = std::chrono::high_resolution_clock::now();
     //    LARGE_INTEGER count;

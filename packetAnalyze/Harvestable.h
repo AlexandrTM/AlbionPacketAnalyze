@@ -46,17 +46,25 @@ struct HarvestableListFilter
 
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
-            ),
+            { 4 },
+            { 1 },
+            { 0 }),
         HarvestableFilter(/*rock*/
-            ),
+            { 4 },
+            { 2 },
+            { 0 }),
         HarvestableFilter(/*fiber*/
             { 4, 5 },
-            { 1, 1 },
+            { 2, 2 },
             { 0, 0 }),
         HarvestableFilter(/*hide*/
-            ),
+            { 4 },
+            { 2 },
+            { 0 }),
         HarvestableFilter(/*ore*/
-            ),
+            { 4 },
+            { 1 },
+            { 0 }),
         HarvestableFilter(/*other*/)
     };
 
@@ -82,7 +90,7 @@ struct HarvestableListFilter
 
 struct Harvestable
 {
-	uint32_t _id;
+	uint64_t _id;
 	uint8_t  _type;
 	uint8_t  _tier;
 	uint8_t  _enchantment;
@@ -91,10 +99,12 @@ struct Harvestable
 	uint8_t  _charges;
 
 	Harvestable();
-	Harvestable(uint32_t id, uint8_t type, uint8_t tier,
+	Harvestable(uint64_t id, uint8_t type, uint8_t tier,
 				float_t positionX, float_t positionY, 
 				uint8_t charges, uint8_t enchantment);
-	Harvestable(NetworkCommand& harvestableRaw);
+	Harvestable(NetworkCommand& rawHarvestable);
+    static void harvestStart(NetworkCommand& rawHarvestable);
+    static void harvestFinished(NetworkCommand& rawHarvestable);
 
 	void printInfo();
     static std::string getHarvestableTextType(uint8_t type);

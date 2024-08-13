@@ -15,7 +15,7 @@ struct PlayerSelf
 
 struct Player
 {
-	uint32_t _id;
+	uint64_t _id;
 	uint32_t _health;
 	float_t _positionX;
 	float_t _positionY;
@@ -23,7 +23,7 @@ struct Player
 
 	Player();
 	Player(NetworkCommand& rawPlayer);
-	Player(uint32_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible);
+	Player(uint64_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible);
 };
 
 class PlayerList

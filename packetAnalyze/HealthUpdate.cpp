@@ -19,13 +19,13 @@ HealthUpdate::HealthUpdate(NetworkCommand& rawHealthUpdate)
 	else if 
 		(idSize == 4) { _id = net::read_uint32(rawHealthUpdate, idFragment._offset); }
 	else if 
-		(idSize == 8) { _id = net::read_uint32(rawHealthUpdate, idFragment._offset + 4); }
+		(idSize == 8) { _id = net::read_uint64(rawHealthUpdate, idFragment._offset); }
 
 	_healthChange = net::read_float32(rawHealthUpdate, dataLayout.findFragment(2)._offset);
 	_health		  = net::read_float32(rawHealthUpdate, dataLayout.findFragment(3)._offset);
 }
 
-HealthUpdate::HealthUpdate(uint32_t id, uint32_t healthChange, uint32_t health)
+HealthUpdate::HealthUpdate(uint64_t id, uint32_t healthChange, uint32_t health)
 {
 	_id			  = id;
 	_healthChange = healthChange;

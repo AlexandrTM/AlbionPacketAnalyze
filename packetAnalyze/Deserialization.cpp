@@ -242,6 +242,13 @@ DataFragment DataLayout::findFragment(uint8_t fragmentID) const
     return DataFragment{};
 }
 
+uint8_t DataLayout::findNumOfFragments(NetworkCommand& command)
+{
+    ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
+    uint8_t numOfFragments = command[offset];
+
+    return numOfFragments;
+}
 void DataLayout::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
@@ -420,6 +427,8 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                     numOfEntries,
                     DataType(dataTypeSize + nestedDataTypeSize, 4, dataType::dictionary)
                 );
+
+                _dataLayout.push_back(dataFragment);
                 /*std::cout <<
                     "offset: "         << (unsigned)dataFragment._offset << " " <<
                     std::hex <<
