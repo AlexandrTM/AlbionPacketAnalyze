@@ -18,7 +18,9 @@ struct Location
         bool printInfo
     );
 
-    void printInfo();
+    static void printInfo(
+        std::vector<Location>& locations, Location& currentLocation,
+        std::string locationFrom, std::string locationTo);
 };
 
 #endif

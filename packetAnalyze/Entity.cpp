@@ -9,8 +9,8 @@ void EntityList::draw(GLFWwindow* window)
     glLoadIdentity();
 
     drawPlayerSelf();
-    //drawPlayers();
-    drawHarvestables();
+    drawPlayers();
+    //drawHarvestables();
     drawMobs();
     drawWindowFrame();
     
@@ -39,7 +39,7 @@ EntityList::EntityList()
 }
 void EntityList::drawWindowFrame()
 {
-    if ((_currentLocation._locationID.find("TNL") == std::string::npos)) {
+    if (_currentLocation._locationID.find("TNL") == std::string::npos) {
         glPointSize(1);
         glBegin(GL_LINES);
         glColor4f(0.5, 0.5, 0.5, 1);
@@ -77,10 +77,11 @@ void EntityList::drawHarvestables()
     std::vector<GLfloat> harvestableCoords;
     std::vector<GLfloat> harvestableMapCoords;
     for (size_t i = 0; i < _currentLocation._harvestableList.size(); i++) {
-        if (isHarvestableFiltered(_currentLocation._harvestableList[i])) {
-            harvestableCoords = { _currentLocation._harvestableList[i]._positionX, _currentLocation._harvestableList[i]._positionY };
-            harvestableMapCoords = convertToMapCoordinates(_currentLocation._harvestableList[i]._positionX,
+        harvestableCoords = { _currentLocation._harvestableList[i]._positionX, _currentLocation._harvestableList[i]._positionY };
+        harvestableMapCoords = convertToMapCoordinates(
+                _currentLocation._harvestableList[i]._positionX,
                 _currentLocation._harvestableList[i]._positionY);
+        if (isHarvestableFiltered(_currentLocation._harvestableList[i])) {
 
             glPointSize(std::max(pow((float)_currentLocation._harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
@@ -89,6 +90,13 @@ void EntityList::drawHarvestables()
             glEnd();
 
             drawCharges(_currentLocation._harvestableList[i], harvestableCoords, playerCoords);
+        }
+        else if (_currentLocation._harvestableList[i]._tier >= 4) {
+            glPointSize(_currentLocation._harvestableList[i]._tier - 3);
+            glBegin(GL_POINTS);
+            colorizeHarvestable(_currentLocation._harvestableList[i]);
+            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
+            glEnd();
         }
     }
 }
@@ -132,16 +140,29 @@ void EntityList::drawPlayers()
 }
 void EntityList::drawMobs()
 {
-    for (size_t i = 0; i < _currentLocation._mobList.size(); i++) {
-        if (isMobFiltered(_currentLocation._mobList[i]) or _currentLocation._mobList[i]._textType == "MOB_NOT_FOUND") {
-            std::vector<GLfloat> mobCoords = { _currentLocation._mobList[i]._positionX, _currentLocation._mobList[i]._positionY };
-            GLfloat x = mobCoords[0];
-            GLfloat y = mobCoords[1];
-            std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
+    float_t pointSize = 0;
+    std::vector<float_t> color = { 0.7f, 0.7f, 0.7f };
 
-            glPointSize(std::max(pow((float)_currentLocation._mobList[i]._tier / 4, 2) * 2.8, 4.0));
+    for (size_t i = 0; i < _currentLocation._mobList.size(); i++) {
+        std::vector<GLfloat> mobCoords = {
+            _currentLocation._mobList[i]._positionX, 
+            _currentLocation._mobList[i]._positionY 
+        };
+        GLfloat x = mobCoords[0];
+        GLfloat y = mobCoords[1];
+        std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
+
+        if (isMobFiltered(_currentLocation._mobList[i], pointSize, color)) {
+            glPointSize(pointSize);
             glBegin(GL_POINTS);
-            colorizeMob(_currentLocation._mobList[i]);
+            glColor3f(color[0], color[1], color[2]);
+            glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
+            glEnd();
+        }
+        else if (_currentLocation._mobList[i]._textType == "MOB_NOT_FOUND") {
+            glPointSize(7);
+            glBegin(GL_POINTS);
+            glColor3f(color[0], color[1], color[2]);
             glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
             glEnd();
         }
@@ -178,11 +199,17 @@ bool EntityList::isHarvestableFiltered(Harvestable harvestable)
     }
     return false;
 }
-bool EntityList::isMobFiltered(Mob mob)
+bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>& color)
 {
-    uint8_t filterID = 5;
+    std::vector<GLfloat> enchantmentColor = returnEnchantmentColor(mob._enchantment);
+
+    for (size_t i = 0; i < color.size(); i++) {
+        enchantmentColor[i] += (mob._tier - 4) * 0.033f;
+    }
+
     if (mob._category == mobCategory::resource or
         mob._category == mobCategory::resourceElemental) {
+        uint8_t filterID = 5;
 
         if (mob._tier > 3) {
             std::string mobTypePrefix = mob._textType.substr(0, 3);
@@ -195,7 +222,8 @@ bool EntityList::isMobFiltered(Mob mob)
 
             HarvestableFilter mobFilter = this->_harvestableListFilter[filterID];
 
-            //glPointSize(std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0));
+            pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
+            color = enchantmentColor;
 
             if (std::isElementInVector(mobFilter._trackingTiers, mob._tier)) {
                 size_t elementIndex = std::findElementIndex(mobFilter._trackingTiers, mob._tier);
@@ -204,25 +232,38 @@ bool EntityList::isMobFiltered(Mob mob)
                 }
             }
         }
-        if (mob._textType.rfind("AVALONIAN_TREASURE", 0) == 0) {
-            //glPointSize(7);
-            return true;
-        }
-        if (mob._textType.rfind("TREASURE", 0) == 0) {
-            //glPointSize(4);
-            return true;
-        }
-        if (mob._textType.find("ELEMENTAL") != std::string::npos) {
-            //glPointSize(std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0));
-            return true;
-        }
-        if (mob._textType.find("ASPECT") != std::string::npos) {
-            //glPointSize(std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0));
-            return true;
-        }
     }
-    if ((mob._textType.find("WISP") != std::string::npos) and mob._enchantment > 1) {
-        //glPointSize(std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0));
+    if (mob._textType.find("ELEMENTAL") != std::string::npos) {
+        pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
+        color = enchantmentColor;
+        return true;
+    }
+    if (mob._textType.find("ASPECT") != std::string::npos) {
+        pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
+        color = enchantmentColor;
+        return true;
+    }
+    if (mob._textType.rfind("TREASURE", 0) == 0) {
+        pointSize = 4;
+        color = { 0.811f, 0.709f, 0.231f };
+        return true;
+    }
+    if (mob._textType.rfind("AVALONIAN_TREASURE", 0) == 0) {
+        pointSize = 5;
+        for (size_t i = 0; i < enchantmentColor.size(); i++) {
+            enchantmentColor[i] *= 1.025;
+        }
+        color = enchantmentColor;
+        return true;
+    }
+    if ((mob._textType.find("WISP") != std::string::npos) and mob._enchantment >= 3) {
+        pointSize = 4;
+        color = enchantmentColor;
+        return true;
+    }
+    if ((mob._textType.find("MOB_BOSS") != std::string::npos)) {
+        pointSize = mob._tier - 1;
+        color = { 0.8f, 0.435f, 0.435f };
         return true;
     }
     return false;
@@ -299,12 +340,14 @@ void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvest
         mapCoords = convertToMapCoordinates(x, y);
 
         if (distance > 10 and distance < 50) {
-            glVertex2f(mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
+            glVertex2f(
+                mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
                 mapCoords[1] / distance * 8.5f + 0.24f);
         }
         else {
-            glVertex2f(mapCoords[0] + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
-                       mapCoords[1] + 0.32f);
+            glVertex2f(
+                mapCoords[0] + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
+                mapCoords[1] + 0.32f);
         }
     }
     glEnd();

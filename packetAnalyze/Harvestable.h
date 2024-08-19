@@ -47,12 +47,12 @@ struct HarvestableListFilter
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
             { 4 },
-            { 1 },
-            { 0 }),
-        HarvestableFilter(/*rock*/
-            { 4 },
             { 2 },
             { 0 }),
+        HarvestableFilter(/*rock*/
+            { 4, 5 },
+            { 3, 2 },
+            { 0, 0 }),
         HarvestableFilter(/*fiber*/
             { 4, 5 },
             { 2, 2 },
@@ -63,7 +63,7 @@ struct HarvestableListFilter
             { 0 }),
         HarvestableFilter(/*ore*/
             { 4 },
-            { 1 },
+            { 2 },
             { 0 }),
         HarvestableFilter(/*other*/)
     };
@@ -130,6 +130,7 @@ struct HarvestableList
     void updateState(NetworkCommand& updateState);
 	void update(Harvestable harvestable);
 	void update(HarvestableList harvestableList);
+    static bool isResourceStatic(Harvestable harvestable);
 
     void clear();
     size_t size();

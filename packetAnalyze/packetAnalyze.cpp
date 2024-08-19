@@ -349,6 +349,7 @@ RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, si
     return rawPacketPayload;
 }
 
+bool _hikingMode = true;
 void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
 {
     _packet = NetworkPacket::findCommandsInPacket(rawPacket);
@@ -371,7 +372,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
                     _fragmentedCommandsBuffer[j].sort();
                     _fragmentedCommandsBuffer[j].connectFragments();
                     _fragmentedCommandsBuffer[j][0].endFragmentedCommand();
-                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window);
+                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window, _hikingMode);
                     _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
                     //std::cout << _fragmentedCommandsBuffer.size() << "\n";
                 }
@@ -384,7 +385,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
          or _packet[i].getCommandType() == commandType::unreliable) {
 
             //_packet[i].printCommandInOneString();
-            _packet[i].analyzeCommand(_window);
+            _packet[i].analyzeCommand(_window, _hikingMode);
             //findUniqueEventCodes(_packet[i]);
         }
     }

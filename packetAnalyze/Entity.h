@@ -24,7 +24,7 @@ struct EntityList
     void drawPlayers();
     void drawMobs();
 
-    bool isMobFiltered(Mob mob);
+    bool isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>& color);
     bool isHarvestableFiltered(Harvestable harvestable);
     std::vector<GLfloat> returnEnchantmentColor(uint8_t enchantment);
     void colorizeHarvestable(Harvestable harvestable);

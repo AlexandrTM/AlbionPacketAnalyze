@@ -8,7 +8,7 @@ public:
     NetworkCommand(NetworkCommand& command, size_t regionStart);
     NetworkCommand();
 
-    void analyzeCommand(GLFWwindow* window);
+    void analyzeCommand(GLFWwindow* window, bool hikingMode);
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);

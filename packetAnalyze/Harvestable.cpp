@@ -181,7 +181,7 @@ std::string Harvestable::getHarvestableTextType(uint8_t type)
 		textType = "\"FIBER\"";
 	}
 	if (type >= resourceType::HIDE and
-		type <= (resourceType::ORE - 1)) {
+		type <= (resourceType::ORE - 1) or type == 44) {
 		textType = "\"HIDE\"";
 	}
 	if (type >= resourceType::ORE and
@@ -269,9 +269,67 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 
 void HarvestableList::printInfo()
 {
-	std::cout << "Num of harvestables: " << _harvestableList.size() << "\n";
-	for (size_t i = 0; i < _harvestableList.size(); i++) {
-		_harvestableList[i].printInfo();
+	// Maps to store counts
+	std::map<uint8_t, int> tierDistribution;
+	std::map<uint8_t, int> enchantmentDistribution;
+	std::map<std::string, int> typeDistribution;
+	std::map<uint8_t, std::map<std::string, int>> tierTypeDistribution;
+
+	// Count the distributions
+	for (const auto& harvestable : _harvestableList) {
+		if (harvestable._tier > 1 and isResourceStatic(harvestable)) {
+			std::string harvestableTextType = Harvestable::getHarvestableTextType(harvestable._type);
+			// Count by tier
+			tierDistribution[harvestable._tier]++;
+
+			// Count by enchantment
+			enchantmentDistribution[harvestable._enchantment]++;
+
+			// Count by resource type
+			typeDistribution[harvestableTextType]++;
+
+			// Count by both tier and resource type
+			tierTypeDistribution[harvestable._tier][harvestableTextType]++;
+		}
+	}
+
+	std::cout << "Num of harvestables tier > 1: " << tierDistribution.size() << "\n";
+
+	// Print distribution by tier
+	std::cout << "\nDistribution by Tier:\n";
+	for (const auto& pair : tierDistribution) {
+		uint8_t tier = pair.first;
+		int count = pair.second;
+		std::cout << "Tier " << (int)tier << ": " << count << "\n";
+	}
+
+	// Print distribution by enchantment
+	std::cout << "\nDistribution by Enchantment:\n";
+	for (const auto& pair : enchantmentDistribution) {
+		uint8_t enchantment = pair.first;
+		int count = pair.second;
+		std::cout << "Enchantment " << (int)enchantment << ": " << count << "\n";
+	}
+
+	// Print distribution by resource type
+	std::cout << "\nDistribution by Resource Type:\n";
+	for (const auto& pair : typeDistribution) {
+		std::string type = pair.first;
+		int count = pair.second;
+		std::cout << type << ": " << count << "\n";
+	}
+
+	// Print distribution by tier and resource type
+	std::cout << "\nDistribution by Tier and Resource Type:\n";
+	for (const auto& outerPair : tierTypeDistribution) {
+		uint8_t tier = outerPair.first;
+		const auto& typeMap = outerPair.second;
+		std::cout << "Tier " << (int)tier << ":\n";
+		for (const auto& innerPair : typeMap) {
+			std::string type = innerPair.first;
+			int count = innerPair.second;
+			std::cout << "  " << type << ": " << count << "\n";
+		}
 	}
 }
 
@@ -300,6 +358,20 @@ void HarvestableList::update(HarvestableList harvestableList)
 	for (size_t i = 0; i < harvestableList.size(); i++) {
 		this->update(harvestableList[i]);
 	}
+}
+bool HarvestableList::isResourceStatic(Harvestable harvestable)
+{
+	// Get the fractional part of _positionX and _positionY
+	float fractionX = harvestable._positionX - floor(harvestable._positionX);
+	float fractionY = harvestable._positionY - floor(harvestable._positionY);
+
+	// Check if the fraction is 0.0 or 0.5 for both coordinates
+	if ((fractionX == 0.0f || fractionX == 0.5f) &&
+		(fractionY == 0.0f || fractionY == 0.5f)) {
+		return true;  // The resource is static
+	}
+
+	return false;  // The resource is not static
 }
 HarvestableList::iterator HarvestableList::begin() {
 	return _harvestableList.begin();
