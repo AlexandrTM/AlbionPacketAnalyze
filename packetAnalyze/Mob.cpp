@@ -46,25 +46,14 @@ Mob::Mob(NetworkCommand& rawMob)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawMob);
 
-	DataFragment idFragment     = dataLayout.findFragment(0);
 	DataFragment healthFragment = dataLayout.findFragment(14);
 	DataFragment tierFragment   = dataLayout.findFragment(21);
 
-	uint8_t idSize = idFragment._dataType._size;
-	if 
-		(idSize == 1) { _id = net::read_uint8(rawMob, idFragment._offset); }
-	else if 
-		(idSize == 2) { _id = net::read_uint16(rawMob, idFragment._offset); }
-	else if 
-		(idSize == 4) { _id = net::read_uint32(rawMob, idFragment._offset); }
-	else if 
-		(idSize == 8) { _id = net::read_uint64(rawMob, idFragment._offset); }
+	DataFragment idFragment = dataLayout.findFragment(0);
+    _id = net::read_integer(rawMob, idFragment);
 
 	// not tier of charges actually some kind of mob subtype
 	//float_t tierAndCharges = net::read_float32(rawMob, dataLayout.findFragment(11)._offset);
-	//float_t preTier = 0;
-	//_tier        = std::floor(tierAndCharges);
-	//_charges     = std::modf(tierAndCharges, &preTier) * 10;
 
 	_category    = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset);
 	_typeID		 = net::read_uint8  (rawMob, dataLayout.findFragment(1)._offset + 1);
@@ -157,17 +146,6 @@ void MobList::newMob(Mob mob)
 	_mobList.push_back(mob);
 }
 
-void MobList::update(EntityMove mobMove)
-{
-	for (size_t i = 0; i < _mobList.size(); i++) {
-		if (_mobList[i]._id == mobMove._id) {
-			_mobList[i]._positionX = mobMove._positionX;
-			_mobList[i]._positionY = mobMove._positionY;
-			return;
-		}
-	}
-}
-
 void MobList::update(HealthUpdate healthUpdate)
 {
 	for (size_t i = 0; i < _mobList.size(); i++) {
@@ -191,16 +169,8 @@ void MobList::mobChangeState(NetworkCommand& mobChangeState)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(mobChangeState);
 
-	DataFragment idFragment     = dataLayout.findFragment(0);
-	uint8_t idSize = idFragment._dataType._size;
-	if 
-		(idSize == 1) { id = net::read_uint8 (mobChangeState, idFragment._offset); }
-	else if 
-		(idSize == 2) { id = net::read_uint16(mobChangeState, idFragment._offset); }
-	else if 
-		(idSize == 4) { id = net::read_uint32(mobChangeState, idFragment._offset); }
-	else if 
-		(idSize == 8) { id = net::read_uint64(mobChangeState, idFragment._offset); }
+	DataFragment idFragment = dataLayout.findFragment(0);
+    id = net::read_integer(mobChangeState, idFragment);
 
 	enchantment = net::read_uint8(mobChangeState, dataLayout.findFragment(1)._offset);
 

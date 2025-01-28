@@ -35,7 +35,6 @@ public:
 	PlayerList();
 	
 	void newPlayer(Player player);
-	void update(EntityMove playerMove);
 	void update(HealthUpdate healthUpdate);
 	void playerLeave(Player playerLeave);
 

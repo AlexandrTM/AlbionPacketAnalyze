@@ -46,31 +46,31 @@ struct HarvestableListFilter
 
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
-            { 4 },
-            { 2 },
-            { 0 }),
+            { 4, 5 },
+            { 1, 2 },
+            { 0, 0 }),
         HarvestableFilter(/*rock*/
-            { 4, 5 },
-            { 3, 2 },
-            { 0, 0 }),
+            { 4, 5, 6 },
+            { 2, 2, 2 },
+            { 0, 0, 0 }),
         HarvestableFilter(/*fiber*/
-            { 4, 5 },
-            { 2, 2 },
-            { 0, 0 }),
+            { 4, 5, 6 },
+            { 2, 2, 2 },
+            { 0, 0, 0 }),
         HarvestableFilter(/*hide*/
-            { 4 },
-            { 2 },
-            { 0 }),
+            { 4, 5 },
+            { 1, 2 },
+            { 0, 0 }),
         HarvestableFilter(/*ore*/
-            { 4 },
-            { 2 },
-            { 0 }),
+            { 4, 5, 6 },
+            { 2, 2, 1 },
+            { 0, 0, 0 }),
         HarvestableFilter(/*other*/)
     };
 
     /*
     { 4, 5, 6, 7, 8 },
-    { 2, 1, 0, 0, 0 },
+    { 2, 2, 1, 0, 0 },
     { 0, 0, 0, 0, 0 }
     */
     /*

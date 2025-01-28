@@ -25,7 +25,7 @@ void Location::changeLocation(
 {
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
-    //dataLayout.printInfo(command);
+    dataLayout.printInfo(command);
     //command.printCommandInOneString();
     DataFragment locationFromFragment = dataLayout.findFragment(65);
     DataFragment locationToFragment = dataLayout.findFragment(8);
@@ -37,11 +37,6 @@ void Location::changeLocation(
     for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
         locationTo += (unsigned)command[locationToFragment._offset + i];
     }
-
-    /*std::sort(currentHarvestableList.begin(), currentHarvestableList.end(),
-        [](const Harvestable& a, const Harvestable& b) {
-            return a._id < b._id;
-        });*/
 
     //currentHarvestableList.printInfo();
     bool locationToIsNew = true;

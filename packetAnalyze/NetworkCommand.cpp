@@ -1,7 +1,7 @@
 #include "pch.h"
 
 std::vector<uint16_t> nnCodes = {};
-std::vector<uint16_t> nCodes = { /*38, 37, 36, 35, 34, 33, 32, 41, 42, 44*/ };
+std::vector<uint16_t> nCodes = { /*55, 71*/49 };
 std::vector<std::string> cityLocations = { "0000", "0301" };
 
 NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
@@ -34,15 +34,14 @@ NetworkCommand::NetworkCommand()
 
 EntityList _entityList{};
 size_t counter = 0;
-void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
+void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
 {
     DataLayout dataLayout{};
-    //if (_eventCode == 0) {} // joining server
-    //else if (std::isElementInVector(nCodes, _eventCode)) {
-    //    _dataLayout.findDataLayout(*this);
-    //    _dataLayout.printInfo(*this);
-    //}
-    if (hikingMode) {
+    /*if (std::isElementInVector(nCodes, _eventCode) and this->size() != 67) {
+        dataLayout.findDataLayout(*this);
+        dataLayout.printInfo(*this);
+    }*/
+    if (isHikingMode) {
         if (_operationType == operationType::event) {
             switch (_eventCode)
             {
@@ -67,9 +66,11 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
             case eventCode::harvestFinished:
                 Harvestable::harvestFinished(*this);
                 break;
-            case eventCode::newPlayer:
+            case 66: // crafting finished on station
                 /*dataLayout.findDataLayout(*this);
                 dataLayout.printInfo(*this);*/
+                break;
+            case eventCode::newPlayer:
                 //if (!std::isElementInVector(cityLocations, _entityList._currentLocation._locationID)) {
                 _entityList._currentLocation._playerList.newPlayer(Player(*this));
                 //}
@@ -90,10 +91,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
             default:
                 break;
             }
-            if (_networkCommand.size() == 67 and _networkCommand[66] & (2 << 0)) {
+            if (_networkCommand.size() == 67/* and _networkCommand[66] & (2 << 0)*/) {
                 if (dataLayout.findNumOfFragments(*this) == 2) {
-                    _entityList._currentLocation._playerList.update(EntityMove::EntityMove(*this));
-                    _entityList._currentLocation._mobList.update(EntityMove::EntityMove(*this));
+                    EntityMove::updateEntityListMove(*this, _entityList._currentLocation._playerList);
+                    EntityMove::updateEntityListMove(*this, _entityList._currentLocation._mobList);
                 }
                 else {
                     /*dataLayout.findDataLayout(*this);
@@ -115,39 +116,41 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
                      "event code: " << _eventCode << "\n";*/
         switch (_eventCode) 
         {
-        case operationCode::joinLocation:
-            Location::changeLocation(*this, _entityList._locationList, 
-                _entityList._currentLocation, true);
+        case operationCode::Join:
+            if (isHikingMode) {
+                Location::changeLocation(*this, _entityList._locationList,
+                    _entityList._currentLocation, true);
+            }
             //dataLayout.findDataLayout(*this);
             //dataLayout.printInfo(*this);
             break;
-        case operationCode::move:
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+        case operationCode::Move:
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
             //this->printCommandInOneString();
             _entityList._player = PlayerSelf(*this);
             break;
-        /*case operationCode::changeLocation: // other player changing location not only me
-            _entityList.changeLocation(*this); 
+        /*case operationCode::ChangeCluster: // other player changing location not only me
+            _entityList.ChangeCluster(*this); 
             break;*/
-        case operationCode::auctionSellOrders:
+        case operationCode::AuctionSellOrders:
             //this->printCommandInOneString();
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo(*this);
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
             break;
-        case operationCode::auctionBuyOrders:
+        case operationCode::AuctionBuyOrders:
             break;
-        case operationCode::auctionFinishedOrders: // non standard format
+        case operationCode::AuctionFinishedOrders: // non standard format
             //this->printCommandInOneString();
-            /*_dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
             break;
-        case operationCode::auctionMyOwnAuctions: // non standard format
+        case operationCode::AuctionGetMyOpenAuctions: // non standard format
             /*this->printCommandInOneString();
-            _dataLayout.findDataLayout(*this);
-            _dataLayout.printInfo(*this);*/
+            dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);*/
             break;
-        case operationCode::auctionAverageValues:
+        case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
             Auction::findAuctionAverageValues(*this, ",");
             /*stop = std::chrono::high_resolution_clock::now();
@@ -155,9 +158,9 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
                 "time to write acution average values: " << 
                 std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";*/
             break;
-        case operationCode::getClusterMapInfo:
-            //_dataLayout.findDataLayout(*this);
-            //_dataLayout.printInfo(*this);
+        case operationCode::GetClusterMapInfo:
+            //dataLayout.findDataLayout(*this);
+            //dataLayout.printInfo(*this);
             //MapCluster::findClusterData(*this);
             //this->printCommandInOneString();
             break;
@@ -169,37 +172,40 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool hikingMode)
     }
     if (_operationType == operationType::request) {
         //this->printCommandInOneString();
-        if (_eventCode == auctionSellOrders) {
-            dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this, true);
-        }
+        //dataLayout.findDataLayout(*this);
+        //dataLayout.printInfo(*this, true);
         switch (_eventCode)
         {
-        case operationCode::move:
+        case operationCode::AuctionGetItemAverageStats:
+            dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this, true);
+            //this->printCommandInOneString();
+            break;
+        case operationCode::Move:
             _entityList._player.update(*this);
             //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
             break;
-        case operationCode::changeLocation:
+        case operationCode::ChangeCluster:
             /*dataLayout.findDataLayout(*this);
             dataLayout.printInfo(*this);*/
             _entityList.changeLocation(*this);
             break;
-        case operationCode::auctionBuyOrders:
+        case operationCode::AuctionBuyOrders:
             /*dataLayout.findDataLayout(*this);
             if (dataLayout.size() == 14) {
                 Auction::findProductName(*this, dataLayout);
             }*/
             break;
-        }
-            
+        default:
+            break;
+        }  
     }
     if (_operationType == operationType::not_defined) {
         //this->printCommandInOneString();
-        /*DataLayout dataLayout{};
-        dataLayout.findDataLayout(*this);
+        /*dataLayout.findDataLayout(*this);
         dataLayout.printInfo(*this);*/
     }
-    if (hikingMode) {
+    if (isHikingMode) {
         _entityList.draw(window);
     }
 }

@@ -55,16 +55,8 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawHarvestable);
 
-	uint8_t idSize = dataLayout.findFragment(0)._dataType._size;
-	ptrdiff_t idOffset = dataLayout.findFragment(0)._offset;
-	if 
-		(idSize == 4) { _id = net::read_uint32(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 2) { _id = net::read_uint16(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 1) { _id = net::read_uint8 (rawHarvestable, idOffset); }
-	else if 
-		(idSize == 8) { _id = net::read_uint64(rawHarvestable, idOffset); }
+	DataFragment idFragment = dataLayout.findFragment(0);
+	_id = net::read_integer(rawHarvestable, idFragment);
 
 	_type        = net::read_uint8  (rawHarvestable, dataLayout.findFragment(5) ._offset);
 	_tier        = net::read_uint8  (rawHarvestable, dataLayout.findFragment(7) ._offset);
@@ -85,17 +77,8 @@ void Harvestable::harvestStart(NetworkCommand& rawHarvestable)
 	uint64_t id = 0;
 	uint64_t harvestTime = 0;
 
-	uint8_t idSize = dataLayout.findFragment(0)._dataType._size;
-	ptrdiff_t idOffset = dataLayout.findFragment(0)._offset;
-	if 
-		(idSize == 4) { id = net::read_uint32(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 2) { id = net::read_uint16(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 1) { id = net::read_uint8 (rawHarvestable, idOffset); }
-	else if 
-		(idSize == 8) { id = net::read_uint64(rawHarvestable, idOffset); }
-
+	DataFragment idFragment = dataLayout.findFragment(0);
+	id = net::read_integer(rawHarvestable, idFragment);
 	harvestTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(1)._offset);
 
 	if (id == previousHarvestID) {
@@ -114,16 +97,8 @@ void Harvestable::harvestFinished(NetworkCommand& rawHarvestable)
 	uint64_t harvestStartTime = 0;
 	uint64_t harvestEndTime = 0;
 
-	uint8_t idSize = dataLayout.findFragment(0)._dataType._size;
-	ptrdiff_t idOffset = dataLayout.findFragment(0)._offset;
-	if 
-		(idSize == 4) { id = net::read_uint32(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 2) { id = net::read_uint16(rawHarvestable, idOffset); }
-	else if 
-		(idSize == 1) { id = net::read_uint8 (rawHarvestable, idOffset); }
-	else if 
-		(idSize == 8) { id = net::read_uint64(rawHarvestable, idOffset); }
+	DataFragment idFragment = dataLayout.findFragment(0);
+	id = net::read_integer(rawHarvestable, idFragment);
 
 	harvestStartTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(1)._offset);
 	harvestEndTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(2)._offset);
@@ -244,16 +219,8 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(updateState);
 
-	uint8_t idSize     = dataLayout.findFragment(0)._dataType._size;
-	ptrdiff_t idOffset = dataLayout.findFragment(0)._offset;
-	if 
-		(idSize == 4) { id = net::read_uint32(updateState, idOffset); }
-	else if 
-		(idSize == 2) { id = net::read_uint16(updateState, idOffset); }
-	else if
-		(idSize == 8) { id = net::read_uint64(updateState, idOffset); }
-	else if 
-		(idSize == 1) { id = net::read_uint8 (updateState, idOffset); }
+	DataFragment idFragment = dataLayout.findFragment(0);
+	id = net::read_integer(updateState, idFragment);
 
 	charges		= net::read_uint8(updateState, dataLayout.findFragment(1)._offset);
 	enchantment = net::read_uint8(updateState, dataLayout.findFragment(2)._offset);

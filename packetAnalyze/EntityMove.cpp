@@ -1,40 +1,88 @@
 #include "pch.h"
 
-EntityMove::EntityMove(uint32_t id, float_t positionX, float_t positionY)
+EntityMove::EntityMove(uint64_t id, float_t positionX, float_t positionY)
 {
     _id        = id;
     _positionX = positionX;
     _positionY = positionY;
 }
 
-EntityMove::EntityMove(NetworkCommand& entityMove)
+void EntityMove::updateEntityListMove(NetworkCommand& entityMove, MobList& mobList)
 {
-    _id        = 0;
-    _positionX = 0;
-    _positionY = 0;
+    uint64_t mob_id = 0;
+    float_t positionX = 0;
+    float_t positionY = 0;
 
     DataLayout dataLayout{};
     dataLayout.findDataLayout(entityMove);
 
-    DataFragment idFragment = dataLayout.findFragment(0);
-    uint8_t idSize = idFragment._dataType._size;
-    if 
-		(idSize == 1) { _id = net::read_uint8 (entityMove, idFragment._offset); }
-	else if 
-		(idSize == 2) { _id = net::read_uint16(entityMove, idFragment._offset); }
-	else if 
-		(idSize == 4) { _id = net::read_uint32(entityMove, idFragment._offset); }
-	else if 
-		(idSize == 8) { _id = net::read_uint32(entityMove, idFragment._offset + 4); }
+    mob_id = getIdOfEntityMove(entityMove, dataLayout);
 
-    _positionX = net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 9);
-    _positionY = net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 13);
-
-    if ((_positionX == 0   && _positionY == 0)  ||
-         _positionX > 800  || _positionY > 800 ||
-         _positionX < -800 || _positionY < -800) {
-        std::cout << "entity coords out of bounds: " <<
-            _positionX << " " << _positionY << "\n";
-        entityMove.printCommandInOneString();
+    for (size_t i = 0; i < mobList.size(); i++) {
+        if (mobList[i]._id == mob_id) {
+            mobList[i]._positionX = 
+                net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 9);
+            mobList[i]._positionY = 
+                net::read_float32big(entityMove, dataLayout.findFragment(1)._offset + 13);
+            //dataLayout.printInfo(entityMove);
+            return;
+        }
     }
+}
+
+void EntityMove::updateEntityListMove(NetworkCommand& entityMove, PlayerList& playerList)
+{
+    return;
+    uint64_t player_id = 0;
+    float_t positionX = 0;
+    float_t positionY = 0;
+
+    DataLayout dataLayout{};
+    dataLayout.findDataLayout(entityMove);
+
+    player_id = getIdOfEntityMove(entityMove, dataLayout);
+
+    for (size_t i = 0; i < playerList.size(); i++) {
+        if (playerList[i]._id == player_id) {
+            //entityMove.printCommandInOneString(46, entityMove.size(), true);
+            dataLayout.printInfo(entityMove);
+            for (ptrdiff_t bitOffset = 72; bitOffset < entityMove.size() * 8 - 32 - 37 * 8; bitOffset+=8) {
+                float_t valueBig = net::read_float32big_from_bits(entityMove, bitOffset + 37 * 8);
+
+                //if (EntityMove::isCoordinateAdequate(valueBig)) {
+                    //std::cout << "bit offset big    " << bitOffset << " value: " << valueBig << "\n";
+                //}
+            }
+            for (ptrdiff_t bitOffset = 72; bitOffset < entityMove.size() * 8 - 32 - 37 * 8; bitOffset+=8) {
+                float_t valueLittle = net::read_float32_from_bits(entityMove, bitOffset + 37 * 8);
+
+                //if (EntityMove::isCoordinateAdequate(valueLittle)) {
+                    //std::cout << "bit offset little " << bitOffset << " value: " << valueLittle << "\n";
+                //}
+            }
+
+            /*playerList[i]._positionX = positionX;
+            playerList[i]._positionY = positionY;*/
+            return;
+        }
+    }
+}
+
+bool EntityMove::isCoordinateAdequate(float_t coordinate)
+{
+    if ((coordinate < 2000 and coordinate > -2000) and
+        (coordinate > 0.001 or coordinate < -0.001 or coordinate == 0.0)) {
+        return true;
+    }
+    return false;
+}
+
+uint64_t EntityMove::getIdOfEntityMove(NetworkCommand& entityMove, DataLayout& dataLayout)
+{
+    uint64_t id = 0;
+
+    DataFragment idFragment = dataLayout.findFragment(0);
+    id = net::read_integer(entityMove, idFragment);
+
+    return id;
 }

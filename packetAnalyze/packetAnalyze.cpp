@@ -65,13 +65,14 @@ int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
+bool _isHikingMode = false;
 
 void PacketAnalyze::run()
 {
-    initWindow();
+    if (_isHikingMode) { initWindow(); }
     initSniffer();
     mainLoop();
-    cleanup();
+    if (_isHikingMode) { cleanup(); }
 }
 
 std::vector<bool> PacketAnalyze::findSameSymbolsInText(NetworkPacket paragraph)
@@ -288,6 +289,7 @@ void PacketAnalyze::initSniffer()
 {
     SnifferConfiguration albionConfig;
     //albionConfig.set_filter("ip dst 192.168.1.70");
+    // Destination Address: 193.169.238.126
     //albionConfig.set_promisc_mode(true);
     _sniffer = Sniffer(_iface.name(), albionConfig);
 }
@@ -349,17 +351,13 @@ RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, si
     return rawPacketPayload;
 }
 
-bool _hikingMode = true;
 void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
 {
     _packet = NetworkPacket::findCommandsInPacket(rawPacket);
 
-    //if (eventCode == eventCodes[counter]) 
     for (size_t i = 0; i < _packet.size(); i++)
     {
-        //_packet[i].printCommandInOneString();
         if (_packet[i].getCommandType() == commandType::fragmented) {
-            //_packet[i].printCommandInOneString();
             if (_fragmentedCommandsBuffer.isNewFragmentedCommand(_packet[i])) {
                 _fragmentedCommandsBuffer.push_back(FragmentedNetworkCommand(_packet[i]));
             }
@@ -372,7 +370,7 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
                     _fragmentedCommandsBuffer[j].sort();
                     _fragmentedCommandsBuffer[j].connectFragments();
                     _fragmentedCommandsBuffer[j][0].endFragmentedCommand();
-                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window, _hikingMode);
+                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window, _isHikingMode);
                     _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
                     //std::cout << _fragmentedCommandsBuffer.size() << "\n";
                 }
@@ -384,14 +382,12 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
         if (_packet[i].getCommandType() == commandType::reliable
          or _packet[i].getCommandType() == commandType::unreliable) {
 
-            //_packet[i].printCommandInOneString();
-            _packet[i].analyzeCommand(_window, _hikingMode);
-            //findUniqueEventCodes(_packet[i]);
+            _packet[i].analyzeCommand(_window, _isHikingMode);
         }
     }
 }
 
-void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
+static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
 {
     std::sort(mobDescriptions.begin(), mobDescriptions.end(),
         [](const MobDescription& a, const MobDescription& b) {
@@ -411,7 +407,7 @@ void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
         std::cout <<
             "MobDescription(" << 
                     std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
-            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
+            ", " << std::left << std::setw(4) << (unsigned)mobDescriptions[i]._category <<                            
             ", "                              << (unsigned)mobDescriptions[i]._tier     <<
                                        ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
     }
@@ -423,7 +419,7 @@ int main() {
     //sortMobDescriptions(mobDescriptions);
     packetAnalyze.run();
 
-    packetAnalyze.outputColorizedNetworkPacket(text);
+    //packetAnalyze.outputColorizedNetworkPacket(text);
     
     //for (size_t j = 0; j < 10; j++) {
     //    auto start = std::chrono::high_resolution_clock::now();

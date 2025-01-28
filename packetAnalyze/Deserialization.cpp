@@ -174,7 +174,7 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
         "num of entries: " << (unsigned)_numOfEntries << "\n";*/
     
     currentPrintPosition += fragmentLength;
-    if (currentPrintPosition > 40) {
+    if (currentPrintPosition > 50) {
         std::cout << "\n";
         currentPrintPosition = 0;
     }
@@ -274,7 +274,9 @@ void DataLayout::findDataLayout(NetworkCommand& command)
     for (size_t i = 0; i < numOfFragments; i++) {
         if (offset > commandSize) {
             SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
-            std::cout << "offset: " << std::hex << offset << std::dec << " " << offset << "\n";
+            std::cout << 
+                "offset bigger than command size\n" << 
+                "offset (hex dec): " << std::hex << offset << std::dec << " " << offset << "\n";
             command.printCommandInOneString();
             SetConsoleTextAttribute(consoleHandle, 7);
             return;

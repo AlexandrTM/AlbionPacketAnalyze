@@ -9,7 +9,7 @@ void EntityList::draw(GLFWwindow* window)
     glLoadIdentity();
 
     drawPlayerSelf();
-    drawPlayers();
+    //drawPlayers();
     //drawHarvestables();
     drawMobs();
     drawWindowFrame();

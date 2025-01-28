@@ -26,13 +26,13 @@
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 
-#include "EntityMove.h"
 #include "HealthUpdate.h"
 #include "Auction.h"
 #include "MapCluster.h"
 #include "Harvestable.h"
 #include "Player.h"
 #include "Mob.h"
+#include "EntityMove.h"
 #include "Location.h"
 #include "Entity.h"
 

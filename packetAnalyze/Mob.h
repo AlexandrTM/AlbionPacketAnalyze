@@ -36,7 +36,6 @@ public:
 	MobList();
 
 	void newMob(Mob mob);
-	void update(EntityMove mobMove);
 	void update(HealthUpdate healthUpdate);
 	void mobChangeState(NetworkCommand& mobChangeState);
 
