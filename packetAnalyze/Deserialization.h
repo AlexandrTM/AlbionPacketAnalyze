@@ -11,7 +11,7 @@ struct DataType
 {
     uint8_t _size;
     uint8_t _headerSize;
-    uint8_t _dataType;
+    uint8_t _dataTypeId;
 
     DataType();
     DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType);
@@ -39,7 +39,7 @@ struct DataFragment
     DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
     DataFragment();
     void printInfo(NetworkCommand& command) const;
-    void printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition, 
+    void printFragmentInfo(NetworkCommand& command, size_t& currentStringPosition,
         bool printPayload = true) const;
 };
 
@@ -52,25 +52,28 @@ struct DataFragment
 class DataLayout
 {
 private:
+    DataFragment _defaultDataFragment{};
     std::vector<DataFragment> _dataLayout;
 
 public:
-    DataFragment findFragment(uint8_t fragmentID) const;
+    DataFragment& findFragment(uint8_t fragmentID);
 
     template<typename T>
     T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);
 
     uint8_t findNumOfFragments(NetworkCommand& command);
     void findDataLayout(NetworkCommand& command);
-    void processDictionary(NetworkCommand& command, uint8_t& fragmentID, ptrdiff_t& offset, 
+    void processDictionary(NetworkCommand& command, uint8_t& fragmentID, ptrdiff_t& offset,
         uint16_t numOfEntries, uint8_t& dataTypeHeaderSize, size_t index);
 
     DataLayout(std::vector<DataFragment> dataFragments);
     DataLayout();
 
     void printInfo(NetworkCommand& command, bool printPayload = true) const;
+    void printInfo(NetworkCommand& command, size_t beginFragment, bool printPayload) const;
+    void printInfo(NetworkCommand& command, size_t beginFragment, size_t endFragment, bool printPayload) const;
 
-    size_t size();
+    size_t size() const;
     DataFragment operator[](size_t elementIndex);
 
 };
@@ -81,21 +84,21 @@ public:
 // **************************************************************************
 
 
-struct net
+namespace net
 {
     template<typename T>
     static T read(NetworkCommand& command, ptrdiff_t offset);
 
     static inline uint8_t read_uint8(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             return command[offset];
         }
         return 0;
     }
     static inline uint16_t read_uint16(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint16_t dataEntry = 0;
             for (size_t i = 0; i < 2; i++) {
                 dataEntry += (command[offset + i] << (8 * (1 - i)));
@@ -106,7 +109,7 @@ struct net
     }
     static inline uint32_t read_uint32(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
             for (size_t i = 0; i < 4; i++) {
                 dataEntry += (command[offset + i] << (8 * (3 - i)));
@@ -117,7 +120,7 @@ struct net
     }
     static inline uint32_t read_uint32(std::vector<uint8_t> rawCommand, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
             for (size_t i = 0; i < 4; i++) {
                 dataEntry += (rawCommand[offset + i] << (8 * (3 - i)));
@@ -128,7 +131,7 @@ struct net
     }
     static inline uint64_t read_uint64(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint64_t dataEntry = 0;
             for (size_t i = 0; i < 8; i++) {
                 dataEntry += (static_cast<unsigned __int64>(command[offset + i]) << (8 * (7 - i)));
@@ -139,7 +142,7 @@ struct net
     }
     static inline float_t read_float32(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
             for (size_t i = 0; i < 4; i++) {
                 dataEntry += (command[offset + i] << (8 * (3 - i)));
@@ -150,7 +153,7 @@ struct net
     }
     static inline float_t read_float32big(NetworkCommand& command, ptrdiff_t offset)
     {
-        if (offset != -1) {
+        if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
             for (size_t i = 0; i < 4; i++) {
                 dataEntry += (command[offset + 3 - i] << (8 * (3 - i)));
@@ -201,7 +204,7 @@ struct net
 
         return std::binToFloat(dataEntry);
     }
-
+    
     static uint64_t read_integer(NetworkCommand& command, DataFragment& dataFragment) {
         uint64_t integer = 0;
         uint8_t dataTypeSize = dataFragment._dataType._size;

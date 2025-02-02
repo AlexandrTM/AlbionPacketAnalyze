@@ -32,40 +32,41 @@ void EntityMove::updateEntityListMove(NetworkCommand& entityMove, MobList& mobLi
 
 void EntityMove::updateEntityListMove(NetworkCommand& entityMove, PlayerList& playerList)
 {
-    return;
     uint64_t player_id = 0;
     float_t positionX = 0;
     float_t positionY = 0;
 
     DataLayout dataLayout{};
     dataLayout.findDataLayout(entityMove);
+    //dataLayout.printInfo(entityMove);
 
     player_id = getIdOfEntityMove(entityMove, dataLayout);
 
     for (size_t i = 0; i < playerList.size(); i++) {
         if (playerList[i]._id == player_id) {
             //entityMove.printCommandInOneString(46, entityMove.size(), true);
-            dataLayout.printInfo(entityMove);
+            //dataLayout.printInfo(entityMove);
             for (ptrdiff_t bitOffset = 72; bitOffset < entityMove.size() * 8 - 32 - 37 * 8; bitOffset+=8) {
                 float_t valueBig = net::read_float32big_from_bits(entityMove, bitOffset + 37 * 8);
 
-                //if (EntityMove::isCoordinateAdequate(valueBig)) {
-                    //std::cout << "bit offset big    " << bitOffset << " value: " << valueBig << "\n";
-                //}
+                /*if (EntityMove::isCoordinateAdequate(valueBig)) {
+                    std::cout << "bit offset big    " << bitOffset << " value: " << valueBig << "\n";
+                }*/
             }
-            for (ptrdiff_t bitOffset = 72; bitOffset < entityMove.size() * 8 - 32 - 37 * 8; bitOffset+=8) {
-                float_t valueLittle = net::read_float32_from_bits(entityMove, bitOffset + 37 * 8);
+            for (ptrdiff_t bitOffset = 72; bitOffset < entityMove.size() * 8 - 32; bitOffset+=8) {
+                float_t valueLittle = net::read_float32_from_bits(entityMove, bitOffset);
 
-                //if (EntityMove::isCoordinateAdequate(valueLittle)) {
-                    //std::cout << "bit offset little " << bitOffset << " value: " << valueLittle << "\n";
-                //}
+                /*if (EntityMove::isCoordinateAdequate(valueLittle)) {
+                    std::cout << "bit offset little " << bitOffset << " value: " << valueLittle << "\n";
+                }*/
             }
 
             /*playerList[i]._positionX = positionX;
             playerList[i]._positionY = positionY;*/
-            return;
+            break;
         }
     }
+    std::cout << "\n";
 }
 
 bool EntityMove::isCoordinateAdequate(float_t coordinate)
@@ -81,8 +82,7 @@ uint64_t EntityMove::getIdOfEntityMove(NetworkCommand& entityMove, DataLayout& d
 {
     uint64_t id = 0;
 
-    DataFragment idFragment = dataLayout.findFragment(0);
-    id = net::read_integer(entityMove, idFragment);
+    id = net::read_integer(entityMove, dataLayout.findFragment(0));
 
     return id;
 }

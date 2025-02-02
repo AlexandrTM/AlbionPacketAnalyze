@@ -23,23 +23,21 @@ struct Mob
 		uint8_t  tier, uint8_t enchantment, uint8_t charges,
 		float_t  positionX, float_t  positionY);
 
-	void printInfo();
+	void printInfo() const;
 
 };
 
-class MobList
+struct MobList
 {
-private:
 	std::vector<Mob> _mobList;
 
-public:
 	MobList();
 
 	void newMob(Mob mob);
 	void update(HealthUpdate healthUpdate);
 	void mobChangeState(NetworkCommand& mobChangeState);
 
-	size_t size();
+	size_t size() const;
 	Mob& operator[](size_t elementIndex);
 };
 
@@ -95,7 +93,7 @@ struct MobListFilter
         MobFilter(/*other*/)
     };
 
-    size_t size();
+    size_t size() const;
     MobFilter& operator[](size_t elementIndex);
 };
 

@@ -9,8 +9,8 @@ void EntityList::draw(GLFWwindow* window)
     glLoadIdentity();
 
     drawPlayerSelf();
-    //drawPlayers();
-    //drawHarvestables();
+    drawPlayers();
+    drawHarvestables();
     drawMobs();
     drawWindowFrame();
     
@@ -18,23 +18,23 @@ void EntityList::draw(GLFWwindow* window)
 }
 void EntityList::changeLocation(NetworkCommand& command)
 {
-    if (abs(_player._positionX) >= abs(_player._positionY)) {
-        _player._positionX = _player._positionX * -1;
+    if (abs(_playerSelf._positionX) >= abs(_playerSelf._positionY)) {
+        _playerSelf._positionX = _playerSelf._positionX * -1;
     }
-    else if (abs(_player._positionY) > abs(_player._positionX)) {
-        _player._positionY = _player._positionY * -1;
+    else if (abs(_playerSelf._positionY) > abs(_playerSelf._positionX)) {
+        _playerSelf._positionY = _playerSelf._positionY * -1;
     }
 }
 void EntityList::clear()
 {
     _currentLocation = {};
-    _player          = {};
+    _playerSelf      = {};
     _locationList    = {};
 }
 EntityList::EntityList()
 {
     _currentLocation = {};
-    _player          = {};
+    _playerSelf      = {};
     _locationList    = {};
 }
 void EntityList::drawWindowFrame()
@@ -58,8 +58,8 @@ void EntityList::drawWindowFrame()
 }
 void EntityList::drawPlayerSelf()
 {
-    std::vector<GLfloat> playerCoords = { _player._positionX, _player._positionY };
-    std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_player._positionX, _player._positionY);
+    std::vector<GLfloat> playerCoords = { _playerSelf._positionX, _playerSelf._positionY };
+    std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_playerSelf._positionX, _playerSelf._positionY);
 
     glPointSize(4);
     glBegin(GL_POINTS);
@@ -73,28 +73,27 @@ void EntityList::drawPlayerSelf()
 }
 void EntityList::drawHarvestables()
 {
-    std::vector<GLfloat> playerCoords = { _player._positionX, _player._positionY };
+    std::vector<GLfloat> playerCoords = { _playerSelf._positionX, _playerSelf._positionY };
     std::vector<GLfloat> harvestableCoords;
     std::vector<GLfloat> harvestableMapCoords;
-    for (size_t i = 0; i < _currentLocation._harvestableList.size(); i++) {
-        harvestableCoords = { _currentLocation._harvestableList[i]._positionX, _currentLocation._harvestableList[i]._positionY };
+    for (const Harvestable& harvestable : _currentLocation._harvestableList) {
+        harvestableCoords = { harvestable._positionX, harvestable._positionY };
         harvestableMapCoords = convertToMapCoordinates(
-                _currentLocation._harvestableList[i]._positionX,
-                _currentLocation._harvestableList[i]._positionY);
-        if (isHarvestableFiltered(_currentLocation._harvestableList[i])) {
-
-            glPointSize(std::max(pow((float)_currentLocation._harvestableList[i]._tier / 4, 2) * 2.8, 4.0));
+            harvestable._positionX,
+            harvestable._positionY);
+        if (isHarvestableFiltered(harvestable)) {
+            glPointSize(std::max(pow((float)harvestable._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
-            colorizeHarvestable(_currentLocation._harvestableList[i]);
+            colorizeHarvestable(harvestable);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
             glEnd();
-
-            drawCharges(_currentLocation._harvestableList[i], harvestableCoords, playerCoords);
+            
+            drawCharges(harvestable, harvestableCoords, playerCoords);
         }
-        else if (_currentLocation._harvestableList[i]._tier >= 4) {
-            glPointSize(_currentLocation._harvestableList[i]._tier - 3);
+        else if (harvestable._tier >= 4) {
+            glPointSize(std::min(harvestable._enchantment + 1, 10));
             glBegin(GL_POINTS);
-            colorizeHarvestable(_currentLocation._harvestableList[i]);
+            colorizeHarvestable(harvestable);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
             glEnd();
         }
@@ -102,7 +101,7 @@ void EntityList::drawHarvestables()
 }
 void EntityList::drawPlayers()
 {
-    std::vector<GLfloat> playerSelfCoords = { _player._positionX, _player._positionY };
+    std::vector<GLfloat> playerSelfCoords = { _playerSelf._positionX, _playerSelf._positionY };
     for (size_t i = 0; i < _currentLocation._playerList.size(); i++) {
         std::vector<GLfloat> playerCoords = { _currentLocation._playerList[i]._positionX, _currentLocation._playerList[i]._positionY};
         GLfloat x = playerCoords[0];
@@ -143,28 +142,30 @@ void EntityList::drawMobs()
     float_t pointSize = 0;
     std::vector<float_t> color = { 0.7f, 0.7f, 0.7f };
 
-    for (size_t i = 0; i < _currentLocation._mobList.size(); i++) {
+    for (const Mob& mob : _currentLocation._mobList._mobList) {
         std::vector<GLfloat> mobCoords = {
-            _currentLocation._mobList[i]._positionX, 
-            _currentLocation._mobList[i]._positionY 
+            mob._positionX,
+            mob._positionY
         };
         GLfloat x = mobCoords[0];
         GLfloat y = mobCoords[1];
         std::vector<GLfloat> mobMapCoords = convertToMapCoordinates(x, y);
 
-        if (isMobFiltered(_currentLocation._mobList[i], pointSize, color)) {
+        if (isMobFiltered(mob, pointSize, color)) {
             glPointSize(pointSize);
             glBegin(GL_POINTS);
             glColor3f(color[0], color[1], color[2]);
             glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
             glEnd();
         }
-        else if (_currentLocation._mobList[i]._textType == "MOB_NOT_FOUND") {
-            glPointSize(7);
-            glBegin(GL_POINTS);
-            glColor3f(color[0], color[1], color[2]);
-            glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
-            glEnd();
+        else if (mob._textType == "MOB_NOT_FOUND") {
+            if (mob._category == mobCategory::resource || mob._category == mobCategory::resourceElemental) {
+                glPointSize(6);
+                glBegin(GL_POINTS);
+                glColor3f(color[0], color[1], color[2]);
+                glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
+                glEnd();
+            }
         }
     }
 }
@@ -261,11 +262,11 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
         color = enchantmentColor;
         return true;
     }
-    if ((mob._textType.find("MOB_BOSS") != std::string::npos)) {
+    /*if ((mob._textType.find("MOB_BOSS") != std::string::npos)) {
         pointSize = mob._tier - 1;
         color = { 0.8f, 0.435f, 0.435f };
         return true;
-    }
+    }*/
     return false;
 }
 std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)

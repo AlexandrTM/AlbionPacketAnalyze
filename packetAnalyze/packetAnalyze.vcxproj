@@ -149,6 +149,7 @@
     <ClCompile Include="Deserialization.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityMove.cpp" />
+    <ClCompile Include="Enumerations.cpp" />
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
     <ClCompile Include="Harvestable.cpp" />

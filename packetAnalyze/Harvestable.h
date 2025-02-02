@@ -106,7 +106,7 @@ struct Harvestable
     static void harvestStart(NetworkCommand& rawHarvestable);
     static void harvestFinished(NetworkCommand& rawHarvestable);
 
-	void printInfo();
+	void printInfo() const;
     static std::string getHarvestableTextType(uint8_t type);
 };
 
@@ -133,7 +133,7 @@ struct HarvestableList
     static bool isResourceStatic(Harvestable harvestable);
 
     void clear();
-    size_t size();
+    size_t size() const;
     iterator begin();
     iterator end();
 

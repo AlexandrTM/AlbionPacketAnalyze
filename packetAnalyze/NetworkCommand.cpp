@@ -33,8 +33,14 @@ NetworkCommand::NetworkCommand()
 }
 
 EntityList _entityList{};
+std::string itemData = "";
 size_t counter = 0;
-void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
+void NetworkCommand::analyzeCommand(
+    GLFWwindow* window, 
+    std::vector<uint8_t>& packetHeader, 
+    NetworkPacketInfo& packetInfo,
+    bool isHikingMode
+)
 {
     DataLayout dataLayout{};
     /*if (std::isElementInVector(nCodes, _eventCode) and this->size() != 67) {
@@ -51,10 +57,10 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
                 //dataLayout.findDataLayout(*this);
                 //dataLayout.printInfo(*this);
                 break;
-            case eventCode::harvestableObjectList:
+            case eventCode::NewSimpleHarvestableObjectList:
                 _entityList._currentLocation._harvestableList.update(HarvestableList(*this));
                 break;
-            case eventCode::harvestableObject:
+            case eventCode::NewHarvestableObject:
                 _entityList._currentLocation._harvestableList.update(Harvestable(*this));
                 break;
             case eventCode::harvestableChangeState:
@@ -93,7 +99,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
             }
             if (_networkCommand.size() == 67/* and _networkCommand[66] & (2 << 0)*/) {
                 if (dataLayout.findNumOfFragments(*this) == 2) {
-                    EntityMove::updateEntityListMove(*this, _entityList._currentLocation._playerList);
+                    //EntityMove::updateEntityListMove(*this, _entityList._currentLocation._playerList);
                     EntityMove::updateEntityListMove(*this, _entityList._currentLocation._mobList);
                 }
                 else {
@@ -117,10 +123,12 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
         switch (_eventCode) 
         {
         case operationCode::Join:
-            if (isHikingMode) {
-                Location::changeLocation(*this, _entityList._locationList,
-                    _entityList._currentLocation, true);
-            }
+            Location::changeLocation(
+                *this, 
+                _entityList._locationList,
+                _entityList._currentLocation, 
+                false
+            );
             //dataLayout.findDataLayout(*this);
             //dataLayout.printInfo(*this);
             break;
@@ -128,7 +136,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
             /*dataLayout.findDataLayout(*this);
             dataLayout.printInfo(*this);*/
             //this->printCommandInOneString();
-            _entityList._player = PlayerSelf(*this);
+            _entityList._playerSelf = PlayerSelf(*this);
             break;
         /*case operationCode::ChangeCluster: // other player changing location not only me
             _entityList.ChangeCluster(*this); 
@@ -152,7 +160,7 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::findAuctionAverageValues(*this, ",");
+            //Auction::findAuctionAverageValues(*this, itemData, ",");
             /*stop = std::chrono::high_resolution_clock::now();
             std::cout << 
                 "time to write acution average values: " << 
@@ -177,13 +185,13 @@ void NetworkCommand::analyzeCommand(GLFWwindow* window, bool isHikingMode)
         switch (_eventCode)
         {
         case operationCode::AuctionGetItemAverageStats:
-            dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this, true);
-            //this->printCommandInOneString();
+            // packetInfo.to_string();
+	        // NetworkCommand::printCommandInOneString(networkPacketHeader, false, true);
+            Auction::GetItemData(*this, _entityList._currentLocation, itemData, false);
             break;
         case operationCode::Move:
-            _entityList._player.update(*this);
-            //std::cout << _entityList._player._positionX << " " << _entityList._player._positionY << "\n";
+            _entityList._playerSelf.update(*this);
+            //std::cout << _entityList._playerSelf._positionX << " " << _entityList._playerSelf._positionY << "\n";
             break;
         case operationCode::ChangeCluster:
             /*dataLayout.findDataLayout(*this);
@@ -239,6 +247,24 @@ void NetworkCommand::printCommand(size_t regionStart, size_t regionEnd)
             std::cout << "\n";
     }
     std::cout.unsetf(std::ios::hex);
+}
+void NetworkCommand::printCommandInOneString(std::vector<uint8_t>& rawCommand, bool lineBreak, bool isHex)
+{
+    if (isHex) {
+        std::cout.setf(std::ios::hex, std::ios::basefield);
+    }
+    for (size_t i = 0; i < rawCommand.size(); i++) {
+        if (rawCommand[i] < 16)
+            std::cout << "0";
+        std::cout << unsigned(rawCommand[i]);
+    }
+    if (lineBreak) {
+        std::cout << "\n";
+    }
+    else {}
+    if (isHex) {
+        std::cout.unsetf(std::ios::hex);
+    }
 }
 void NetworkCommand::printCommandInOneString(bool lineBreak, bool isHex)
 {

@@ -10,11 +10,10 @@ HealthUpdate::HealthUpdate(NetworkCommand& rawHealthUpdate)
 	DataLayout dataLayout{};
     dataLayout.findDataLayout(rawHealthUpdate);
 
-    DataFragment idFragment = dataLayout.findFragment(0);
-    _id = net::read_integer(rawHealthUpdate, idFragment);
+    _id = net::read_integer(rawHealthUpdate, dataLayout.findFragment(0));
 
 	_healthChange = net::read_float32(rawHealthUpdate, dataLayout.findFragment(2)._offset);
-	_health		  = net::read_float32(rawHealthUpdate, dataLayout.findFragment(3)._offset);
+	_health = net::read_float32(rawHealthUpdate, dataLayout.findFragment(3)._offset);
 }
 
 HealthUpdate::HealthUpdate(uint64_t id, uint32_t healthChange, uint32_t health)

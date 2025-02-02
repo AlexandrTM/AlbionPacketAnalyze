@@ -5,26 +5,28 @@
 NetworkPacket::NetworkPacket()
 {
     _networkPacket = { {} };
+    _packetInfo = {};
     _packetTime = 0;
+    _packetHeader = {};
 }
 
-void NetworkPacket::addCommandsFromPacket(std::vector<uint8_t> rawPacket)
-{
-    uint8_t commandsNumInPacket = rawPacket[3];
-    ptrdiff_t offset = _packetHeaderSize;
-    for (uint8_t i = 0; i < commandsNumInPacket; i++) {
-        uint16_t commandLength = (rawPacket[offset + 6] << 8) + rawPacket[offset + 7];
-        _networkPacket.push_back(NetworkCommand({ rawPacket.begin() + offset,
-                                    rawPacket.begin() + offset + commandLength }));
-        offset += commandLength;
-    }
-}
+//void NetworkPacket::addCommandsFromPacket(std::vector<uint8_t> rawPacket)
+//{
+//    uint8_t commandsNumInPacket = rawPacket[3];
+//    ptrdiff_t offset = _networkPacketHeaderSize;
+//    for (uint8_t i = 0; i < commandsNumInPacket; i++) {
+//        uint16_t commandLength = (rawPacket[offset + 6] << 8) + rawPacket[offset + 7];
+//        _networkPacket.push_back(NetworkCommand({ rawPacket.begin() + offset,
+//                                    rawPacket.begin() + offset + commandLength }));
+//        offset += commandLength;
+//    }
+//}
 NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket)
 {
     NetworkPacket networkPacket;
 
     /*std::cout.setf(std::ios::hex, std::ios::basefield);
-    for (size_t i = 0; i < _packetHeaderSize; i++) {
+    for (size_t i = 0; i < _networkPacketHeaderSize; i++) {
         if (rawPacket[i] < 16)
             std::cout << "0";
         std::cout << (unsigned)rawPacket[i];
@@ -33,7 +35,9 @@ NetworkPacket NetworkPacket::findCommandsInPacket(std::vector<uint8_t> rawPacket
     std::cout.unsetf(std::ios::hex);*/
 
     uint8_t commandsNumInPacket = rawPacket[3];
-    ptrdiff_t offset = _packetHeaderSize;
+    ptrdiff_t offset = _networkPacketHeaderSize;
+    networkPacket._packetHeader = { rawPacket.begin(), rawPacket.begin() + _networkPacketHeaderSize };
+
     for (uint8_t i = 0; i < commandsNumInPacket; i++) {
         uint16_t commandLength = (rawPacket[offset + 6] << 8) + rawPacket[offset + 7];
         if (rawPacket.begin() + offset + commandLength <= rawPacket.end()) {

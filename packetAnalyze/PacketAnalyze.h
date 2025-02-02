@@ -1,3 +1,5 @@
+#include "Enumerations.h"
+
 #ifndef PACKET_ANALYZE_H
 #define PACKET_ANALYZE_H
 
@@ -42,15 +44,16 @@ private:
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     void initSniffer();
-    bool isPacketFiltered(std::vector<uint8_t>& filteredPacket);
+    bool isPacketFiltered(RawNetworkPacket& filteredPacket, NetworkPacketInfo& packetInfo);
     void sniffPacket();
+    void sendPacket();
 
-    void readRawPacket(Tins::RawPDU pdu, std::vector<uint8_t>& rawPacketPayload);
+    void readRawPacket(Tins::RawPDU pdu, RawNetworkPacket& rawPacketPayload);
     void readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd, 
-        std::vector<uint8_t>& rawPacketPayload);
+        RawNetworkPacket& rawPacketPayload);
     std::vector<uint8_t> readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd);
 
-    void analyzePacket(std::vector<uint8_t> rawPacket);
+    void analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo& packetInfo);
 };
 
 #endif // !PACKET_ANALYZE_H

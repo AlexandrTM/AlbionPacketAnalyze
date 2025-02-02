@@ -98,13 +98,13 @@ DataType::DataType()
 {
     _size = 0;
     _headerSize = 0;
-    _dataType = 0;
+    _dataTypeId = 0;
 }
 DataType::DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType)
 {
     _size = dataTypeSize;
     _headerSize = dataTypeHeaderSize;
-    _dataType = dataType;
+    _dataTypeId = dataType;
 }
 
 
@@ -146,7 +146,7 @@ DataFragment::DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfE
 DataFragment::DataFragment()
 {
     _fragmentID = 0;
-    _offset = -1;
+    _offset = std::numeric_limits<ptrdiff_t>::min();
     _numOfEntries = 0;
     _dataType = {};
 }
@@ -158,7 +158,7 @@ void DataFragment::printInfo(NetworkCommand& command) const
 }
 
 HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPrintPosition, 
+void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentStringPosition,
     bool printPayload) const
 {
     // take dicionaty into account
@@ -173,10 +173,10 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
         "offset: " << (unsigned)_offset << " " <<
         "num of entries: " << (unsigned)_numOfEntries << "\n";*/
     
-    currentPrintPosition += fragmentLength;
-    if (currentPrintPosition > 50) {
+    currentStringPosition += fragmentLength;
+    if (currentStringPosition > 50) {
         std::cout << "\n";
-        currentPrintPosition = 0;
+        currentStringPosition = 0;
     }
 
     std::cout.setf(std::ios::hex, std::ios::basefield);
@@ -207,15 +207,12 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
         else {
             command.printCommandInOneString(_offset, endOffset, false);
         }*/
-        /*if (_dataType._dataType == dataType::int64) {
-            for (size_t i = 0; i < _numOfEntries; i++) {
-                command.printCommandInOneString(_offset + i * 8, _offset + i * 8 + 8, false);
-                std::cout << " ";
-            }
+        if (_dataType._dataTypeId == dataType::float32) {
+            std::cout << " " << net::read_float32(command, _offset);
         }
-        else {*/
+        else {
             command.printCommandInOneString(_offset, endOffset, false);
-        //}
+        }
         SetConsoleTextAttribute(consoleHandle, 7);
     }
     std::cout << " ";
@@ -229,17 +226,17 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentPri
 // **************************************************************************
 
 
-DataFragment DataLayout::findFragment(uint8_t fragmentID) const
+DataFragment& DataLayout::findFragment(uint8_t fragmentID)
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
         if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
-            while (_dataLayout[i]._dataType._dataType == dataType::listOfType) {
+            while (_dataLayout[i]._dataType._dataTypeId == dataType::listOfType) {
                 i += 1;
             }
             return _dataLayout[i];
         }
     }
-    return DataFragment{};
+    return _defaultDataFragment;
 }
 
 uint8_t DataLayout::findNumOfFragments(NetworkCommand& command)
@@ -485,14 +482,15 @@ DataLayout::DataLayout()
 
 void DataLayout::printInfo(NetworkCommand& command, bool printPayload) const
 {
-    uint16_t numOfFragmensOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
+    uint16_t numOfFragmentsOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
     std::cout << 
-        "num of fragments: " << (unsigned)command[numOfFragmensOffset] << " " <<
+        "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << " " <<
         "event code: " << command.getEventCode() << " " <<
         "size: " << command.size() << "\n";
-    size_t currentPrintPosition = 0;
+
+    size_t currentStringPosition = 0;
     for (size_t i = 0; i < _dataLayout.size(); i++) {
-        _dataLayout[i].printFragmentInfo(command, currentPrintPosition, printPayload);
+        _dataLayout[i].printFragmentInfo(command, currentStringPosition, printPayload);
 
         /*if (i < _dataLayout.size() - 1) {
             command.printCommandInOneString(_dataLayout[i]._offset, _dataLayout[i + 1]._offset, false);
@@ -504,8 +502,42 @@ void DataLayout::printInfo(NetworkCommand& command, bool printPayload) const
     }
     std::cout << "\n\n";
 }
+void DataLayout::printInfo(NetworkCommand& command, size_t beginFragment, bool printPayload) const
+{
+    uint16_t numOfFragmentsOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
+    std::cout <<
+        "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << " " <<
+        "event code: " << command.getEventCode() << " " <<
+        "size: " << command.size() << "\n";
 
-size_t DataLayout::size()
+    size_t currentStringPosition = 0;
+    for (const DataFragment& dataFragment : _dataLayout) {
+        if (dataFragment._fragmentID >= beginFragment) {
+            dataFragment.printFragmentInfo(command, currentStringPosition, printPayload);
+        }
+    }
+    std::cout << "\n\n";
+}
+void DataLayout::printInfo(NetworkCommand& command, size_t beginFragment, size_t endFragment, bool printPayload) const
+{
+    uint16_t numOfFragmentsOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
+    std::cout <<
+        "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << " " <<
+        "event code: " << command.getEventCode() << " " <<
+        "size: " << command.size() << "\n";
+
+    size_t currentStringPosition = 0;
+    for (const DataFragment& dataFragment : _dataLayout) {
+        //std::vector<uint8_t> nonWantedElements = { 13, 14, 17, 19 };
+        if (dataFragment._fragmentID >= beginFragment && dataFragment._fragmentID <= endFragment/* &&
+            !std::isElementInVector(nonWantedElements, dataFragment._fragmentID)*/) {
+            dataFragment.printFragmentInfo(command, currentStringPosition, printPayload);
+        }
+    }
+    std::cout << "\n\n";
+}
+
+size_t DataLayout::size() const
 {
     return _dataLayout.size();
 }

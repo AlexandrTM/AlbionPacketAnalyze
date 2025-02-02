@@ -21,14 +21,15 @@ void Location::changeLocation(
     NetworkCommand& command,
     std::vector<Location>& locations,
     Location& currentLocation,
-    bool printInfo)
+    bool printInfo
+)
 {
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
-    dataLayout.printInfo(command);
+    //dataLayout.printInfo(command);
     //command.printCommandInOneString();
-    DataFragment locationFromFragment = dataLayout.findFragment(65);
-    DataFragment locationToFragment = dataLayout.findFragment(8);
+    DataFragment& locationFromFragment = dataLayout.findFragment(65);
+    DataFragment& locationToFragment = dataLayout.findFragment(8);
     std::string locationFrom = "";
     std::string locationTo = "";
     for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
@@ -55,6 +56,7 @@ void Location::changeLocation(
     for (size_t i = 0; i < locations.size(); i++) {
         //locations[i].printInfo();
         if (locations[i]._locationID == locationTo) {
+            currentLocation._locationID      = locationTo;
             currentLocation._harvestableList = locations[i]._harvestableList;
             currentLocation._playerList      = PlayerList();
             currentLocation._mobList         = locations[i]._mobList;
@@ -64,11 +66,18 @@ void Location::changeLocation(
         }
     }
     if (locationFromIsNew == true) {
-        locations.push_back(Location(locationFrom,
-            currentLocation._harvestableList, currentLocation._playerList, currentLocation._mobList));
+        locations.push_back(
+            Location(
+                locationFrom,
+                currentLocation._harvestableList, 
+                currentLocation._playerList, 
+                currentLocation._mobList
+            )
+        );
     }
     if (locationToIsNew == true) {
         locations.push_back(Location(locationTo, {}, {}, {}));
+        currentLocation._locationID      = locationTo;
         currentLocation._harvestableList = {};
         currentLocation._playerList      = {};
         currentLocation._mobList         = {};

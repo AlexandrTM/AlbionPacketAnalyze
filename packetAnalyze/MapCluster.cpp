@@ -6,10 +6,10 @@ void MapCluster::findClusterData(NetworkCommand& command)
 	dataLayout.findDataLayout(command);
 	dataLayout.printInfo(command, true);
 
-	DataFragment elementCoordsFragment = dataLayout.findFragment(18);
+	DataFragment& elementCoordsFragment = dataLayout.findFragment(18);
 	// 35 some id
-	DataFragment feeFragment = dataLayout.findFragment(35);
-	DataFragment ownerFragment = dataLayout.findFragment(25);
+	DataFragment& feeFragment = dataLayout.findFragment(35);
+	DataFragment& ownerFragment = dataLayout.findFragment(25);
 
 	uint16_t numOfEntries = net::read_uint16(command, elementCoordsFragment._offset - 6);
 	uint16_t numOfSubEntries = elementCoordsFragment._numOfEntries;

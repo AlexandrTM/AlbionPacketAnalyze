@@ -11,14 +11,16 @@
 #include <chrono>
 #include <algorithm>
 #include <fstream>
+#include <regex>
 
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 #define TINS_STATIC
 #include "tins/tins.h"
 
+#include <nlohmann/json.hpp>
+
 #include "namespace_std.h"
-#include "Enumerations.h"
 
 #include "NetworkCommand.h"
 #include "FragmentedNetworkCommand.h"
@@ -27,13 +29,13 @@
 #include "Deserialization.h"
 
 #include "HealthUpdate.h"
-#include "Auction.h"
 #include "MapCluster.h"
 #include "Harvestable.h"
 #include "Player.h"
 #include "Mob.h"
 #include "EntityMove.h"
 #include "Location.h"
+#include "Auction.h"
 #include "Entity.h"
 
 #include "PacketAnalyze.h"

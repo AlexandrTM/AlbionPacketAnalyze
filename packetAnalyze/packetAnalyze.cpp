@@ -5,8 +5,6 @@
 
 using namespace Tins;
 
-typedef std::vector<uint8_t> RawNetworkPacket;
-
 std::vector<uint16_t> _eventCodes;
 
 std::vector<size_t> PacketAnalyze::findCommandBordersInPacket(std::string packet)
@@ -56,23 +54,29 @@ bool PacketAnalyze::findStringInString(std::string packet, size_t regionStart, s
     return false;
 }
 
-int counter;
-int filteredCommands;
-
-std::vector<std::vector<uint16_t>> commandLenghts;
-std::vector <NetworkPacket> text;
+std::vector<NetworkPacket> text;
 int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
-bool _isHikingMode = false;
+bool _isHikingMode = true;
 
 void PacketAnalyze::run()
 {
     if (_isHikingMode) { initWindow(); }
     initSniffer();
+    //sendPacket();
     mainLoop();
     if (_isHikingMode) { cleanup(); }
+}
+
+void PacketAnalyze::mainLoop()
+{
+    while (!glfwWindowShouldClose(_window)) {
+        sniffPacket();
+
+        glfwPollEvents();
+    }
 }
 
 std::vector<bool> PacketAnalyze::findSameSymbolsInText(NetworkPacket paragraph)
@@ -155,15 +159,6 @@ void PacketAnalyze::findUniqueEventCodes(NetworkCommand& command)
     }
 
     _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
-}
-
-void PacketAnalyze::mainLoop()
-{
-    while (!glfwWindowShouldClose(_window)) {
-        sniffPacket();
-
-        glfwPollEvents();
-    }
 }
 
 void PacketAnalyze::cleanup()
@@ -293,7 +288,7 @@ void PacketAnalyze::initSniffer()
     //albionConfig.set_promisc_mode(true);
     _sniffer = Sniffer(_iface.name(), albionConfig);
 }
-bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket)
+bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket, NetworkPacketInfo& packetInfo)
 {
     PDU* sniffedPacket = _sniffer.next_packet();
 
@@ -302,12 +297,19 @@ bool PacketAnalyze::isPacketFiltered(RawNetworkPacket& filteredPacket)
         const UDP& udp = sniffedPacket->rfind_pdu<UDP>();
 
         if (/*_albionIPRange.contains(ip.src_addr()) and */(udp.sport() == 5056 or udp.dport() == 5056)) {
+            /*Tins::IPv4Address src_ip = ip.src_addr();
+            Tins::IPv4Address dst_ip = ip.dst_addr();
+            
+            uint16_t src_port = udp.sport();
+            uint16_t dst_port = udp.dport();*/
+            
             RawPDU rawPacket = sniffedPacket->rfind_pdu<RawPDU>();
             RawNetworkPacket packet;
             readRawPacket(rawPacket, packet);
 
             if (packet.size() > 0) {
                 filteredPacket = packet;
+                //packetInfo = { src_ip, dst_ip, src_port, dst_port };
                 return true;
             }
         }
@@ -318,16 +320,50 @@ void PacketAnalyze::sniffPacket()
 {
     try {
         RawNetworkPacket packet;
-        if (isPacketFiltered(packet)) {
+        NetworkPacketInfo packetInfo;
+        if (isPacketFiltered(packet, packetInfo)) {
             //auto start = std::chrono::high_resolution_clock::now();
 
-            analyzePacket(packet); 
+            analyzePacket(packet, packetInfo);
 
             //auto stop = std::chrono::high_resolution_clock::now();
             //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
     }
     catch (std::exception& e) {
+    }
+}
+
+void PacketAnalyze::sendPacket()
+{
+    try {
+        // Convert the payload from hex string to a byte vector
+        std::string hex_string = "959100050093c1e15e6ad63c0600010400000028000001c8f302010006006264016b038b026201036202ff6900000169fd6b0059";
+        std::vector<uint8_t> payload;
+        for (size_t i = 0; i < hex_string.length(); i += 2) {
+            payload.push_back(std::stoi(hex_string.substr(i, 2), nullptr, 16));
+        }
+
+        // Define source and destination IPs and ports
+        std::string source_ip = "192.168.1.3";
+        uint16_t source_port = 52197;
+        std::string destination_ip = "193.169.238.97";
+        uint16_t destination_port = 5056;
+
+        // Create the packet: IP layer -> UDP layer -> RawPDU (payload)
+        UDP udp = UDP(destination_port, source_port) / RawPDU(payload);
+
+        // IP layer with destination IP only (source IP is automatically determined)
+        IP ip = IP(destination_ip) / udp;
+
+        // Send the packet using a specific interface
+        PacketSender sender;
+        sender.send(ip);
+
+        std::cout << "Packet sent successfully!" << std::endl;
+    }
+    catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
     }
 }
 
@@ -351,9 +387,10 @@ RawNetworkPacket PacketAnalyze::readRawPacket(RawPDU pdu, size_t regionStart, si
     return rawPacketPayload;
 }
 
-void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
+void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo& packetInfo)
 {
     _packet = NetworkPacket::findCommandsInPacket(rawPacket);
+    _packet._packetInfo = packetInfo;
 
     for (size_t i = 0; i < _packet.size(); i++)
     {
@@ -370,7 +407,9 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
                     _fragmentedCommandsBuffer[j].sort();
                     _fragmentedCommandsBuffer[j].connectFragments();
                     _fragmentedCommandsBuffer[j][0].endFragmentedCommand();
-                    _fragmentedCommandsBuffer[j][0].analyzeCommand(_window, _isHikingMode);
+                    _fragmentedCommandsBuffer[j][0].analyzeCommand(
+                        _window, _packet._packetHeader, _packet._packetInfo, _isHikingMode
+                    );
                     _fragmentedCommandsBuffer.erase(_fragmentedCommandsBuffer.begin() + j);
                     //std::cout << _fragmentedCommandsBuffer.size() << "\n";
                 }
@@ -382,7 +421,9 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket)
         if (_packet[i].getCommandType() == commandType::reliable
          or _packet[i].getCommandType() == commandType::unreliable) {
 
-            _packet[i].analyzeCommand(_window, _isHikingMode);
+            _packet[i].analyzeCommand(
+                _window, _packet._packetHeader, _packet._packetInfo, _isHikingMode
+            );
         }
     }
 }
@@ -407,7 +448,7 @@ static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
         std::cout <<
             "MobDescription(" << 
                     std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
-            ", " << std::left << std::setw(4) << (unsigned)mobDescriptions[i]._category <<                            
+            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
             ", "                              << (unsigned)mobDescriptions[i]._tier     <<
                                        ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
     }

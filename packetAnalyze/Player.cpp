@@ -65,12 +65,17 @@ Player::Player(NetworkCommand& rawPlayer) // find health
 	dataLayout.findDataLayout(rawPlayer);
 	//dataLayout.printInfo(rawPlayer);
 
-	DataFragment idFragment = dataLayout.findFragment(0);
-	_id = net::read_integer(rawPlayer, idFragment);
+	// проверил прямые и обратные пары, проверил первое и второе число отрицательное
+	// 20 возможно какой-то коэффициент, у числа короткая дробная часть
+	// 30 35 очень маленькие числа возможно скорость ?
+	// 19 25 скорее всего координаты но преобразованные
+	_id = net::read_integer(rawPlayer, dataLayout.findFragment(0));
 
-	_positionX = -net::read_float32(rawPlayer, dataLayout.findFragment(19)._offset);
-	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(27)._offset);
+	/*_positionX = -net::read_float32(rawPlayer, dataLayout.findFragment(19)._offset);
+	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(25)._offset);*/
 
+	_positionX = -100;
+	_positionY = 400;
 	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }
 

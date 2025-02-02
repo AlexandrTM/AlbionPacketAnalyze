@@ -10,7 +10,7 @@
 struct EntityList
 {
     HarvestableListFilter _harvestableListFilter;
-    PlayerSelf            _player;
+    PlayerSelf            _playerSelf;
     MobListFilter         _mobListFilter;
     Location              _currentLocation;
     std::vector<Location> _locationList;

@@ -54,20 +54,25 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawHarvestable);
+	//dataLayout.printInfo(rawHarvestable);
+	DataFragment& positionFragment = dataLayout.findFragment(8);
 
-	DataFragment idFragment = dataLayout.findFragment(0);
-	_id = net::read_integer(rawHarvestable, idFragment);
-
+	_id		     = net::read_integer(rawHarvestable, dataLayout.findFragment(0));
 	_type        = net::read_uint8  (rawHarvestable, dataLayout.findFragment(5) ._offset);
 	_tier        = net::read_uint8  (rawHarvestable, dataLayout.findFragment(7) ._offset);
-	_positionX   = net::read_float32(rawHarvestable, dataLayout.findFragment(8) ._offset);
-	_positionY   = net::read_float32(rawHarvestable, dataLayout.findFragment(8) ._offset + 4);
+	if (positionFragment._offset != std::numeric_limits<ptrdiff_t>::min()) {
+		_positionX = net::read_float32(rawHarvestable, positionFragment._offset);
+		_positionY = net::read_float32(rawHarvestable, positionFragment._offset + 4);
+	}
 	_charges     = net::read_uint8  (rawHarvestable, dataLayout.findFragment(10)._offset);
 	_enchantment = net::read_uint8  (rawHarvestable, dataLayout.findFragment(11)._offset);
 
-	//this->printInfo();
+	if (_type >= resourceType::OTHER) {
+		this->printInfo();
+		dataLayout.printInfo(rawHarvestable);
+	}
 }
-static uint64_t previousHarvestTime = 0;
+static uint64_t previousTimeOfHarvest = 0;
 static uint32_t previousHarvestID = 0;
 void Harvestable::harvestStart(NetworkCommand& rawHarvestable)
 {
@@ -75,18 +80,17 @@ void Harvestable::harvestStart(NetworkCommand& rawHarvestable)
 	dataLayout.findDataLayout(rawHarvestable);
 
 	uint64_t id = 0;
-	uint64_t harvestTime = 0;
+	uint64_t timeOfHarvest = 0;
 
-	DataFragment idFragment = dataLayout.findFragment(0);
-	id = net::read_integer(rawHarvestable, idFragment);
-	harvestTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(1)._offset);
+	id = net::read_integer(rawHarvestable, dataLayout.findFragment(0));
+	timeOfHarvest = net::read_uint64(rawHarvestable, dataLayout.findFragment(1)._offset);
 
 	if (id == previousHarvestID) {
-		std::cout << "harvest time: " << (float_t)(harvestTime - previousHarvestTime) / 1e7 << "\n";
+		std::cout << "harvest time: " << (float_t)(timeOfHarvest - previousTimeOfHarvest) / 1e7 << "\n";
 	}
 
 	previousHarvestID = id;
-	previousHarvestTime = harvestTime;
+	previousTimeOfHarvest = timeOfHarvest;
 }
 void Harvestable::harvestFinished(NetworkCommand& rawHarvestable)
 {
@@ -97,13 +101,15 @@ void Harvestable::harvestFinished(NetworkCommand& rawHarvestable)
 	uint64_t harvestStartTime = 0;
 	uint64_t harvestEndTime = 0;
 
-	DataFragment idFragment = dataLayout.findFragment(0);
-	id = net::read_integer(rawHarvestable, idFragment);
+	id = net::read_integer(rawHarvestable, dataLayout.findFragment(0));
 
 	harvestStartTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(1)._offset);
 	harvestEndTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(2)._offset);
 
-	std::cout << "harvest time: " << (float_t)(harvestEndTime - harvestStartTime) / 1e7 << "\n";
+	float_t harvestTime = (float_t)(harvestEndTime - harvestStartTime) / 1e7;
+	if (harvestTime <= 1e6) {
+		std::cout << "harvest time: " << harvestTime << "\n";
+	}
 }
 Harvestable::Harvestable()
 {
@@ -128,7 +134,7 @@ Harvestable::Harvestable(uint64_t id, uint8_t type, uint8_t tier,
 	_enchantment = enchantment;
 }
 
-void Harvestable::printInfo()
+void Harvestable::printInfo() const
 {
 	std::cout << 
 		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
@@ -203,8 +209,11 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 		positionY = net::read_float32(rawHarvestableList, positionYOffset + i * 8);
 		charges   = net::read_uint8  (rawHarvestableList, chargesOffset   + i);
 
-		_harvestableList.push_back(
-			Harvestable(id, type, tier, positionX, positionY, charges, enchantment));
+		Harvestable harvestable = Harvestable(id, type, tier, positionX, positionY, charges, enchantment);
+		if (type >= resourceType::OTHER) {
+			harvestable.printInfo();
+		}
+		_harvestableList.push_back(harvestable);
 	}
 
 	//this->printInfo();
@@ -219,10 +228,9 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(updateState);
 
-	DataFragment idFragment = dataLayout.findFragment(0);
-	id = net::read_integer(updateState, idFragment);
+	id = net::read_integer(updateState, dataLayout.findFragment(0));
 
-	charges		= net::read_uint8(updateState, dataLayout.findFragment(1)._offset);
+	charges	    = net::read_uint8(updateState, dataLayout.findFragment(1)._offset);
 	enchantment = net::read_uint8(updateState, dataLayout.findFragment(2)._offset);
 
 	for (size_t i = 0; i < _harvestableList.size(); i++) {
@@ -237,10 +245,10 @@ void HarvestableList::updateState(NetworkCommand& updateState)
 void HarvestableList::printInfo()
 {
 	// Maps to store counts
-	std::map<uint8_t, int> tierDistribution;
-	std::map<uint8_t, int> enchantmentDistribution;
-	std::map<std::string, int> typeDistribution;
-	std::map<uint8_t, std::map<std::string, int>> tierTypeDistribution;
+	std::map<uint8_t, size_t> tierDistribution;
+	std::map<uint8_t, size_t> enchantmentDistribution;
+	std::map<std::string, size_t> typeDistribution;
+	std::map<uint8_t, std::map<std::string, size_t>> tierTypeDistribution;
 
 	// Count the distributions
 	for (const auto& harvestable : _harvestableList) {
@@ -266,23 +274,23 @@ void HarvestableList::printInfo()
 	std::cout << "\nDistribution by Tier:\n";
 	for (const auto& pair : tierDistribution) {
 		uint8_t tier = pair.first;
-		int count = pair.second;
-		std::cout << "Tier " << (int)tier << ": " << count << "\n";
+		size_t count = pair.second;
+		std::cout << "Tier " << (unsigned)tier << ": " << count << "\n";
 	}
 
 	// Print distribution by enchantment
 	std::cout << "\nDistribution by Enchantment:\n";
 	for (const auto& pair : enchantmentDistribution) {
 		uint8_t enchantment = pair.first;
-		int count = pair.second;
-		std::cout << "Enchantment " << (int)enchantment << ": " << count << "\n";
+		size_t count = pair.second;
+		std::cout << "Enchantment " << (unsigned)enchantment << ": " << count << "\n";
 	}
 
 	// Print distribution by resource type
 	std::cout << "\nDistribution by Resource Type:\n";
 	for (const auto& pair : typeDistribution) {
 		std::string type = pair.first;
-		int count = pair.second;
+		size_t count = pair.second;
 		std::cout << type << ": " << count << "\n";
 	}
 
@@ -291,10 +299,10 @@ void HarvestableList::printInfo()
 	for (const auto& outerPair : tierTypeDistribution) {
 		uint8_t tier = outerPair.first;
 		const auto& typeMap = outerPair.second;
-		std::cout << "Tier " << (int)tier << ":\n";
+		std::cout << "Tier " << (unsigned)tier << ":\n";
 		for (const auto& innerPair : typeMap) {
 			std::string type = innerPair.first;
-			int count = innerPair.second;
+			size_t count = innerPair.second;
 			std::cout << "  " << type << ": " << count << "\n";
 		}
 	}
@@ -304,7 +312,7 @@ void HarvestableList::clear()
 {
 	_harvestableList.clear();
 }
-size_t HarvestableList::size()
+size_t HarvestableList::size() const
 {
 	return _harvestableList.size();
 }

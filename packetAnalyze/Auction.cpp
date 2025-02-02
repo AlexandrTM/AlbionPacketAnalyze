@@ -20,7 +20,7 @@ uint16_t numOfColumns = 4;
 uint16_t numOfRows = 113;
 uint32_t previousCommandID = 0;
 
-void Auction::findAuctionAverageValues(NetworkCommand& command, std::string dataSeparator)
+void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& itemData, std::string dataSeparator)
 {
 	if (previousCommandID != command.getCommandID()) {
 
@@ -38,9 +38,9 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string data
 		auctionAverageValues.open("auctionAverageValues.csv", std::ofstream::app);
 		if (auctionAverageValues.is_open()) {
 
-			DataFragment soldAmountFragment = dataLayout.findFragment(0);
-			DataFragment soldVolumeFragment = dataLayout.findFragment(1);
-			DataFragment dateFragment = dataLayout.findFragment(2);
+			DataFragment& soldAmountFragment = dataLayout.findFragment(0);
+			DataFragment& soldVolumeFragment = dataLayout.findFragment(1);
+			DataFragment& dateFragment = dataLayout.findFragment(2);
 
 			uint16_t numOfEntries = soldAmountFragment._numOfEntries;
 
@@ -79,29 +79,42 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string data
 			}
 			//std::cout << auctionData[auctionData.size() - 1][3] << "\n";
 
-			size_t IDOfSortingRow = 3;
+			size_t idOfSortingRow = 3;
 			std::sort(auctionData.begin(), auctionData.end(),
-				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
+				[idOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(idOfSortingRow)) < std::stoull(b.at(idOfSortingRow));
 				});
 
+			//std::cout << "auctionData.size(): " << auctionData.size() << "\n";
 			addEmptyEntries(auctionData);
 
 			std::sort(auctionData.begin(), auctionData.end(),
-				[IDOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
-					return std::stoull(a.at(IDOfSortingRow)) < std::stoull(b.at(IDOfSortingRow));
+				[idOfSortingRow](const std::vector<std::string>& a, const std::vector<std::string>& b) {
+					return std::stoull(a.at(idOfSortingRow)) < std::stoull(b.at(idOfSortingRow));
 				});
 
+			/*for (size_t i = 0; i < 4; i++) {
+				for (size_t j = 0; j < auctionData.size(); j++) {
+					auctionAverageValues << auctionData[j][i] << dataSeparator;
+				}
+				if (i == 3) {
+					auctionAverageValues << itemData;
+				}
+				auctionAverageValues << "\n";
+			}*/
 			for (size_t i = 0; i < 2; i++) {
 				for (size_t j = 0; j < auctionData.size(); j++) {
 					auctionAverageValues << auctionData[j][i == 1 ? 2 : i] << dataSeparator;
+				}
+				if (i == 1) {
+					auctionAverageValues << itemData;
 				}
 				auctionAverageValues << "\n";
 			}
 			auctionAverageValues.close();
 		}
 		else {
-			std::cout << "auctionAverageValues is not opened" << "\n";
+			std::cout << "auctionAverageValues.csv is not opened" << "\n";
 		}
 	}
 	previousCommandID = command.getCommandID();
@@ -134,4 +147,41 @@ void Auction::addEmptyEntries(std::vector<std::vector<std::string>>& auctionData
 	for (size_t i = 0; i < valuesToAdd; i++) {
 		auctionData.push_back({ "0", "0", "0", std::numberToString(dateFirst - (i + 1) * sixHours) });
 	}
+}
+
+void Auction::GetItemData(
+	NetworkCommand& command,
+	Location& currentLocation,
+	std::string& itemData,
+	bool printInfo
+)
+{
+	DataLayout dataLayout;
+	dataLayout.findDataLayout(command);
+
+	DataFragment& cityFragment = dataLayout.findFragment(0);
+	DataFragment& itemIdFragment = dataLayout.findFragment(1);
+	DataFragment& qualityFragment = dataLayout.findFragment(2);
+	DataFragment& dataScaleFragment = dataLayout.findFragment(3);
+
+	uint64_t cityId = net::read_integer(command, cityFragment);
+	uint64_t itemId = net::read_integer(command, itemIdFragment);
+	uint64_t qualityId = net::read_integer(command, qualityFragment);
+	uint64_t dataScaleId = net::read_integer(command, dataScaleFragment);
+
+	std::ofstream auctionAverageValues;
+
+	itemData =
+		"currentLocation: " + currentLocation._locationID + " " +
+		"itemId: " + std::to_string(itemId)				  + " " +
+		"qualityId: " + std::to_string(qualityId)		  + " " +
+		"dataScaleId: " + std::to_string(dataScaleId);
+
+	if (printInfo) {
+		//std::cout << itemData << "\n";
+		std::cout << std::to_string(itemId) << "\n";
+	}
+	//dataLayout.printInfo(command);
+	// command.printCommandInOneString();
+
 }
