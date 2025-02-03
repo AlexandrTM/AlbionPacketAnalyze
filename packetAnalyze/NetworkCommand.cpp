@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "NetworkCommand.h"
 
 std::vector<uint16_t> nnCodes = {};
 std::vector<uint16_t> nCodes = { /*55, 71*/49 };
@@ -51,9 +52,9 @@ void NetworkCommand::analyzeCommand(
         if (_operationType == operationType::event) {
             switch (_eventCode)
             {
-            case eventCode::healthUpdate:
-                //_entityList._playerList.update(HealthUpdate::HealthUpdate(*this)); // need to add health handling
-                _entityList._currentLocation._mobList.update(HealthUpdate::HealthUpdate(*this));
+            case eventCode::HealthUpdate:
+                //_entityList._playerList.update(HealthUpdateHandler::HealthUpdateHandler(*this)); // need to add health handling
+                _entityList._currentLocation._mobList.update(HealthUpdateHandler::HealthUpdateHandler(*this));
                 //dataLayout.findDataLayout(*this);
                 //dataLayout.printInfo(*this);
                 break;
@@ -63,35 +64,35 @@ void NetworkCommand::analyzeCommand(
             case eventCode::NewHarvestableObject:
                 _entityList._currentLocation._harvestableList.update(Harvestable(*this));
                 break;
-            case eventCode::harvestableChangeState:
+            case eventCode::HarvestableChangeState:
                 _entityList._currentLocation._harvestableList.updateState(*this);
                 break;
-            case eventCode::harvestStart:
+            case eventCode::HarvestStart:
                 //Harvestable::harvestStart(*this);
                 break;
-            case eventCode::harvestFinished:
+            case eventCode::HarvestFinished:
                 Harvestable::harvestFinished(*this);
                 break;
             case 66: // crafting finished on station
                 /*dataLayout.findDataLayout(*this);
                 dataLayout.printInfo(*this);*/
                 break;
-            case eventCode::newPlayer:
+            case eventCode::NewCharacter:
                 //if (!std::isElementInVector(cityLocations, _entityList._currentLocation._locationID)) {
                 _entityList._currentLocation._playerList.newPlayer(Player(*this));
                 //}
                 break;
-            case eventCode::playerLeave:
+            case eventCode::Leave:
                 _entityList._currentLocation._playerList.playerLeave(Player(*this));
                 break;
-            case eventCode::playerMove:
+            case eventCode::PlayerMove:
                 //_entityList._playerList.update(Player::playerMove(*this)); 
                 break;
-            case eventCode::mobChangeState:
+            case eventCode::MobChangeState:
                 _entityList._currentLocation._mobList.mobChangeState(*this);
                 //_entityList._playerList.update(Player::playerMove(*this)); 
                 break;
-            case eventCode::newMob:
+            case eventCode::NewMob:
                 _entityList._currentLocation._mobList.newMob(Mob::Mob(*this));
                 break;
             default:
@@ -469,6 +470,6 @@ uint16_t NetworkCommand::findEventCode(std::vector<uint8_t>& rawCommand) const
         }
     }
     else {
-        return eventCode::none;
+        return eventCode::None;
     }
 }

@@ -221,6 +221,28 @@ namespace net
 
         return integer;
     }
+
+    nlohmann::json readJsonFile(const std::string& filename);
+    void extractMatchingMobs(
+        const nlohmann::json& data,
+        float_t moveSpeed, float_t maxEnergy, float_t energyRegeneration
+    );
+    void findUniqueValues(
+        const nlohmann::json& data,
+        const std::string& firstLevel,
+        const std::string& secondLevel,
+        const std::string& key
+    );
+    void findUniqueValuesByCriterion(
+        const nlohmann::json& data,
+        const std::string& firstLevel,
+        const std::string& secondLevel,
+        const std::string& uniqueKey,
+        const std::string& criterion
+    );
+
+    const nlohmann::json mobsData = net::readJsonFile("mobs.json");
+    const nlohmann::json harvestablesData = net::readJsonFile("harvestables.json");
 };
 
 #endif

@@ -26,16 +26,14 @@ struct Player
 	Player(uint64_t id, uint32_t health, float_t positionX, float_t positionY, bool isVisible);
 };
 
-class PlayerList
+struct PlayerList
 {
-private:
 	std::vector<Player> _playerList;
 
-public:
 	PlayerList();
 	
 	void newPlayer(Player player);
-	void update(HealthUpdate healthUpdate);
+	void update(HealthUpdateHandler healthUpdate);
 	void playerLeave(Player playerLeave);
 
 	void removePlayer(Player player);

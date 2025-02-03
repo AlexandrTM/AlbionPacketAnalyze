@@ -67,10 +67,14 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	_charges     = net::read_uint8  (rawHarvestable, dataLayout.findFragment(10)._offset);
 	_enchantment = net::read_uint8  (rawHarvestable, dataLayout.findFragment(11)._offset);
 
-	if (_type >= resourceType::OTHER) {
+	/*if (_type >= resourceType::OTHER) {
+		this->printInfo();
+	}*/
+
+	/*if (_type >= resourceType::OTHER) {
 		this->printInfo();
 		dataLayout.printInfo(rawHarvestable);
-	}
+	}*/
 }
 static uint64_t previousTimeOfHarvest = 0;
 static uint32_t previousHarvestID = 0;
@@ -107,7 +111,7 @@ void Harvestable::harvestFinished(NetworkCommand& rawHarvestable)
 	harvestEndTime = net::read_uint64(rawHarvestable, dataLayout.findFragment(2)._offset);
 
 	float_t harvestTime = (float_t)(harvestEndTime - harvestStartTime) / 1e7;
-	if (harvestTime <= 1e6) {
+	if (harvestTime <= 1e6 && harvestTime >= 1e-6) {
 		std::cout << "harvest time: " << harvestTime << "\n";
 	}
 }
@@ -146,30 +150,30 @@ void Harvestable::printInfo() const
 		"x: "			<< std::setw(6) << _positionX			  << " " <<
 		"y: "			<< std::setw(6) << _positionY			  << "\n";
 }
+
 std::string Harvestable::getHarvestableTextType(uint8_t type)
 {
-	std::string textType = "\"UNDEFINED\"";
-	if (type >= resourceType::WOOD and
-		type <= (resourceType::ROCK - 1)) {
-		textType = "\"WOOD\"";
+	for (size_t i = 0; i < resourceRanges.size(); ++i) {
+		const auto& range1 = resourceRanges[i].first;
+		const auto& range2 = resourceRanges[i].second;
+
+		// Check if the type falls within either range
+		if ((type >= range1.start && type <= range1.end) ||
+			(type >= range2.start && type <= range2.end)) {
+
+			// Map range index to resource type
+			switch (i) {
+			case 0: return "\"WOOD\"";         // WOOD & WOOD_ROADS
+			case 1: return "\"ROCK\"";         // ROCK & ROCK_ROADS
+			case 2: return "\"FIBER\"";        // FIBER & FIBER_ROADS
+			case 3: return "\"HIDE\"";         // HIDE & HIDE_ROADS
+			case 4: return "\"ORE\"";          // ORE & ORE_ROADS
+			default: return "\"UNDEFINED\"";   // Undefined type
+			}
+		}
 	}
-	if (type >= resourceType::ROCK and
-		type <= (resourceType::FIBER - 1)) {
-		textType = "\"ROCK\"";
-	}
-	if (type >= resourceType::FIBER and
-		type <= (resourceType::HIDE - 1)) {
-		textType = "\"FIBER\"";
-	}
-	if (type >= resourceType::HIDE and
-		type <= (resourceType::ORE - 1) or type == 44) {
-		textType = "\"HIDE\"";
-	}
-	if (type >= resourceType::ORE and
-		type <= (resourceType::OTHER - 1)) {
-		textType = "\"ORE\"";
-	}
-	return textType;
+
+	return "\"UNDEFINED\"";
 }
 
 
@@ -213,6 +217,7 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 		if (type >= resourceType::OTHER) {
 			harvestable.printInfo();
 		}
+		//harvestable.printInfo();
 		_harvestableList.push_back(harvestable);
 	}
 

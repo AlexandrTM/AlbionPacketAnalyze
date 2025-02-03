@@ -16,6 +16,10 @@ struct Mob
 	float_t     _positionX;
 	float_t     _positionY;
 
+    float_t     _moveSpeed;
+    float_t     _maxEnergy;
+    float_t     _energyRegeneration;
+
 	Mob();
 	Mob(NetworkCommand& rawMob);
 	Mob(uint64_t id, uint8_t category, uint8_t type, std::string textType,
@@ -34,7 +38,7 @@ struct MobList
 	MobList();
 
 	void newMob(Mob mob);
-	void update(HealthUpdate healthUpdate);
+	void update(HealthUpdateHandler healthUpdate);
 	void mobChangeState(NetworkCommand& mobChangeState);
 
 	size_t size() const;

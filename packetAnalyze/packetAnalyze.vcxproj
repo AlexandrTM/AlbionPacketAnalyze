@@ -153,7 +153,7 @@
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
     <ClCompile Include="Harvestable.cpp" />
-    <ClCompile Include="HealthUpdate.cpp" />
+    <ClCompile Include="HealthUpdateHandler.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="MapCluster.cpp" />
     <ClCompile Include="Mob.cpp" />
@@ -176,7 +176,7 @@
     <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
     <ClInclude Include="Harvestable.h" />
-    <ClInclude Include="HealthUpdate.h" />
+    <ClInclude Include="HealthUpdateHandler.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapCluster.h" />
     <ClInclude Include="Mob.h" />

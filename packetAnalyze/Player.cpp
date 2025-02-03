@@ -84,7 +84,7 @@ PlayerList::PlayerList()
 	_playerList = {};
 }
 
-void PlayerList::update(HealthUpdate healthUpdate)
+void PlayerList::update(HealthUpdateHandler healthUpdate)
 {
 	for (size_t i = 0; i < _playerList.size(); i++) {
 		if (_playerList[i]._id == healthUpdate._id) {

@@ -102,13 +102,13 @@ void EntityList::drawHarvestables()
 void EntityList::drawPlayers()
 {
     std::vector<GLfloat> playerSelfCoords = { _playerSelf._positionX, _playerSelf._positionY };
-    for (size_t i = 0; i < _currentLocation._playerList.size(); i++) {
-        std::vector<GLfloat> playerCoords = { _currentLocation._playerList[i]._positionX, _currentLocation._playerList[i]._positionY};
+    for (const Player& player : _currentLocation._playerList._playerList) {
+        std::vector<GLfloat> playerCoords = { player._positionX, player._positionY};
         GLfloat x = playerCoords[0];
         GLfloat y = playerCoords[1];
         std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(x, y);
 
-        if (_currentLocation._playerList[i]._isVisible == true) {
+        if (player._isVisible == true) {
             glPointSize(5);
             glBegin(GL_POINTS);
             glColor3f(0.9, 0.65, 0.65);
@@ -174,20 +174,21 @@ void EntityList::drawMobs()
 
 
 
+
 bool EntityList::isHarvestableFiltered(Harvestable harvestable)
 {
     uint8_t filterID = 5;
-    if (harvestable._type >=  resourceType::WOOD  and
-        harvestable._type <= (resourceType::ROCK  - 1)) { filterID = 0; }
-    if (harvestable._type >=  resourceType::ROCK  and
-        harvestable._type <= (resourceType::FIBER - 1)) { filterID = 1; }
-    if (harvestable._type >=  resourceType::FIBER and
-        harvestable._type <= (resourceType::HIDE  - 1)) { filterID = 2; }
-    if ((harvestable._type >=  resourceType::HIDE  and
-        harvestable._type <= (resourceType::ORE   - 1)) or 
-        harvestable._type == 44)                        { filterID = 3; }
-    if (harvestable._type >=  resourceType::ORE   and
-        harvestable._type <= (resourceType::OTHER - 1)) { filterID = 4; }
+    for (size_t i = 0; i < resourceRanges.size(); ++i) {
+        const auto& range1 = resourceRanges[i].first;
+        const auto& range2 = resourceRanges[i].second;
+
+        // Check if the resource falls within either of the two valid ranges
+        if ((harvestable._type >= range1.start && harvestable._type <= range1.end) ||
+            (harvestable._type >= range2.start && harvestable._type <= range2.end)) {
+            filterID = i;
+            break;
+        }
+    }
 
     HarvestableFilter harvestableFilter = this->_harvestableListFilter[filterID];
 

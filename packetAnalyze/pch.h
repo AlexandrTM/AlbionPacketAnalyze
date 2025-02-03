@@ -28,7 +28,7 @@
 #include "NetworkPacket.h"
 #include "Deserialization.h"
 
-#include "HealthUpdate.h"
+#include "HealthUpdateHandler.h"
 #include "MapCluster.h"
 #include "Harvestable.h"
 #include "Player.h"

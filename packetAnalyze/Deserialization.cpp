@@ -545,3 +545,153 @@ DataFragment DataLayout::operator[](size_t elementIndex)
 {
     return _dataLayout[elementIndex];
 }
+
+nlohmann::json net::readJsonFile(const std::string& filename)
+{
+    std::ifstream file(filename);
+    if (!file) {
+        throw std::runtime_error("Error: Could not open file: " + filename);
+    }
+    nlohmann::json jsonData;
+    file >> jsonData;
+    return jsonData;
+}
+
+void net::extractMatchingMobs(
+    const nlohmann::json& data, 
+    float_t moveSpeed, float_t maxEnergy, float_t energyRegeneration
+)
+{
+    if (!data.contains("Mobs") || !data["Mobs"].contains("Mob")) {
+        std::cerr << "Error: Invalid JSON format!" << std::endl;
+        return;
+    }
+
+    for (const auto& mob : data["Mobs"]["Mob"]) {
+        if (mob.contains("@movespeed") &&
+            mob.contains("@energymax") &&
+            mob.contains("@energyregeneration")
+            ) {
+            float_t mobMoveSpeed = std::stof(mob["@movespeed"].get<std::string>());
+            float_t mobMaxEnergy = std::stof(mob["@energymax"].get<std::string>());
+            float_t mobEnergyRegeneration = std::stof(mob["@energyregeneration"].get<std::string>());
+
+            if (mobMoveSpeed == moveSpeed && 
+                mobMaxEnergy == maxEnergy &&
+                mobEnergyRegeneration == energyRegeneration
+                ) {
+                std::cout << 
+                    "uniquename: " << mob["@uniquename"] << " " <<
+                    "category: "   << mob["@category"] << " " <<
+                    "faction: "    << mob["@faction"] << "\n";
+            }
+        }
+    }
+    std::cout << "\n";
+}
+
+void net::findUniqueValues(
+    const nlohmann::json& data, 
+    const std::string& firstLevel, 
+    const std::string& secondLevel,
+    const std::string& key
+)
+{
+    if (!data.contains(firstLevel) || !data[firstLevel].contains(secondLevel)) {
+        std::cerr << "Error: Invalid JSON format!" << std::endl;
+        return;
+    }
+
+    std::unordered_map<std::string, size_t> uniqueValues;
+    std::vector<std::string> order;
+    size_t maxKeyLength = 0;
+    size_t totalCount = 0;
+
+    for (const auto& entry : data[firstLevel][secondLevel]) {
+        if (entry.contains(key) && entry[key].is_string()) {
+            std::string entryName = entry[key].get<std::string>();
+
+            if (uniqueValues.find(entryName) == uniqueValues.end()) {
+                order.push_back(entryName); // Store order of first appearance
+            }
+
+            uniqueValues[entryName]++;
+            totalCount++;
+            maxKeyLength = std::max(maxKeyLength, entryName.length());
+        }
+    }
+
+    // Print results
+    std::cout << 
+        "Unique values for \"" << key << "\" (" << 
+        uniqueValues.size() << " found) (" << 
+        totalCount << " " << firstLevel << ")" << ":\n";
+
+    size_t index = 0;
+    for (const auto& value : order) {
+        std::cout << 
+            "- " << std::setw(maxKeyLength) << std::left << value <<
+            " = " << index << 
+            " (" << uniqueValues[value] << " " << firstLevel << ")\n";
+        index++;
+    }
+    /*for (const auto& entryName : order) {
+        std::cout <<
+            std::setw(maxKeyLength) << std::left << entryName <<
+            " = " << index << ",\n";
+        index++;
+    }*/
+    std::cout << "---------------------------------\n";
+}
+
+void net::findUniqueValuesByCriterion(
+    const nlohmann::json& data,
+    const std::string& firstLevel,
+    const std::string& secondLevel,
+    const std::string& uniqueKey,
+    const std::string& criterion
+)
+{
+    if (!data.contains(firstLevel) || !data[firstLevel].contains(secondLevel)) {
+        std::cerr << "Error: Invalid JSON format!" << std::endl;
+        return;
+    }
+
+    std::unordered_map<std::string, std::vector<std::string>> uniqueValues;
+    std::vector<std::string> order;
+    size_t maxCriterionLength = 0;
+    size_t maxUniqueLength = 0;
+
+    for (const auto& entry : data[firstLevel][secondLevel]) {
+        if (entry.contains(criterion) && entry[criterion].is_string() &&
+            entry.contains(uniqueKey) && entry[uniqueKey].is_string()) {
+
+            std::string criterionName = entry[criterion].get<std::string>();
+            std::string uniqueName = entry[uniqueKey].get<std::string>();
+
+            if (uniqueValues.find(criterionName) == uniqueValues.end()) {
+                order.push_back(criterionName); // Store order of first appearance
+            }
+
+            uniqueValues[criterionName].push_back(uniqueName);
+            maxCriterionLength = std::max(maxCriterionLength, criterionName.length());
+            maxUniqueLength = std::max(maxUniqueLength, uniqueName.length());
+        }
+    }
+
+    // Print results
+    std::cout << "Mob Unique Names by Faction:\n";
+    for (const std::string& criterionName : order) {
+        const std::vector<std::string>& uniqueNames = uniqueValues[criterionName];
+
+        std::cout << "- " << criterionName << ":\n";
+        size_t index = 0;
+        for (const auto& uniqueName : uniqueNames) {
+            std::cout << "    " << std::setw(maxUniqueLength) << std::left << uniqueName
+                << " = " << index << ",\n";
+            index++;
+        }
+        std::cout << "---------------------------------\n";
+    }
+}
+

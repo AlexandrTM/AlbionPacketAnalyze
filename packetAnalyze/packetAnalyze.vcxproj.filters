@@ -72,7 +72,7 @@
     <ClCompile Include="EntityMove.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="HealthUpdate.cpp">
+    <ClCompile Include="HealthUpdateHandler.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
     <ClCompile Include="Location.cpp">
@@ -134,7 +134,7 @@
     <ClInclude Include="Mob.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="HealthUpdate.h">
+    <ClInclude Include="HealthUpdateHandler.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="Location.h">

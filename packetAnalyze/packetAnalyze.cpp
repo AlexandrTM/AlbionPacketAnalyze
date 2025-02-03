@@ -457,7 +457,16 @@ static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
 int main() {
     PacketAnalyze packetAnalyze;
 
+    //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@faction");
+    //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@category");
+
+    //net::findUniqueValues(net::harvestablesData, "AO-Harvestables", "Harvestable", "@name");
+    //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@uniquename");
+    //net::findUniqueValuesByCriterion(net::mobsData, "Mobs", "Mob", "@uniquename", "@category");
+
+    
     //sortMobDescriptions(mobDescriptions);
+     
     packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);
