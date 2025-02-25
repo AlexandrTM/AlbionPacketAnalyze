@@ -19,8 +19,12 @@ PlayerSelf::PlayerSelf(NetworkCommand& rawPlayer)
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawPlayer);
 
-	_positionX = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset);
-	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset + 4);
+	DataFragment& positionFragment = dataLayout.findFragment(1);
+
+	if (positionFragment._offset != std::numeric_limits<ptrdiff_t>::min()) {
+		_positionX = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset);
+		_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(1)._offset + 4);
+	}
 
 	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }

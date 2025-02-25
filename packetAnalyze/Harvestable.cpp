@@ -18,7 +18,7 @@ HarvestableFilter::HarvestableFilter()
 	_trackingEnchantments = {};
 	_trackingCharges = {};
 }
-size_t HarvestableListFilter::size()
+size_t HarvestableListFilter::size() const
 {
 	return _harvestableListFilter.size();
 }
@@ -67,11 +67,11 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 	_charges     = net::read_uint8  (rawHarvestable, dataLayout.findFragment(10)._offset);
 	_enchantment = net::read_uint8  (rawHarvestable, dataLayout.findFragment(11)._offset);
 
-	/*if (_type >= resourceType::OTHER) {
+	/*if (_type >= harvestableUniqueType::OTHER) {
 		this->printInfo();
 	}*/
 
-	/*if (_type >= resourceType::OTHER) {
+	/*if (_type >= harvestableUniqueType::OTHER) {
 		this->printInfo();
 		dataLayout.printInfo(rawHarvestable);
 	}*/
@@ -153,9 +153,9 @@ void Harvestable::printInfo() const
 
 std::string Harvestable::getHarvestableTextType(uint8_t type)
 {
-	for (size_t i = 0; i < resourceRanges.size(); ++i) {
-		const auto& range1 = resourceRanges[i].first;
-		const auto& range2 = resourceRanges[i].second;
+	for (size_t i = 0; i < staticHarvestableRanges.size(); ++i) {
+		const auto& range1 = staticHarvestableRanges[i].first;
+		const auto& range2 = staticHarvestableRanges[i].second;
 
 		// Check if the type falls within either range
 		if ((type >= range1.start && type <= range1.end) ||
@@ -214,8 +214,8 @@ HarvestableList::HarvestableList(NetworkCommand& rawHarvestableList)
 		charges   = net::read_uint8  (rawHarvestableList, chargesOffset   + i);
 
 		Harvestable harvestable = Harvestable(id, type, tier, positionX, positionY, charges, enchantment);
-		if (type >= resourceType::OTHER) {
-			harvestable.printInfo();
+		if (type >= harvestableUniqueType::OTHER) {
+			//harvestable.printInfo();
 		}
 		//harvestable.printInfo();
 		_harvestableList.push_back(harvestable);
@@ -313,14 +313,6 @@ void HarvestableList::printInfo()
 	}
 }
 
-void HarvestableList::clear()
-{
-	_harvestableList.clear();
-}
-size_t HarvestableList::size() const
-{
-	return _harvestableList.size();
-}
 void HarvestableList::update(Harvestable harvestable)
 {
 	for (size_t i = 0; i < _harvestableList.size(); i++) {
@@ -353,10 +345,74 @@ bool HarvestableList::isResourceStatic(Harvestable harvestable)
 
 	return false;  // The resource is not static
 }
+
+FishNode::FishNode(NetworkCommand& rawHarvestable)
+{
+	_id = 0;
+	_name = "";
+	_type = 0;
+	_tier = 0;
+	_positionX = 0;
+	_positionY = 0;
+	_charges = 0;
+	_enchantment = 0;
+
+	DataLayout dataLayout{};
+	dataLayout.findDataLayout(rawHarvestable);
+
+	DataFragment& positionFragment = dataLayout.findFragment(1);
+	DataFragment& nameFragment = dataLayout.findFragment(4);
+
+	_id = net::read_integer(rawHarvestable, dataLayout.findFragment(0));
+	if (positionFragment._offset != std::numeric_limits<ptrdiff_t>::min()) {
+		_positionX = net::read_float32(rawHarvestable, positionFragment._offset);
+		_positionY = net::read_float32(rawHarvestable, positionFragment._offset + 4);
+	}
+	_charges = net::read_uint8(rawHarvestable, dataLayout.findFragment(2)._offset);
+	for (size_t i = 0; i < nameFragment._numOfEntries; i++) {
+		_name += (unsigned)rawHarvestable[nameFragment._offset + i];
+	}
+	//if (_name != "") {
+	/*if (_name.find("Chest") != std::string::npos) {
+		std::cout << _name << "\n";
+		dataLayout.printInfo(rawHarvestable);
+	}*/
+}
+
+FishNodeList::FishNodeList()
+{
+	_fishNodeList = {};
+}
+
+void FishNodeList::update(FishNode fishNode)
+{
+	for (size_t i = 0; i < _fishNodeList.size(); i++) {
+		if (_fishNodeList[i]._id == fishNode._id) {
+			_fishNodeList[i]._charges = fishNode._charges;
+			_fishNodeList[i]._enchantment = fishNode._enchantment;
+			return;
+		}
+	}
+	_fishNodeList.push_back(fishNode);
+}
+FishNodeList::iterator FishNodeList::begin() {
+	return _fishNodeList.begin();
+}
+FishNodeList::iterator FishNodeList::end() {
+	return _fishNodeList.end();
+}
+
+void HarvestableList::clear()
+{
+	_harvestableList.clear();
+}
+size_t HarvestableList::size() const
+{
+	return _harvestableList.size();
+}
 HarvestableList::iterator HarvestableList::begin() {
 	return _harvestableList.begin();
 }
-
 HarvestableList::iterator HarvestableList::end() {
 	return _harvestableList.end();
 }

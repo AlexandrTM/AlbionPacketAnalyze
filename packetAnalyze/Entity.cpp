@@ -2,6 +2,7 @@
 
 float_t _pixelsInMeter = 45.5;
 size_t  _halfMapSize = 400;
+float_t scaleFactor = 1.145f;
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -9,10 +10,10 @@ void EntityList::draw(GLFWwindow* window)
     glLoadIdentity();
 
     drawPlayerSelf();
-    drawPlayers();
-    drawHarvestables();
+    //drawPlayers();
+    //drawHarvestables();
     drawMobs();
-    drawWindowFrame();
+    drawWindowFrame(scaleFactor);
     
     glfwSwapBuffers(window);
 }
@@ -37,22 +38,23 @@ EntityList::EntityList()
     _playerSelf      = {};
     _locationList    = {};
 }
-void EntityList::drawWindowFrame()
+void EntityList::drawWindowFrame(float scale) const
 {
     if (_currentLocation._locationID.find("TNL") == std::string::npos) {
         glPointSize(1);
         glBegin(GL_LINES);
         glColor4f(0.5, 0.5, 0.5, 1);
 
-        glVertex2f(0, -0.821);
-        glVertex2f(0.59, -0.085);
-        glVertex2f(0.59, -0.085);
-        glVertex2f(0, 0.653);
+        glVertex2f(0, -0.821 * scale);
+        glVertex2f(0.59 * scale, -0.085 * scale);
+        glVertex2f(0.59 * scale, -0.085 * scale);
+        glVertex2f(0, 0.653 * scale);
 
-        glVertex2f(0, 0.653);
-        glVertex2f(-0.59, -0.085);
-        glVertex2f(-0.59, -0.085);
-        glVertex2f(0, -0.821);
+        glVertex2f(0, 0.653 * scale);
+        glVertex2f(-0.59 * scale, -0.085 * scale);
+        glVertex2f(-0.59 * scale, -0.085 * scale);
+        glVertex2f(0, -0.821 * scale);
+
         glEnd();
     }
 }
@@ -80,7 +82,9 @@ void EntityList::drawHarvestables()
         harvestableCoords = { harvestable._positionX, harvestable._positionY };
         harvestableMapCoords = convertToMapCoordinates(
             harvestable._positionX,
-            harvestable._positionY);
+            harvestable._positionY
+        );
+
         if (isHarvestableFiltered(harvestable)) {
             glPointSize(std::max(pow((float)harvestable._tier / 4, 2) * 2.8, 4.0));
             glBegin(GL_POINTS);
@@ -94,6 +98,36 @@ void EntityList::drawHarvestables()
             glPointSize(std::min(harvestable._enchantment + 1, 10));
             glBegin(GL_POINTS);
             colorizeHarvestable(harvestable);
+            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
+            glEnd();
+        }
+    }
+
+    for (const FishNode& fishNode : _currentLocation._fishNodeList) {
+        harvestableCoords = { fishNode._positionX, fishNode._positionY };
+        harvestableMapCoords = convertToMapCoordinates(
+            fishNode._positionX,
+            fishNode._positionY
+        );
+
+        if (fishNode._name.find("Chest") != std::string::npos) {
+            glPointSize(4);
+            glBegin(GL_POINTS);
+            glColor3f(0.92f, 0.92f, 0.231f);
+            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
+            glEnd();
+        }
+        else if (fishNode._name != "" and fishNode._charges > 0) {
+            glPointSize(2 + fishNode._charges);
+            glBegin(GL_POINTS);
+            glColor3f(0.85f, 0.5f, 0.85f);
+            glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
+            glEnd();
+        }
+        else {
+            glPointSize(3);
+            glBegin(GL_POINTS);
+            glColor3f(0.6f, 0.4f, 0.6f);
             glVertex3f(harvestableMapCoords[0], harvestableMapCoords[1], 0.0f);
             glEnd();
         }
@@ -158,14 +192,12 @@ void EntityList::drawMobs()
             glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
             glEnd();
         }
-        else if (mob._textType == "MOB_NOT_FOUND") {
-            if (mob._category == mobCategory::resource || mob._category == mobCategory::resourceElemental) {
-                glPointSize(6);
-                glBegin(GL_POINTS);
-                glColor3f(color[0], color[1], color[2]);
-                glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
-                glEnd();
-            }
+        else if (mob._uniqueName == "") {
+            glPointSize(6);
+            glBegin(GL_POINTS);
+            glColor3f(color[0], color[1], color[2]);
+            glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
+            glEnd();
         }
     }
 }
@@ -178,9 +210,9 @@ void EntityList::drawMobs()
 bool EntityList::isHarvestableFiltered(Harvestable harvestable)
 {
     uint8_t filterID = 5;
-    for (size_t i = 0; i < resourceRanges.size(); ++i) {
-        const auto& range1 = resourceRanges[i].first;
-        const auto& range2 = resourceRanges[i].second;
+    for (size_t i = 0; i < staticHarvestableRanges.size(); ++i) {
+        const auto& range1 = staticHarvestableRanges[i].first;
+        const auto& range2 = staticHarvestableRanges[i].second;
 
         // Check if the resource falls within either of the two valid ranges
         if ((harvestable._type >= range1.start && harvestable._type <= range1.end) ||
@@ -209,19 +241,20 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
         enchantmentColor[i] += (mob._tier - 4) * 0.033f;
     }
 
-    if (mob._category == mobCategory::resource or
-        mob._category == mobCategory::resourceElemental) {
-        uint8_t filterID = 5;
+    if (mob.isHarvestable()) {
+        //std::cout << "_uniqueName: " << mob._uniqueName << "\n";
+        uint8_t filterID = static_cast<uint8_t>(mob._harvestableType);
+
+        // Check if _uniqueName contains any of the special names
+        if (std::any_of(harvestableSpecialNames.begin(), harvestableSpecialNames.end(),
+            [&](const std::string& keyword) { return mob._uniqueName.find(keyword) != std::string::npos; })) {
+            pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
+            color = enchantmentColor;
+            //std::cout << "special mob!\n";
+            return true;
+        }
 
         if (mob._tier > 3) {
-            std::string mobTypePrefix = mob._textType.substr(0, 3);
-
-            if      (mobTypePrefix == "WOO") { filterID = 0; }
-            else if (mobTypePrefix == "ROC") { filterID = 1; }
-            else if (mobTypePrefix == "FIB") { filterID = 2; }
-            else if (mobTypePrefix == "HID") { filterID = 3; }
-            else if (mobTypePrefix == "ORE") { filterID = 4; }
-
             HarvestableFilter mobFilter = this->_harvestableListFilter[filterID];
 
             pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
@@ -235,22 +268,27 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
             }
         }
     }
-    if (mob._textType.find("ELEMENTAL") != std::string::npos) {
-        pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
-        color = enchantmentColor;
+    /*if (mob._typeCategory == "champion") {
+        pointSize = 3;
+        color = { 0.8f, 0.4f, 0.4f };
         return true;
     }
-    if (mob._textType.find("ASPECT") != std::string::npos) {
-        pointSize = std::max(pow((float)mob._tier / 4, 2) * 2.8, 4.0);
-        color = enchantmentColor;
+    if (mob._typeCategory == "boss") {
+        pointSize = 3;
+        color = { 0.6f, 0.3f, 0.3f };
         return true;
     }
-    if (mob._textType.rfind("TREASURE", 0) == 0) {
+    if (mob._uniqueName.find("_CRYSTAL") != std::string::npos) {
+        pointSize = 3;
+        color = { 0.6f, 0.3f, 0.3f };
+        return true;
+    }*/
+    if (mob._category == "hiddentreasures") {
         pointSize = 4;
         color = { 0.811f, 0.709f, 0.231f };
         return true;
     }
-    if (mob._textType.rfind("AVALONIAN_TREASURE", 0) == 0) {
+    if (mob._category == "treasuredrones") {
         pointSize = 5;
         for (size_t i = 0; i < enchantmentColor.size(); i++) {
             enchantmentColor[i] *= 1.025;
@@ -258,16 +296,19 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
         color = enchantmentColor;
         return true;
     }
-    if ((mob._textType.find("WISP") != std::string::npos) and mob._enchantment >= 3) {
+    if (mob._uniqueName.find("WISP_RESOURCE") != std::string::npos) {
         pointSize = 4;
+        for (size_t i = 0; i < enchantmentColor.size(); i++) {
+            enchantmentColor[i] *= 1.1;
+        }
         color = enchantmentColor;
         return true;
     }
-    /*if ((mob._textType.find("MOB_BOSS") != std::string::npos)) {
-        pointSize = mob._tier - 1;
-        color = { 0.8f, 0.435f, 0.435f };
+    else if ((mob._uniqueName.find("WISP") != std::string::npos)/* and mob._enchantment >= 1*/) {
+        pointSize = 7;
+        color = enchantmentColor;
         return true;
-    }*/
+    }
     return false;
 }
 std::vector<GLfloat> EntityList::returnEnchantmentColor(uint8_t enchantment)
@@ -372,8 +413,8 @@ std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y)
 {
     x = x / _halfMapSize;
     y = y / _halfMapSize;
-    return { (float)((x * _cos + y * _sin) * 0.56 * 0.7366),
-             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 - 0.085)};
+    return { (float)((x * _cos + y * _sin) * 0.56 * scaleFactor * 0.7366),
+             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 * scaleFactor - 0.085)};
 }
 float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 {

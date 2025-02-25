@@ -38,6 +38,4 @@
 #include "Auction.h"
 #include "Entity.h"
 
-#include "PacketAnalyze.h"
-
 #endif // PCH_H

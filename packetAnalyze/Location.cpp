@@ -2,19 +2,26 @@
 
 Location::Location()
 {
-    std::string _locationID = "";
-    HarvestableList _harvestableList = {};
-    PlayerList _playerList = {};
-    MobList _mobList = {};
+    _locationID      = "";
+    _harvestableList = {};
+    _playerList      = {};
+    _mobList         = {};
+    _fishNodeList    = {};
 }
 
-Location::Location(std::string locationID,
-    HarvestableList harvestableList, PlayerList playerList, MobList mobList)
+Location::Location(
+    std::string locationID,
+    HarvestableList harvestableList, 
+    PlayerList playerList, 
+    MobList mobList, 
+    FishNodeList fishNodeList
+)
 {
-    _locationID = locationID;
+    _locationID      = locationID;
     _harvestableList = harvestableList;
-    _playerList = playerList;
-    _mobList = mobList;
+    _playerList      = playerList;
+    _mobList         = mobList;
+    _fishNodeList    = fishNodeList;
 }
 
 void Location::changeLocation(
@@ -60,6 +67,7 @@ void Location::changeLocation(
             currentLocation._harvestableList = locations[i]._harvestableList;
             currentLocation._playerList      = PlayerList();
             currentLocation._mobList         = locations[i]._mobList;
+            currentLocation._fishNodeList    = locations[i]._fishNodeList;
             //currentPlayerList    = locations[i]._playerList;
             locationToIsNew = false;
             break;
@@ -71,16 +79,18 @@ void Location::changeLocation(
                 locationFrom,
                 currentLocation._harvestableList, 
                 currentLocation._playerList, 
-                currentLocation._mobList
+                currentLocation._mobList,
+                currentLocation._fishNodeList
             )
         );
     }
     if (locationToIsNew == true) {
-        locations.push_back(Location(locationTo, {}, {}, {}));
+        locations.push_back(Location(locationTo, {}, {}, {}, {}));
         currentLocation._locationID      = locationTo;
         currentLocation._harvestableList = {};
         currentLocation._playerList      = {};
         currentLocation._mobList         = {};
+        currentLocation._fishNodeList    = {};
     }
 
     if (printInfo) {
@@ -88,8 +98,10 @@ void Location::changeLocation(
     }
 }
 
-void Location::printInfo(std::vector<Location>& locations, Location& currentLocation,
-    std::string locationFrom, std::string locationTo)
+void Location::printInfo(
+    std::vector<Location>& locations, Location& currentLocation,
+    std::string locationFrom, std::string locationTo
+)
 {
     auto timeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     char timeBuffer[30];

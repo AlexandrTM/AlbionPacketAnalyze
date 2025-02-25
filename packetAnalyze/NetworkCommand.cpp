@@ -55,8 +55,6 @@ void NetworkCommand::analyzeCommand(
             case eventCode::HealthUpdate:
                 //_entityList._playerList.update(HealthUpdateHandler::HealthUpdateHandler(*this)); // need to add health handling
                 _entityList._currentLocation._mobList.update(HealthUpdateHandler::HealthUpdateHandler(*this));
-                //dataLayout.findDataLayout(*this);
-                //dataLayout.printInfo(*this);
                 break;
             case eventCode::NewSimpleHarvestableObjectList:
                 _entityList._currentLocation._harvestableList.update(HarvestableList(*this));
@@ -67,6 +65,16 @@ void NetworkCommand::analyzeCommand(
             case eventCode::HarvestableChangeState:
                 _entityList._currentLocation._harvestableList.updateState(*this);
                 break;
+            case eventCode::MobChangeState:
+                _entityList._currentLocation._mobList.mobChangeState(*this);
+                //_entityList._playerList.update(Player::playerMove(*this)); 
+                break;
+            case eventCode::NewMob:
+                _entityList._currentLocation._mobList.newMob(Mob::Mob(*this));
+                break;
+            case eventCode::NewFishingZoneObject:
+                _entityList._currentLocation._fishNodeList.update(FishNode(*this));
+                break;
             case eventCode::HarvestStart:
                 //Harvestable::harvestStart(*this);
                 break;
@@ -74,8 +82,6 @@ void NetworkCommand::analyzeCommand(
                 Harvestable::harvestFinished(*this);
                 break;
             case 66: // crafting finished on station
-                /*dataLayout.findDataLayout(*this);
-                dataLayout.printInfo(*this);*/
                 break;
             case eventCode::NewCharacter:
                 //if (!std::isElementInVector(cityLocations, _entityList._currentLocation._locationID)) {
@@ -87,13 +93,6 @@ void NetworkCommand::analyzeCommand(
                 break;
             case eventCode::PlayerMove:
                 //_entityList._playerList.update(Player::playerMove(*this)); 
-                break;
-            case eventCode::MobChangeState:
-                _entityList._currentLocation._mobList.mobChangeState(*this);
-                //_entityList._playerList.update(Player::playerMove(*this)); 
-                break;
-            case eventCode::NewMob:
-                _entityList._currentLocation._mobList.newMob(Mob::Mob(*this));
                 break;
             default:
                 break;
@@ -130,34 +129,24 @@ void NetworkCommand::analyzeCommand(
                 _entityList._currentLocation, 
                 false
             );
-            //dataLayout.findDataLayout(*this);
-            //dataLayout.printInfo(*this);
             break;
         case operationCode::Move:
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);*/
-            //this->printCommandInOneString();
             _entityList._playerSelf = PlayerSelf(*this);
             break;
         /*case operationCode::ChangeCluster: // other player changing location not only me
             _entityList.ChangeCluster(*this); 
             break;*/
         case operationCode::AuctionSellOrders:
-            //this->printCommandInOneString();
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);*/
+            Auction::auctionOrders(*this, true);
             break;
         case operationCode::AuctionBuyOrders:
+            //Auction::auctionOrders(*this, false);
+            break;
+        case operationCode::RealEstateGetAuctionData:
             break;
         case operationCode::AuctionFinishedOrders: // non standard format
-            //this->printCommandInOneString();
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);*/
             break;
         case operationCode::AuctionGetMyOpenAuctions: // non standard format
-            /*this->printCommandInOneString();
-            dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);*/
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
@@ -168,21 +157,14 @@ void NetworkCommand::analyzeCommand(
                 std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";*/
             break;
         case operationCode::GetClusterMapInfo:
-            //dataLayout.findDataLayout(*this);
-            //dataLayout.printInfo(*this);
             //MapCluster::findClusterData(*this);
-            //this->printCommandInOneString();
             break;
         default:
             break;
         }
         //std::cout << this->getEventCode() << "\n";
-        //this->printCommandInOneString();
     }
     if (_operationType == operationType::request) {
-        //this->printCommandInOneString();
-        //dataLayout.findDataLayout(*this);
-        //dataLayout.printInfo(*this, true);
         switch (_eventCode)
         {
         case operationCode::AuctionGetItemAverageStats:
@@ -200,19 +182,12 @@ void NetworkCommand::analyzeCommand(
             _entityList.changeLocation(*this);
             break;
         case operationCode::AuctionBuyOrders:
-            /*dataLayout.findDataLayout(*this);
-            if (dataLayout.size() == 14) {
-                Auction::findProductName(*this, dataLayout);
-            }*/
             break;
         default:
             break;
         }  
     }
     if (_operationType == operationType::not_defined) {
-        //this->printCommandInOneString();
-        /*dataLayout.findDataLayout(*this);
-        dataLayout.printInfo(*this);*/
     }
     if (isHikingMode) {
         _entityList.draw(window);
@@ -414,6 +389,14 @@ bool NetworkCommand::operator==(NetworkCommand& command)
         //std::cout << "false" << "\n";
         return false;
     }
+}
+NetworkCommand::iterator NetworkCommand::begin()
+{
+    return _networkCommand.begin();
+}
+NetworkCommand::iterator NetworkCommand::end()
+{
+    return _networkCommand.end();
 }
 uint8_t NetworkCommand::findCommandType(std::vector<uint8_t>& rawCommand) const
 {

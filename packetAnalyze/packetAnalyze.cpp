@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "PacketAnalyze.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -59,7 +61,7 @@ int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
-bool _isHikingMode = true;
+bool _isHikingMode = false;
 
 void PacketAnalyze::run()
 {
@@ -190,13 +192,15 @@ void PacketAnalyze::initWindow()
     glViewport(0, 0, _screenWidth, _screenHeight);*/
 
     // full screen map
-    _window = glfwCreateWindow(_videoMode->width - 1, _videoMode->height - 1,
-        u8"Packet Analyze", nullptr, nullptr);
+    _window = glfwCreateWindow(
+        _videoMode->width - 1, _videoMode->height - 1,
+        "Packet Analyze", nullptr, nullptr
+    );
     glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
     glViewport(0, 0, _screenWidth, _screenHeight);
     //glfwSetWindowPos(_window, 0, 0);
 
-    GLFWimage images[1];
+    GLFWimage images[1]{};
     images[0].pixels = stbi_load("mineral_icon.jpg", &images[0].width, &images[0].height, 0, 4);
     glfwSetWindowIcon(_window, 2, images);
     stbi_image_free(images[0].pixels);
@@ -228,8 +232,8 @@ void PacketAnalyze::changeMapState(GLFWwindow*  window)
     }
 }
 
-void PacketAnalyze::framebufferResizeCallback(GLFWwindow* _window, int width, int height) {
-    auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(_window));
+void PacketAnalyze::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto app = reinterpret_cast<PacketAnalyze*>(glfwGetWindowUserPointer(window));
     app->_framebufferResized = true;
 }
 void PacketAnalyze::cursorEnterCallback(GLFWwindow* window, int entered)
@@ -285,6 +289,7 @@ void PacketAnalyze::initSniffer()
     SnifferConfiguration albionConfig;
     //albionConfig.set_filter("ip dst 192.168.1.70");
     // Destination Address: 193.169.238.126
+    //albionConfig.set_immediate_mode(true);
     //albionConfig.set_promisc_mode(true);
     _sniffer = Sniffer(_iface.name(), albionConfig);
 }
@@ -428,45 +433,44 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo&
     }
 }
 
-static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
-{
-    std::sort(mobDescriptions.begin(), mobDescriptions.end(),
-        [](const MobDescription& a, const MobDescription& b) {
-            if (a._category == b._category) {
-                return a._typeID < b._typeID;
-            }
-            return a._category < b._category;
-        });
-
-    uint8_t previousCategory = 0;
-    for (size_t i = 0; i < mobDescriptions.size(); i++) {
-        if (previousCategory != mobDescriptions[i]._category) {
-            std::cout << "\n";
-            previousCategory = mobDescriptions[i]._category;
-        }
-
-        std::cout <<
-            "MobDescription(" << 
-                    std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
-            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
-            ", "                              << (unsigned)mobDescriptions[i]._tier     <<
-                                       ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
-    }
-}
+//static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
+//{
+//    std::sort(mobDescriptions.begin(), mobDescriptions.end(),
+//        [](const MobDescription& a, const MobDescription& b) {
+//            if (a._category == b._category) {
+//                return a._typeID < b._typeID;
+//            }
+//            return a._category < b._category;
+//        });
+//
+//    uint8_t previousCategory = 0;
+//    for (size_t i = 0; i < mobDescriptions.size(); i++) {
+//        if (previousCategory != mobDescriptions[i]._category) {
+//            std::cout << "\n";
+//            previousCategory = mobDescriptions[i]._category;
+//        }
+//
+//        std::cout <<
+//            "MobDescription(" << 
+//                    std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
+//            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
+//            ", "                              << (unsigned)mobDescriptions[i]._tier     <<
+//                                       ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
+//    }
+//}
 
 int main() {
     PacketAnalyze packetAnalyze;
 
-    //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@faction");
+    //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@mobtypecategory");
     //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@category");
 
     //net::findUniqueValues(net::harvestablesData, "AO-Harvestables", "Harvestable", "@name");
     //net::findUniqueValues(net::mobsData, "Mobs", "Mob", "@uniquename");
     //net::findUniqueValuesByCriterion(net::mobsData, "Mobs", "Mob", "@uniquename", "@category");
 
-    
     //sortMobDescriptions(mobDescriptions);
-     
+    //net::formatItemsData();
     packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);

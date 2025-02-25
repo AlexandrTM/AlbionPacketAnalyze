@@ -1,24 +1,12 @@
 #include "pch.h"
 #include "Auction.h"
 
-void Auction::findProductName(NetworkCommand& command, DataLayout& dataLayout)
-{
-	std::ofstream auctionAverageValues;
-
-	auctionAverageValues.open("auctionAverageValues.txt", std::ofstream::app);
-	if (auctionAverageValues.is_open()) {
-		auctionAverageValues.close();
-	}
-	else {
-		std::cout << "auctionAverageValues is not opened" << "\n";
-	}
-}
-
 //size_t counter = 0;
 uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
 uint16_t numOfColumns = 4;
 uint16_t numOfRows = 113;
 uint32_t previousCommandID = 0;
+std::string previousAuctionOrdersString = "";
 
 void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& itemData, std::string dataSeparator)
 {
@@ -183,5 +171,107 @@ void Auction::GetItemData(
 	}
 	//dataLayout.printInfo(command);
 	// command.printCommandInOneString();
+}
 
+void Auction::auctionOrders(NetworkCommand& command, bool isSellOrders)
+{
+	DataLayout dataLayout;
+	dataLayout.findDataLayout(command);
+	//dataLayout.printInfo(command);
+
+	std::vector<std::reference_wrapper<DataFragment>> auctionOrdersData = dataLayout.findFragments(0);
+
+	std::string auctionOrdersString{};
+	for (const auto& auctionOrderData : auctionOrdersData) {
+		const DataFragment& auctionOrderFragment = auctionOrderData.get();
+
+		size_t from = auctionOrderFragment._offset;
+		size_t to = from + auctionOrderFragment._numOfEntries;
+
+		auctionOrdersString += std::string(command.begin() + from, command.begin() + to);
+	}
+
+	if (previousAuctionOrdersString != auctionOrdersString) {
+		//std::cout << auctionOrdersString << "\n";
+		processAuctionOrders(auctionOrdersString, isSellOrders);
+	}
+	previousAuctionOrdersString = auctionOrdersString;
+}
+
+void Auction::processAuctionOrders(const std::string& auctionSellOrdersString, bool isSellOrders) {
+	std::unordered_map<std::string, std::unordered_map<std::string, std::pair<size_t, size_t>>> sellerData;
+
+	size_t pos = 0;
+	while (pos < auctionSellOrdersString.size()) {
+		size_t start = auctionSellOrdersString.find('{', pos);
+		if (start == std::string::npos) break;
+		size_t end = auctionSellOrdersString.find('}', start);
+		if (end == std::string::npos) break;
+
+		std::string jsonStr = auctionSellOrdersString.substr(start, end - start + 1);
+		//std::cout << jsonStr << "\n";
+		pos = end + 1;
+
+		try {
+			nlohmann::json order = nlohmann::json::parse(jsonStr);
+			std::string playerName = isSellOrders ? order["SellerName"] : order["BuyerName"];
+			std::string itemTypeId = order["ItemTypeId"];
+			size_t amount = order["Amount"];
+			size_t totalPriceSilver = static_cast<double>(order["TotalPriceSilver"]) / 1e4;
+
+			sellerData[playerName][itemTypeId].first += amount;
+			sellerData[playerName][itemTypeId].second += totalPriceSilver;
+		}
+		catch (const std::exception& e) {
+			std::cerr << "JSON Parsing Error: " << e.what() << "\n";
+		}
+	}
+
+	size_t totalAmount = 0;
+	size_t totalSilver = 0;
+	std::vector<std::tuple<size_t, size_t, std::string, std::string>> sortedData;
+	for (const auto& player : sellerData) {
+		for (const auto& item : player.second) {
+			size_t amount = item.second.first;
+			size_t totalSilverPrice = item.second.second;
+			sortedData.emplace_back(amount, totalSilverPrice, player.first, item.first);
+
+			totalAmount += amount;
+			totalSilver += totalSilverPrice;
+		}
+	}
+
+	// Sort by amount in descending order
+	std::sort(sortedData.rbegin(), sortedData.rend());
+
+	// Compute threshold
+	size_t thresholdAmount = static_cast<size_t>(0.80 * totalAmount);
+	size_t accumulatedAmount = 0;
+
+	// Print the sorted result
+	if (isSellOrders) {
+		std::cout << "sell orders\n";
+	}
+	else {
+		std::cout << "buy orders\n";
+	}
+
+	std::cout << "total amount: " << totalAmount << "\n";
+	for (const auto& [amount, totalSilverPrice, playerName, itemTypeId] : sortedData) {
+		if (accumulatedAmount >= thresholdAmount) {
+			break; // Stop once we have reached threshold
+		}
+		accumulatedAmount += amount;
+
+		if (amount > 3000 or totalSilverPrice > 7e6) {
+			std::cout <<
+				std::setw(16) << std::left << playerName << " "
+				<< itemTypeId << " "
+				<< std::setw(5) << amount << " "
+				<< std::setw(10) << totalSilverPrice << " "
+				<< totalSilverPrice / amount
+				<< "\n";
+		}
+	}
+	std::cout << "\n";
 }

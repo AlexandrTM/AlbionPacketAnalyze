@@ -29,7 +29,7 @@ struct DataType
 
 struct DataFragment
 {
-    uint8_t _fragmentID;
+    uint8_t _fragmentId;
     ptrdiff_t _offset;
     uint16_t _numOfEntries;
     DataType _dataType;
@@ -56,14 +56,12 @@ private:
     std::vector<DataFragment> _dataLayout;
 
 public:
-    DataFragment& findFragment(uint8_t fragmentID);
-
-    template<typename T>
-    T readDataFragmentEntry(NetworkCommand& command, size_t fragmentID);
+    DataFragment& findFragment(uint8_t fragmentId);
+    std::vector<std::reference_wrapper<DataFragment>> findFragments(uint8_t fragmentId);
 
     uint8_t findNumOfFragments(NetworkCommand& command);
     void findDataLayout(NetworkCommand& command);
-    void processDictionary(NetworkCommand& command, uint8_t& fragmentID, ptrdiff_t& offset,
+    void processDictionary(NetworkCommand& command, uint8_t& fragmentId, ptrdiff_t& offset,
         uint16_t numOfEntries, uint8_t& dataTypeHeaderSize, size_t index);
 
     DataLayout(std::vector<DataFragment> dataFragments);
@@ -86,9 +84,6 @@ public:
 
 namespace net
 {
-    template<typename T>
-    static T read(NetworkCommand& command, ptrdiff_t offset);
-
     static inline uint8_t read_uint8(NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
@@ -223,7 +218,13 @@ namespace net
     }
 
     nlohmann::json readJsonFile(const std::string& filename);
-    void extractMatchingMobs(
+
+    void getMobData(
+        const nlohmann::json& data, const uint16_t uniqueValue,
+        uint8_t& tier, std::string& uniqueName, 
+        std::string& category, std::string& typeCategory
+    );
+    void getMatchingMobs(
         const nlohmann::json& data,
         float_t moveSpeed, float_t maxEnergy, float_t energyRegeneration
     );
@@ -240,6 +241,8 @@ namespace net
         const std::string& uniqueKey,
         const std::string& criterion
     );
+
+    void formatItemsData();
 
     const nlohmann::json mobsData = net::readJsonFile("mobs.json");
     const nlohmann::json harvestablesData = net::readJsonFile("harvestables.json");

@@ -60,6 +60,10 @@ public:
     bool operator!=(NetworkCommand& command);
     bool operator==(NetworkCommand& command);
 
+    using iterator = std::vector<uint8_t>::iterator;
+    iterator begin();
+    iterator end();
+
 };
 
 #endif 

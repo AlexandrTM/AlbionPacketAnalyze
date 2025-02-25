@@ -19,7 +19,7 @@ struct EntityList
 
     void drawPlayerSelf();
     void drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords, std::vector<float> playerCoords);
-    void drawWindowFrame();
+    void drawWindowFrame(float scale) const;
     void drawHarvestables();
     void drawPlayers();
     void drawMobs();

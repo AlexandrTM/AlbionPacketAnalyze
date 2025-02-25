@@ -39,7 +39,7 @@ private:
 
     static void changeMapState(GLFWwindow* window);
 
-    static void framebufferResizeCallback(GLFWwindow* _window, int width, int height);
+    static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
     static void cursorEnterCallback(GLFWwindow* window, int entered);
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

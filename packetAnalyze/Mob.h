@@ -4,10 +4,11 @@
 struct Mob
 {
     uint64_t    _id;
-	uint8_t     _category;
-	uint8_t     _typeID;
-    std::string _textType;
-	uint32_t    _health;
+    uint16_t    _uniqueValue;
+    std::string _uniqueName;
+    std::string _category;
+    std::string _typeCategory;
+    int8_t      _harvestableType;
 
 	uint8_t     _tier;
 	uint8_t     _enchantment;
@@ -16,18 +17,27 @@ struct Mob
 	float_t     _positionX;
 	float_t     _positionY;
 
+	uint32_t    _health;
     float_t     _moveSpeed;
     float_t     _maxEnergy;
     float_t     _energyRegeneration;
 
+    //  "WOOD_" "_ROCK" "_ROCK" !SUMMON "_FIBER" "_ORE"
+    //  "WOOD_", "_ROCK", "_ROCK", "_FIBER", "_ORE"
+
 	Mob();
 	Mob(NetworkCommand& rawMob);
-	Mob(uint64_t id, uint8_t category, uint8_t type, std::string textType,
-		uint32_t health, 
-		uint8_t  tier, uint8_t enchantment, uint8_t charges,
-		float_t  positionX, float_t  positionY);
+	Mob(
+        uint64_t id, uint16_t uniqueValue,
+        std::string uniqueName, std::string category, std::string typeCategory,
+        uint32_t health,
+        uint8_t  tier, uint8_t enchantment, uint8_t charges,
+        float_t  positionX, float_t  positionY
+    );
 
 	void printInfo() const;
+    int8_t findHarvestableType() const;
+    bool isHarvestable() const;
 
 };
 

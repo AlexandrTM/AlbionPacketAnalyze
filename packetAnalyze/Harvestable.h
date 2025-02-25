@@ -47,7 +47,7 @@ struct HarvestableListFilter
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
             { 4, 5 },
-            { 1, 2 },
+            { 2, 2 },
             { 0, 0 }),
         HarvestableFilter(/*rock*/
             { 4, 5, 6 },
@@ -59,11 +59,11 @@ struct HarvestableListFilter
             { 0, 0, 0 }),
         HarvestableFilter(/*hide*/
             { 4, 5 },
-            { 1, 2 },
+            { 2, 2 },
             { 0, 0 }),
         HarvestableFilter(/*ore*/
             { 4, 5, 6 },
-            { 2, 2, 1 },
+            { 2, 2, 2 },
             { 0, 0, 0 }),
         HarvestableFilter(/*other*/)
     };
@@ -79,7 +79,7 @@ struct HarvestableListFilter
     { 0, 0, 0, 0, 0, 0, 0, 0 }
     */
 
-    size_t size();
+    size_t size() const;
     HarvestableFilter& operator[](size_t elementIndex);
 };
 
@@ -110,6 +110,19 @@ struct Harvestable
     static std::string getHarvestableTextType(uint8_t type);
 };
 
+struct FishNode
+{
+    uint64_t    _id;
+    std::string _name;
+    uint8_t     _type;
+    uint8_t     _tier;
+    uint8_t     _enchantment;
+    float_t     _positionX;
+    float_t     _positionY;
+    uint8_t     _charges;
+
+    FishNode(NetworkCommand& rawHarvestable);
+};
 
 // *****************************************************************************
 // ============================== HarvestableList ==============================
@@ -140,6 +153,24 @@ struct HarvestableList
 	Harvestable& operator[](size_t elementIndex);
 	HarvestableList& operator+=(HarvestableList harvestableList);
 
+};
+
+struct FishNodeList
+{
+    std::vector<FishNode> _fishNodeList;
+
+    using iterator = std::vector<FishNode>::iterator;
+
+    FishNodeList();
+
+    void update(FishNode fishNode);
+
+    void clear();
+    size_t size() const;
+    iterator begin();
+    iterator end();
+
+    FishNode& operator[](size_t elementIndex);
 };
 
 #endif

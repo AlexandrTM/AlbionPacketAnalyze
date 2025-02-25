@@ -138,14 +138,14 @@ ptrdiff_t DataFragment::findFragmentsNumOffset(NetworkCommand& command)
 
 DataFragment::DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType)
 {
-    _fragmentID = fragmentID;
+    _fragmentId = fragmentID;
     _offset = offset;
     _numOfEntries = numOfEntries;
     _dataType = dataType;
 }
 DataFragment::DataFragment()
 {
-    _fragmentID = 0;
+    _fragmentId = 0;
     _offset = std::numeric_limits<ptrdiff_t>::min();
     _numOfEntries = 0;
     _dataType = {};
@@ -153,7 +153,7 @@ DataFragment::DataFragment()
 void DataFragment::printInfo(NetworkCommand& command) const
 {
     size_t commandSizeLength = std::to_string(command.size()).length();
-    std::cout << "id: " << std::setw(commandSizeLength) << (unsigned)_fragmentID << " "
+    std::cout << "id: " << std::setw(commandSizeLength) << (unsigned)_fragmentId << " "
               << "of: " << std::setw(commandSizeLength) << (unsigned)_offset << " ";
 }
 
@@ -182,10 +182,10 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentStr
     std::cout.setf(std::ios::hex, std::ios::basefield);
     // fragment id
     SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    if (_fragmentID < 16) {
+    if (_fragmentId < 16) {
         std::cout << "0";
     }
-    std::cout << (unsigned)_fragmentID;
+    std::cout << (unsigned)_fragmentId;
     SetConsoleTextAttribute(consoleHandle, 7);
     //std::cout << " ";
     // fragment data type
@@ -210,6 +210,13 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentStr
         if (_dataType._dataTypeId == dataType::float32) {
             std::cout << " " << net::read_float32(command, _offset);
         }
+        /*else if (_dataType._dataTypeId == dataType::int8_string) {
+            std::cout.unsetf(std::ios::hex);
+            for (size_t i = _offset; i < endOffset; i++) {
+                std::cout << command[i];
+            }
+            std::cout.setf(std::ios::hex, std::ios::basefield);
+        }*/
         else {
             command.printCommandInOneString(_offset, endOffset, false);
         }
@@ -226,10 +233,10 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentStr
 // **************************************************************************
 
 
-DataFragment& DataLayout::findFragment(uint8_t fragmentID)
+DataFragment& DataLayout::findFragment(uint8_t fragmentId)
 {
     for (size_t i = 0; i < _dataLayout.size(); i++) {
-        if (_dataLayout[i]._fragmentID == (uint8_t)fragmentID) {
+        if (_dataLayout[i]._fragmentId == (uint8_t)fragmentId) {
             while (_dataLayout[i]._dataType._dataTypeId == dataType::listOfType) {
                 i += 1;
             }
@@ -237,6 +244,21 @@ DataFragment& DataLayout::findFragment(uint8_t fragmentID)
         }
     }
     return _defaultDataFragment;
+}
+std::vector<std::reference_wrapper<DataFragment>> DataLayout::findFragments(uint8_t fragmentId)
+{
+    std::vector<std::reference_wrapper<DataFragment>> matchingFragments;
+
+    for (size_t i = 0; i < _dataLayout.size(); i++) {
+        if (_dataLayout[i]._fragmentId == fragmentId) {
+            while (_dataLayout[i]._dataType._dataTypeId == dataType::listOfType) {
+                i += 1;
+            }
+            matchingFragments.push_back(_dataLayout[i]);
+        }
+    }
+
+    return matchingFragments;
 }
 
 uint8_t DataLayout::findNumOfFragments(NetworkCommand& command)
@@ -281,7 +303,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
         //std::cout << "start offset: " << offset << " ";
         if (offset < commandSize) {
             fragmentID = command[offset];
-            //std::cout << "fragmentID: " << (unsigned)command[offset] << " ";
+            //std::cout << "fragmentId: " << (unsigned)command[offset] << " ";
             offset += 1;
             dataType = command[offset];
 
@@ -304,7 +326,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 _dataLayout.push_back(dataFragment);
 
                 dataType = command[offset];
-                //processDictionary(command, fragmentID, offset, numOfEntries, dataTypeHeaderSize, 0);
+                //processDictionary(command, fragmentId, offset, numOfEntries, dataTypeHeaderSize, 0);
                 if (numOfEntries == 0) {
                     offset += 1;
                     dataTypeHeaderSize = 1;
@@ -381,7 +403,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                         /*std::cout <<
                             "offset: "         << (unsigned)dataFragment._offset << " " <<
                             std::hex <<
-                            "fragment id: "    << (unsigned)fragmentID           << " " <<
+                            "fragment id: "    << (unsigned)fragmentId           << " " <<
                             "data type: "      << (unsigned)dataType             << " " <<
                             std::dec <<
                             "size: "           << (unsigned)dataTypeSize         << " " <<
@@ -431,7 +453,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 /*std::cout <<
                     "offset: "         << (unsigned)dataFragment._offset << " " <<
                     std::hex <<
-                    "fragment id: "    << (unsigned)fragmentID           << " " <<
+                    "fragment id: "    << (unsigned)fragmentId           << " " <<
                     "data type: "      << (unsigned)dataType             << " " <<
                     std::dec <<
                     "size: "           << (unsigned)dataTypeSize         << " " <<
@@ -460,7 +482,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 /*std::cout <<
                     "offset: "         << (unsigned)dataFragment._offset << " " <<
                     std::hex <<
-                    "fragment id: "    << (unsigned)fragmentID           << " " <<
+                    "fragment id: "    << (unsigned)fragmentId           << " " <<
                     "data type: "      << (unsigned)dataType             << " " <<
                     std::dec <<
                     "size: "           << (unsigned)dataTypeSize         << " " <<
@@ -512,7 +534,7 @@ void DataLayout::printInfo(NetworkCommand& command, size_t beginFragment, bool p
 
     size_t currentStringPosition = 0;
     for (const DataFragment& dataFragment : _dataLayout) {
-        if (dataFragment._fragmentID >= beginFragment) {
+        if (dataFragment._fragmentId >= beginFragment) {
             dataFragment.printFragmentInfo(command, currentStringPosition, printPayload);
         }
     }
@@ -529,8 +551,8 @@ void DataLayout::printInfo(NetworkCommand& command, size_t beginFragment, size_t
     size_t currentStringPosition = 0;
     for (const DataFragment& dataFragment : _dataLayout) {
         //std::vector<uint8_t> nonWantedElements = { 13, 14, 17, 19 };
-        if (dataFragment._fragmentID >= beginFragment && dataFragment._fragmentID <= endFragment/* &&
-            !std::isElementInVector(nonWantedElements, dataFragment._fragmentID)*/) {
+        if (dataFragment._fragmentId >= beginFragment && dataFragment._fragmentId <= endFragment/* &&
+            !std::isElementInVector(nonWantedElements, dataFragment._fragmentId)*/) {
             dataFragment.printFragmentInfo(command, currentStringPosition, printPayload);
         }
     }
@@ -557,7 +579,38 @@ nlohmann::json net::readJsonFile(const std::string& filename)
     return jsonData;
 }
 
-void net::extractMatchingMobs(
+void net::getMobData(
+    const nlohmann::json& data, const uint16_t uniqueValue,
+    uint8_t& tier, std::string& uniqueName,
+    std::string& category, std::string& typeCategory
+)
+{
+    if (!data.contains("Mobs") || !data["Mobs"].contains("Mob")) {
+        std::cerr << "Error: Invalid JSON format!" << std::endl;
+        return;
+    }
+
+    const auto& mobs = data["Mobs"]["Mob"];
+
+    if (uniqueValue >= mobs.size()) {
+        // std::cerr << "Error: mobUniqueValue out of range! " << uniqueValue << std::endl;
+        return;
+    }
+
+    const auto& mob = mobs[uniqueValue];
+
+    if (mob.contains("@category") && mob["@category"].is_string()) {
+        category = mob["@category"].get<std::string>();
+    }
+    if (mob.contains("@mobtypecategory") && mob["@mobtypecategory"].is_string()) {
+        typeCategory = mob["@mobtypecategory"].get<std::string>();
+        //std::cout << "typeCategory: " << typeCategory << "\n";
+    }
+    uniqueName = mob["@uniquename"].get<std::string>();
+    tier = std::stoi(mob["@tier"].get<std::string>());
+}
+
+void net::getMatchingMobs(
     const nlohmann::json& data, 
     float_t moveSpeed, float_t maxEnergy, float_t energyRegeneration
 )
@@ -583,7 +636,7 @@ void net::extractMatchingMobs(
                 std::cout << 
                     "uniquename: " << mob["@uniquename"] << " " <<
                     "category: "   << mob["@category"] << " " <<
-                    "faction: "    << mob["@faction"] << "\n";
+                    "category: "    << mob["@category"] << "\n";
             }
         }
     }
@@ -659,8 +712,10 @@ void net::findUniqueValuesByCriterion(
 
     std::unordered_map<std::string, std::vector<std::string>> uniqueValues;
     std::vector<std::string> order;
+    std::unordered_map<std::string, size_t> mobIndex;
     size_t maxCriterionLength = 0;
     size_t maxUniqueLength = 0;
+    size_t globalIndex = 0;
 
     for (const auto& entry : data[firstLevel][secondLevel]) {
         if (entry.contains(criterion) && entry[criterion].is_string() &&
@@ -669,6 +724,8 @@ void net::findUniqueValuesByCriterion(
             std::string criterionName = entry[criterion].get<std::string>();
             std::string uniqueName = entry[uniqueKey].get<std::string>();
 
+            mobIndex[uniqueName] = globalIndex;
+
             if (uniqueValues.find(criterionName) == uniqueValues.end()) {
                 order.push_back(criterionName); // Store order of first appearance
             }
@@ -676,6 +733,8 @@ void net::findUniqueValuesByCriterion(
             uniqueValues[criterionName].push_back(uniqueName);
             maxCriterionLength = std::max(maxCriterionLength, criterionName.length());
             maxUniqueLength = std::max(maxUniqueLength, uniqueName.length());
+        
+            globalIndex++;
         }
     }
 
@@ -693,5 +752,59 @@ void net::findUniqueValuesByCriterion(
         }
         std::cout << "---------------------------------\n";
     }
+
+    //for (const auto& entry : data[firstLevel][secondLevel]) {
+    //    if (entry.contains(uniqueKey) && entry[uniqueKey].is_string()) {
+    //        std::string uniqueName = entry[uniqueKey].get<std::string>();
+
+    //        if (mobIndex.find(uniqueName) == mobIndex.end()) {
+    //            mobIndex[uniqueName] = globalIndex;
+    //            order.push_back(uniqueName); // Maintain order of appearance
+    //            maxUniqueLength = std::max(maxUniqueLength, uniqueName.length());
+    //            globalIndex++;
+    //        }
+    //    }
+    //}
+
+    //// Print all mobs with their global index
+    //std::cout << "Mob Unique Names with Global Index:\n";
+    //for (const auto& uniqueName : order) {
+    //    std::cout << std::setw(maxUniqueLength) << std::left << uniqueName
+    //        << " = " << mobIndex[uniqueName] << ",\n";
+    //}
+    //std::cout << "---------------------------------\n";
+}
+
+void net::formatItemsData()
+{
+    std::ifstream inputFile("items.txt");  // Replace with your file name
+    std::ofstream outputFile("formatted_items.txt");
+
+    if (!inputFile || !outputFile) {
+        std::cerr << "Error opening file!" << std::endl;
+    }
+
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        std::istringstream ss(line);
+        std::string itemId, itemTechName;
+
+        // Read item ID (before ':')
+        std::getline(ss, itemId, ':');
+        std::getline(ss, itemTechName, ':');
+
+        itemId.erase(std::remove_if(itemId.begin(), itemId.end(), 
+            [](unsigned char c) { return std::isspace(c); }), itemId.end());
+        itemTechName.erase(std::remove_if(itemTechName.begin(), itemTechName.end(), 
+            [](unsigned char c) { return std::isspace(c); }), itemTechName.end());
+
+        // Output in desired format
+        outputFile << itemTechName << ", " << itemId << std::endl;
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    std::cout << "Formatting complete. Output saved to formatted_items.txt" << std::endl;
 }
 
