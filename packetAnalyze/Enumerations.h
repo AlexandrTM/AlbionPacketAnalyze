@@ -79,9 +79,11 @@ enum operationCode : uint16_t
     Join = 2, // join location
     Move = 21,
     ChangeCluster = 35, // change location
+
     AuctionSellOrders = 75,
     AuctionBuyOrders = 76,
-    AuctionFinishedOrders = 84,
+    AuctionGetFinishedAuctions = 83,
+    AuctionGetFinishedAuctionsCount = 84,
     AuctionGetMyOpenAuctions = 88,
     AuctionGetItemAverageStats = 89,
 
@@ -246,6 +248,7 @@ enum locationId : uint32_t
     Caerleon = 3005,
     Black_market = 3003,
     Fort_Sterling_portal = 4301,
+    Brecilien = 5003,
 };
 
 enum mobCategory : uint8_t

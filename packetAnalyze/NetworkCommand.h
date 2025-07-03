@@ -24,7 +24,7 @@ private:
 
 public:
     NetworkCommand(std::vector<uint8_t> rawCommand);
-    NetworkCommand(NetworkCommand& command, size_t regionStart);
+    NetworkCommand(NetworkCommand& command, size_t beginOffset);
     NetworkCommand();
 
     void analyzeCommand(

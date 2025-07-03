@@ -10,8 +10,8 @@ void EntityList::draw(GLFWwindow* window)
     glLoadIdentity();
 
     drawPlayerSelf();
-    //drawPlayers();
-    //drawHarvestables();
+    drawPlayers();
+    drawHarvestables();
     drawMobs();
     drawWindowFrame(scaleFactor);
     
@@ -304,7 +304,7 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
         color = enchantmentColor;
         return true;
     }
-    else if ((mob._uniqueName.find("WISP") != std::string::npos)/* and mob._enchantment >= 1*/) {
+    else if ((mob._uniqueName.find("WISP") != std::string::npos) and mob._enchantment >= 2) {
         pointSize = 7;
         color = enchantmentColor;
         return true;

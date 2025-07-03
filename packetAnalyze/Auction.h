@@ -1,3 +1,5 @@
+#include "Location.h"
+
 #ifndef AUCTION_H
 #define AUCTION_H
 
@@ -10,8 +12,14 @@ struct Auction
 		std::string& itemData,
 		bool printInfo
 	);
-	static void processAuctionOrders(const std::string& auctionSellOrdersString, bool isSellOrders);
-	static void auctionOrders(NetworkCommand& command, bool isSellOrders);
+	static void processAuctionOrders(
+		const std::string& auctionSellOrdersString, bool isSellOrders, 
+		Location& currentLocation, bool isFilterEnabled
+	);
+	static void auctionOrders(
+		NetworkCommand& command, bool isSellOrders, 
+		Location& currentLocation, bool isFilterEnabled
+	);
 
 	static void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
 };

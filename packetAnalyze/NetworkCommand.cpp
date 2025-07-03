@@ -14,9 +14,9 @@ NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
     _commandIndexInChain = findCommandIndexInChain(rawCommand);
     _commandID = findCommandID(rawCommand);
 }
-NetworkCommand::NetworkCommand(NetworkCommand& command, size_t regionStart)
+NetworkCommand::NetworkCommand(NetworkCommand& command, size_t beginOffset)
 {
-    _networkCommand = { command._networkCommand.begin() + regionStart, command._networkCommand.end() };
+    _networkCommand = { command._networkCommand.begin() + beginOffset, command._networkCommand.end() };
     _commandType = findCommandType(command._networkCommand);
     _operationType = findOperationType(command._networkCommand);
     _eventCode = findEventCode(command._networkCommand);
@@ -137,20 +137,25 @@ void NetworkCommand::analyzeCommand(
             _entityList.ChangeCluster(*this); 
             break;*/
         case operationCode::AuctionSellOrders:
-            Auction::auctionOrders(*this, true);
+            //Auction::auctionOrders(*this, true, _entityList._currentLocation, true);
             break;
         case operationCode::AuctionBuyOrders:
-            //Auction::auctionOrders(*this, false);
+            //Auction::auctionOrders(*this, false, _entityList._currentLocation, true);
             break;
         case operationCode::RealEstateGetAuctionData:
             break;
-        case operationCode::AuctionFinishedOrders: // non standard format
+        case operationCode::AuctionGetFinishedAuctions: // non standard format
+            /*dataLayout.findDataLayout(*this);
+            dataLayout.printInfo(*this);
+            this->printCommandInOneString();*/
+            break;
+        case operationCode::AuctionGetFinishedAuctionsCount: // non standard format
             break;
         case operationCode::AuctionGetMyOpenAuctions: // non standard format
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
-            //Auction::findAuctionAverageValues(*this, itemData, ",");
+            Auction::findAuctionAverageValues(*this, itemData, ",");
             /*stop = std::chrono::high_resolution_clock::now();
             std::cout << 
                 "time to write acution average values: " << 

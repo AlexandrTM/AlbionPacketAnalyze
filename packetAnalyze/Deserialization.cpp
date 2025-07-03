@@ -59,7 +59,7 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
     case dataType::listOfType:
         return 3;
     default:
-        std::cout << "new data type!" << "\n";
+        std::cout << "new data type: " << (unsigned)dataType << "\n";
         return 1;
         break;
     }
@@ -294,8 +294,10 @@ void DataLayout::findDataLayout(NetworkCommand& command)
         if (offset > commandSize) {
             SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
             std::cout << 
-                "offset bigger than command size\n" << 
-                "offset (hex dec): " << std::hex << offset << std::dec << " " << offset << "\n";
+                "offset is bigger than command size (hex dec): " << 
+                std::hex << commandSize << std::dec << " " << commandSize << "\n" <<
+                "offset (hex dec): " << 
+                std::hex << offset << std::dec << " " << offset << "\n";
             command.printCommandInOneString();
             SetConsoleTextAttribute(consoleHandle, 7);
             return;

@@ -2,7 +2,8 @@
 #include "Auction.h"
 
 //size_t counter = 0;
-uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
+constexpr uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
+constexpr uint64_t years1970offset = static_cast<uint64_t>(62135596800);
 uint16_t numOfColumns = 4;
 uint16_t numOfRows = 113;
 uint32_t previousCommandID = 0;
@@ -22,8 +23,8 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 		//std::cout << net::read_uint32(command, dataLayout.findFragment(255)._offset) << "\n";
 
 		std::ofstream auctionAverageValues;
-
 		auctionAverageValues.open("auctionAverageValues.csv", std::ofstream::app);
+
 		if (auctionAverageValues.is_open()) {
 
 			DataFragment& soldAmountFragment = dataLayout.findFragment(0);
@@ -61,8 +62,8 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 				date = net::read_uint64(command, dateFragment._offset + i * 8) / 1e+7;
 
 				auctionData[i][0] = std::numberToString(soldAmount);
-				auctionData[i][1] = std::numberToString(averagePrice);
-				auctionData[i][2] = std::numberToString(soldVolume);
+				auctionData[i][1] = std::numberToString(soldVolume);
+				auctionData[i][2] = std::numberToString(averagePrice);
 				auctionData[i][3] = std::numberToString(date);
 			}
 			//std::cout << auctionData[auctionData.size() - 1][3] << "\n";
@@ -81,24 +82,24 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 					return std::stoull(a.at(idOfSortingRow)) < std::stoull(b.at(idOfSortingRow));
 				});
 
-			/*for (size_t i = 0; i < 4; i++) {
+			for (size_t i = 0; i < 4; i++) {
 				for (size_t j = 0; j < auctionData.size(); j++) {
 					auctionAverageValues << auctionData[j][i] << dataSeparator;
 				}
-				if (i == 3) {
+				/*if (i == 3) {
 					auctionAverageValues << itemData;
-				}
-				auctionAverageValues << "\n";
-			}*/
-			for (size_t i = 0; i < 2; i++) {
-				for (size_t j = 0; j < auctionData.size(); j++) {
-					auctionAverageValues << auctionData[j][i == 1 ? 2 : i] << dataSeparator;
-				}
-				if (i == 1) {
-					auctionAverageValues << itemData;
-				}
-				auctionAverageValues << "\n";
+				}*/
+				auctionAverageValues << i << " " << itemData << "\n";
 			}
+			//for (size_t i = 0; i < 2; i++) {
+			//	for (size_t j = 0; j < auctionData.size(); j++) {
+			//		auctionAverageValues << auctionData[j][i] << dataSeparator;
+			//	}
+			//	/*if (i == 1) {
+			//		auctionAverageValues << itemData;
+			//	}*/
+			//	auctionAverageValues << i << " " << itemData << "\n";
+			//}
 			auctionAverageValues.close();
 		}
 		else {
@@ -110,6 +111,23 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 
 void Auction::addEmptyEntries(std::vector<std::vector<std::string>>& auctionData) 
 {
+	auto now = std::chrono::system_clock::now();
+	uint64_t nowEpochSeconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count() + years1970offset;
+	uint64_t currentAlignedTime = nowEpochSeconds - (nowEpochSeconds % sixHours);
+
+	uint64_t firstAlignedTime = currentAlignedTime;
+	uint64_t lastAlignedTime = currentAlignedTime;
+	if (auctionData.size() > 0) {
+		firstAlignedTime = std::stoull(auctionData[0][3]);
+		lastAlignedTime = std::stoull(auctionData[auctionData.size() - 1][3]);
+	}
+
+	/*std::cout << 
+		  "firstAlignedTime:   " << firstAlignedTime << 
+		"\nlastAlignedTime:    " << lastAlignedTime <<
+		"\ncurrentAlignedTime: " << currentAlignedTime << "\n";
+	std::cout << std::stoull(auctionData[auctionData.size() - 1][1]) << "\n";*/
+
 	uint64_t datePrevious = 0;
 	size_t initialSize = auctionData.size();
 	for (size_t i = 0; i < initialSize; i++) {
@@ -127,13 +145,15 @@ void Auction::addEmptyEntries(std::vector<std::vector<std::string>>& auctionData
 		datePrevious = date;
 	}
 
-	size_t valuesToAdd = numOfRows - auctionData.size();
-	uint64_t dateFirst = sixHours * numOfRows;
-	if (auctionData.size() > 0) {
-		dateFirst = std::stoull(auctionData[0][3]);
+	if (lastAlignedTime < currentAlignedTime) {
+		for (uint64_t t = lastAlignedTime + sixHours; t <= currentAlignedTime; t += sixHours) {
+			auctionData.push_back({ "0", "0", "0", std::numberToString(t) });
+		}
 	}
+
+	size_t valuesToAdd = numOfRows - auctionData.size();
 	for (size_t i = 0; i < valuesToAdd; i++) {
-		auctionData.push_back({ "0", "0", "0", std::numberToString(dateFirst - (i + 1) * sixHours) });
+		auctionData.push_back({ "0", "0", "0", std::numberToString(firstAlignedTime - (i + 1) * sixHours) });
 	}
 }
 
@@ -173,7 +193,10 @@ void Auction::GetItemData(
 	// command.printCommandInOneString();
 }
 
-void Auction::auctionOrders(NetworkCommand& command, bool isSellOrders)
+void Auction::auctionOrders(
+	NetworkCommand& command, bool isSellOrders, 
+	Location& currentLocation, bool isFilterEnabled
+)
 {
 	DataLayout dataLayout;
 	dataLayout.findDataLayout(command);
@@ -193,12 +216,15 @@ void Auction::auctionOrders(NetworkCommand& command, bool isSellOrders)
 
 	if (previousAuctionOrdersString != auctionOrdersString) {
 		//std::cout << auctionOrdersString << "\n";
-		processAuctionOrders(auctionOrdersString, isSellOrders);
+		processAuctionOrders(auctionOrdersString, isSellOrders, currentLocation, isFilterEnabled);
 	}
 	previousAuctionOrdersString = auctionOrdersString;
 }
 
-void Auction::processAuctionOrders(const std::string& auctionSellOrdersString, bool isSellOrders) {
+void Auction::processAuctionOrders(
+	const std::string& auctionSellOrdersString, bool isSellOrders,
+	Location& currentLocation, bool isFilterEnabled
+) {
 	std::unordered_map<std::string, std::unordered_map<std::string, std::pair<size_t, size_t>>> sellerData;
 
 	size_t pos = 0;
@@ -245,7 +271,7 @@ void Auction::processAuctionOrders(const std::string& auctionSellOrdersString, b
 	std::sort(sortedData.rbegin(), sortedData.rend());
 
 	// Compute threshold
-	size_t thresholdAmount = static_cast<size_t>(0.80 * totalAmount);
+	size_t thresholdAmount = static_cast<size_t>(1.0 * totalAmount);
 	size_t accumulatedAmount = 0;
 
 	// Print the sorted result
@@ -256,22 +282,40 @@ void Auction::processAuctionOrders(const std::string& auctionSellOrdersString, b
 		std::cout << "buy orders\n";
 	}
 
-	std::cout << "total amount: " << totalAmount << "\n";
-	for (const auto& [amount, totalSilverPrice, playerName, itemTypeId] : sortedData) {
-		if (accumulatedAmount >= thresholdAmount) {
-			break; // Stop once we have reached threshold
-		}
-		accumulatedAmount += amount;
+	std::ofstream auctionOrders;
+	auctionOrders.open("auction orders.txt", std::ofstream::app);
 
-		if (amount > 3000 or totalSilverPrice > 7e6) {
-			std::cout <<
-				std::setw(16) << std::left << playerName << " "
-				<< itemTypeId << " "
-				<< std::setw(5) << amount << " "
-				<< std::setw(10) << totalSilverPrice << " "
-				<< totalSilverPrice / amount
-				<< "\n";
+	if (auctionOrders.is_open()) {
+		std::cout << "total amount: " << totalAmount << "\n";
+		for (const auto& [amount, totalSilverPrice, playerName, itemTypeId] : sortedData) {
+			if (accumulatedAmount >= thresholdAmount) {
+				break; // Stop once we have reached threshold
+			}
+			accumulatedAmount += amount;
+
+			if (!isFilterEnabled || (amount >= 100 || totalSilverPrice >= 4e6)) {
+				std::cout <<
+					std::setw(16) << std::left << playerName << " "
+					<< itemTypeId << " "
+					<< std::setw(5) << amount << " "
+					/*<< std::setw(10) << totalSilverPrice << " "*/
+					<< totalSilverPrice / amount << " "
+					<< /*std::string(magic_enum::enum_name(
+						static_cast<locationId>(
+							static_cast<uint32_t>(std::stoul(currentLocation._locationID)))))
+					<< */"\n";
+				/*auctionOrders <<
+					std::setw(16) << std::left << playerName << " "
+					<< itemTypeId << " "
+					<< std::setw(5) << amount << " "
+					<< totalSilverPrice / amount
+					<< "\n";*/
+			}
 		}
+		std::cout << "\n";
+		auctionOrders.close();
 	}
-	std::cout << "\n";
+	else {
+		std::cout << "auction orders.txt is not opened" << "\n";
+	}
 }
