@@ -73,10 +73,10 @@ Mob::Mob(NetworkCommand& rawMob)
 	DataFragment& tierFragment     = dataLayout.findFragment(21);
 
 	if (uniqueValueFragment._dataType._size == 2) {
-		_uniqueValue = net::read_uint16(rawMob, dataLayout.findFragment(1)._offset) - 14;
+		_uniqueValue = net::read_uint16(rawMob, dataLayout.findFragment(1)._offset) - 15;
 	}
 	else if (uniqueValueFragment._dataType._size == 1) {
-		_uniqueValue = net::read_uint8 (rawMob, dataLayout.findFragment(1)._offset) - 14;
+		_uniqueValue = net::read_uint8 (rawMob, dataLayout.findFragment(1)._offset) - 15;
 	}
 	if (positionFragment._offset != std::numeric_limits<ptrdiff_t>::min()) {
 		_positionX      = net::read_float32(rawMob, dataLayout.findFragment(8)._offset);
@@ -90,7 +90,9 @@ Mob::Mob(NetworkCommand& rawMob)
 	net::getMobData(net::mobsData, _uniqueValue, _tier, _uniqueName, _category, _typeCategory);
 	_harvestableType = findHarvestableType();
 	//std::cout << "typeCategory: " << _typeCategory << "\n";
-	//this->printInfo();
+	/*if (_harvestableType == static_cast<int8_t>(HarvestableType::HIDE) and _tier == 5) {
+		this->printInfo();
+	}*/
 	//dataLayout.printInfo(rawMob, true);
 	//dataLayout.printInfo(rawMob, 11, 21, true);
 
@@ -148,29 +150,29 @@ bool Mob::isHarvestable() const
 
 MobList::MobList()
 {
-	_mobList = {};
+	_mobs = {};
 }
 
 void MobList::newMob(Mob mob)
 {
-	for (size_t i = 0; i < _mobList.size(); i++) {
-		if (_mobList[i]._id == mob._id) {
-			_mobList[i] = mob;
+	for (size_t i = 0; i < _mobs.size(); i++) {
+		if (_mobs[i]._id == mob._id) {
+			_mobs[i] = mob;
 			return;
 		}
 	}
-	_mobList.push_back(mob);
+	_mobs.push_back(mob);
 }
 
 void MobList::update(HealthUpdateHandler healthUpdate)
 {
-	for (size_t i = 0; i < _mobList.size(); i++) {
-		if (_mobList[i]._id == healthUpdate._id) {
+	for (size_t i = 0; i < _mobs.size(); i++) {
+		if (_mobs[i]._id == healthUpdate._id) {
 			if (healthUpdate._health == 0) {
-				_mobList.erase(_mobList.begin() + i);
+				_mobs.erase(_mobs.begin() + i);
 			}
 			else {
-				_mobList[i]._health = healthUpdate._health;
+				_mobs[i]._health = healthUpdate._health;
 			}
 			return;
 		}
@@ -189,22 +191,22 @@ void MobList::mobChangeState(NetworkCommand& mobChangeState)
 
 	enchantment = net::read_uint8(mobChangeState, dataLayout.findFragment(1)._offset);
 
-	for (size_t i = 0; i < _mobList.size(); i++) {
-		if (_mobList[i]._id == id) {
-			_mobList[i]._enchantment = enchantment;
+	for (size_t i = 0; i < _mobs.size(); i++) {
+		if (_mobs[i]._id == id) {
+			_mobs[i]._enchantment = enchantment;
 			return;
 		}
 	}
-	// _mobList.push_back(Mob::Mob(id, 0, 0, enchantment, 0, 0)); if isMobComplete
+	// _mobs.push_back(Mob::Mob(id, 0, 0, enchantment, 0, 0)); if isMobComplete
 }
 
 size_t MobList::size() const
 {
-	return _mobList.size();
+	return _mobs.size();
 }
 Mob& MobList::operator[](size_t elementIndex)
 {
-	return _mobList[elementIndex];
+	return _mobs[elementIndex];
 }
 
 MobFilter::MobFilter(std::vector<uint8_t> trackingTiers,

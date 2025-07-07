@@ -20,6 +20,7 @@
 
 #include <nlohmann/json.hpp>
 #include <magic_enum/magic_enum.hpp>
+#include <tinyxml2.h>
 
 #include "namespace_std.h"
 

@@ -8,6 +8,8 @@ struct Location
     PlayerList      _playerList      = {};
     MobList         _mobList         = {};
     FishNodeList    _fishNodeList    = {};
+    glm::ivec2      _origin          = glm::ivec2(0, 0);
+    glm::ivec2      _size            = glm::ivec2(800, 800);
 
     Location();
     Location(
@@ -17,6 +19,11 @@ struct Location
         MobList mobList,
         FishNodeList fishNodeList
     );
+    static void findLocationData(
+        const std::regex& locationRegex, Location& location
+    );
+    static void parseLocationXML(const std::string& filePath, Location& location);
+
     static void changeLocation(
         NetworkCommand& command,
         std::vector<Location>& locations,

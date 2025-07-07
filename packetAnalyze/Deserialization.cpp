@@ -300,6 +300,7 @@ void DataLayout::findDataLayout(NetworkCommand& command)
                 std::hex << offset << std::dec << " " << offset << "\n";
             command.printCommandInOneString();
             SetConsoleTextAttribute(consoleHandle, 7);
+            _dataLayout.clear();
             return;
         }
         //std::cout << "start offset: " << offset << " ";
@@ -506,6 +507,10 @@ DataLayout::DataLayout()
 
 void DataLayout::printInfo(NetworkCommand& command, bool printPayload) const
 {
+    if (_dataLayout.size() == 0) {
+        return;
+    }
+
     uint16_t numOfFragmentsOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
     std::cout << 
         "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << " " <<

@@ -88,9 +88,9 @@ enum operationCode : uint16_t
     AuctionGetItemAverageStats = 89,
 
     GetCharacterEquipment = 136,
-    GetClusterMapInfo = 191,
-    GoldMarketGetAverageInfo = 243,
-    RealEstateGetAuctionData = 257,
+    GetClusterMapInfo = 190,
+    GoldMarketGetAverageInfo = 242,
+    RealEstateGetAuctionData = 256,
 
 };
 enum eventCode : uint16_t

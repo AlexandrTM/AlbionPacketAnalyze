@@ -86,19 +86,19 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 				for (size_t j = 0; j < auctionData.size(); j++) {
 					auctionAverageValues << auctionData[j][i] << dataSeparator;
 				}
+				auctionAverageValues << i << " " << itemData << "\n";
 				/*if (i == 3) {
 					auctionAverageValues << itemData;
 				}*/
-				auctionAverageValues << i << " " << itemData << "\n";
 			}
 			//for (size_t i = 0; i < 2; i++) {
 			//	for (size_t j = 0; j < auctionData.size(); j++) {
 			//		auctionAverageValues << auctionData[j][i] << dataSeparator;
 			//	}
+			//	auctionAverageValues << i << " " << itemData << "\n";
 			//	/*if (i == 1) {
 			//		auctionAverageValues << itemData;
 			//	}*/
-			//	auctionAverageValues << i << " " << itemData << "\n";
 			//}
 			auctionAverageValues.close();
 		}
@@ -274,7 +274,6 @@ void Auction::processAuctionOrders(
 	size_t thresholdAmount = static_cast<size_t>(1.0 * totalAmount);
 	size_t accumulatedAmount = 0;
 
-	// Print the sorted result
 	if (isSellOrders) {
 		std::cout << "sell orders\n";
 	}
@@ -286,7 +285,9 @@ void Auction::processAuctionOrders(
 	auctionOrders.open("auction orders.txt", std::ofstream::app);
 
 	if (auctionOrders.is_open()) {
-		std::cout << "total amount: " << totalAmount << "\n";
+		std::cout << "total amount: " << totalAmount << " totalSilver: " << totalSilver << "\n";
+
+		// Print the sorted result
 		for (const auto& [amount, totalSilverPrice, playerName, itemTypeId] : sortedData) {
 			if (accumulatedAmount >= thresholdAmount) {
 				break; // Stop once we have reached threshold
@@ -297,8 +298,8 @@ void Auction::processAuctionOrders(
 				std::cout <<
 					std::setw(16) << std::left << playerName << " "
 					<< itemTypeId << " "
+					<< std::setw(10) << totalSilverPrice << " "
 					<< std::setw(5) << amount << " "
-					/*<< std::setw(10) << totalSilverPrice << " "*/
 					<< totalSilverPrice / amount << " "
 					<< /*std::string(magic_enum::enum_name(
 						static_cast<locationId>(

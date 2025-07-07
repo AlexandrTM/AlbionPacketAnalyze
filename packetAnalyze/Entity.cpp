@@ -2,7 +2,7 @@
 
 float_t _pixelsInMeter = 45.5;
 size_t  _halfMapSize = 400;
-float_t scaleFactor = 1.145f;
+float_t scaleFactor = 1.12f; // 1.145f
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -176,7 +176,7 @@ void EntityList::drawMobs()
     float_t pointSize = 0;
     std::vector<float_t> color = { 0.7f, 0.7f, 0.7f };
 
-    for (const Mob& mob : _currentLocation._mobList._mobList) {
+    for (const Mob& mob : _currentLocation._mobList._mobs) {
         std::vector<GLfloat> mobCoords = {
             mob._positionX,
             mob._positionY

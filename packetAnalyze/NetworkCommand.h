@@ -50,6 +50,7 @@ public:
     uint32_t getCommandID() const;
     uint8_t getCommandIndexInChain() const;
 
+    std::vector<uint8_t>& rawNetworkCommand();
     uint16_t size();
     void push_back(uint8_t element);
     void clear();

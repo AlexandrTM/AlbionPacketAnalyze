@@ -36,6 +36,10 @@ NetworkCommand::NetworkCommand()
 EntityList _entityList{};
 std::string itemData = "";
 size_t counter = 0;
+
+//const std::regex locationRegex(R"(TNL-\d+)");
+const std::regex locationRegex(R"(.*)");
+
 void NetworkCommand::analyzeCommand(
     GLFWwindow* window, 
     std::vector<uint8_t>& packetHeader, 
@@ -44,10 +48,15 @@ void NetworkCommand::analyzeCommand(
 )
 {
     DataLayout dataLayout{};
-    /*if (std::isElementInVector(nCodes, _eventCode) and this->size() != 67) {
-        dataLayout.findDataLayout(*this);
-        dataLayout.printInfo(*this);
-    }*/
+    //std::vector<uint8_t>& raw = this->rawNetworkCommand();
+    //std::string rawStr(raw.begin(), raw.end());
+
+    //if (/*std::isElementInVector(nCodes, _eventCode) and */
+    //    this->size() != 67 and rawStr.find("TNL") != std::string::npos) {
+    //    // 544e4c TNL
+    //    dataLayout.findDataLayout(*this);
+    //    dataLayout.printInfo(*this);
+    //}
     if (isHikingMode) {
         if (_operationType == operationType::event) {
             switch (_eventCode)
@@ -116,8 +125,8 @@ void NetworkCommand::analyzeCommand(
     if (_operationType == operationType::response) {
         std::chrono::steady_clock::time_point start;
         std::chrono::steady_clock::time_point stop;
-        /*dataLayout.findDataLayout(*this);
-        dataLayout.printInfo(*this);*/
+        //dataLayout.findDataLayout(*this);
+        //dataLayout.printInfo(*this);
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << _eventCode << "\n";*/
         switch (_eventCode) 
@@ -129,6 +138,7 @@ void NetworkCommand::analyzeCommand(
                 _entityList._currentLocation, 
                 false
             );
+            Location::findLocationData(locationRegex, _entityList._currentLocation);
             break;
         case operationCode::Move:
             _entityList._playerSelf = PlayerSelf(*this);
@@ -350,6 +360,10 @@ uint16_t NetworkCommand::getEventCode() const
 void NetworkCommand::push_back(uint8_t element)
 {
     _networkCommand.push_back(element);
+}
+std::vector<uint8_t>& NetworkCommand::rawNetworkCommand()
+{
+    return _networkCommand;
 }
 uint16_t NetworkCommand::size()
 {

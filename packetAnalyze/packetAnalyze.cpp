@@ -61,7 +61,7 @@ int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
-bool _isHikingMode = false;
+bool _isHikingMode = true;
 
 void PacketAnalyze::run()
 {

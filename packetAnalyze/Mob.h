@@ -43,7 +43,7 @@ struct Mob
 
 struct MobList
 {
-	std::vector<Mob> _mobList;
+	std::vector<Mob> _mobs;
 
 	MobList();
 
