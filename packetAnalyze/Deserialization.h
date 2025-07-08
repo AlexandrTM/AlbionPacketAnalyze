@@ -241,6 +241,8 @@ namespace net
         const std::string& uniqueKey,
         const std::string& criterion
     );
+    void searchLocationsTemplates(int32_t x, int32_t y);
+    void parseFishingZonesFromTemplate(const std::string& templateFilePath);
 
     void formatItemsData();
 

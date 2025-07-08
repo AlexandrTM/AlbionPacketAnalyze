@@ -1,8 +1,7 @@
 #include "pch.h"
 
 float_t _pixelsInMeter = 45.5;
-size_t  _halfMapSize = 400;
-float_t scaleFactor = 1.12f; // 1.145f
+float_t scaleFactor = 1.118f; // 1.145f
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -17,14 +16,100 @@ void EntityList::draw(GLFWwindow* window)
     
     glfwSwapBuffers(window);
 }
-void EntityList::changeLocation(NetworkCommand& command)
+
+void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
 {
-    if (abs(_playerSelf._positionX) >= abs(_playerSelf._positionY)) {
+    _isChangingLocation = false;
+
+    DataLayout dataLayout{};
+    dataLayout.findDataLayout(command);
+    //dataLayout.printInfo(command);
+    //command.printCommandInOneString();
+    DataFragment& locationFromFragment = dataLayout.findFragment(65);
+    DataFragment& locationToFragment = dataLayout.findFragment(8);
+    std::string locationFrom = "";
+    std::string locationTo = "";
+    for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
+        locationFrom += (unsigned)command[locationFromFragment._offset + i];
+    }
+    for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
+        locationTo += (unsigned)command[locationToFragment._offset + i];
+    }
+    if (locationTo == "") {
+        dataLayout.printInfo(command);
+    }
+
+    //currentHarvestableList.printInfo();
+    bool locationToIsNew = true;
+    bool locationFromIsNew = true;
+    // order is important
+    for (Location& location : _locationList) {
+        if (location._locationID == locationFrom) {
+            location._harvestableList = _currentLocation._harvestableList;
+            location._playerList = PlayerList();
+            location._mobList = _currentLocation._mobList;
+            //location._playerList      = currentPlayerList;
+            locationFromIsNew = false;
+            break;
+        }
+    }
+    for (Location& location : _locationList) {
+        //location.printInfo();
+        if (location._locationID == locationTo) {
+            _currentLocation._locationID = locationTo;
+            _currentLocation._harvestableList = location._harvestableList;
+            _currentLocation._playerList = PlayerList();
+            _currentLocation._mobList = location._mobList;
+            _currentLocation._fishNodeList = location._fishNodeList;
+            //currentPlayerList    = location._playerList;
+            locationToIsNew = false;
+            break;
+        }
+    }
+    if (locationFromIsNew == true) {
+        _locationList.push_back(
+            Location(
+                locationFrom,
+                _currentLocation._harvestableList,
+                _currentLocation._playerList,
+                _currentLocation._mobList,
+                _currentLocation._fishNodeList
+            )
+        );
+    }
+    if (locationToIsNew == true) {
+        _locationList.push_back(Location(locationTo, {}, {}, {}, {}));
+        _currentLocation._locationID      = locationTo;
+        _currentLocation._harvestableList = {};
+        _currentLocation._playerList      = {};
+        _currentLocation._mobList         = {};
+        _currentLocation._fishNodeList    = {};
+    }
+
+    if (printInfo) {
+        Location::printInfo(_locationList, _currentLocation, locationFrom, locationTo);
+    }
+}
+void EntityList::beginChangeLocation(NetworkCommand& command, bool printInfo)
+{
+    _isChangingLocation = true;
+    /*if (abs(_playerSelf._positionX) >= abs(_playerSelf._positionY)) {
         _playerSelf._positionX = _playerSelf._positionX * -1;
     }
     else if (abs(_playerSelf._positionY) > abs(_playerSelf._positionX)) {
         _playerSelf._positionY = _playerSelf._positionY * -1;
+    }*/
+    if (printInfo) {
+        Location::printInfo(
+            _locationList, 
+            _currentLocation, 
+            _currentLocation._locationID, 
+            _currentLocation._locationID
+        );
     }
+
+    _playerSelf._positionX = 10000;
+    _playerSelf._positionY = 10000;
 }
 void EntityList::clear()
 {
@@ -49,7 +134,7 @@ void EntityList::drawWindowFrame(float scale) const
         glVertex2f(0.59 * scale, -0.085 * scale);
         glVertex2f(0.59 * scale, -0.085 * scale);
         glVertex2f(0, 0.653 * scale);
-
+        
         glVertex2f(0, 0.653 * scale);
         glVertex2f(-0.59 * scale, -0.085 * scale);
         glVertex2f(-0.59 * scale, -0.085 * scale);
@@ -71,7 +156,7 @@ void EntityList::drawPlayerSelf()
 
     glPointSize(2);
     glColor3f(0.85, 0.85, 0.85);
-    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)45 / _halfMapSize, 25);
+    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)53 / _currentLocation._halfSize, 25);
 }
 void EntityList::drawHarvestables()
 {
@@ -359,8 +444,10 @@ void EntityList::colorizeHarvestableCharge(Harvestable harvestable, size_t charg
 {
     glColor3f(0.55 + 0.04f * chargeID, 0.4 + 0.04f * chargeID, 0.5 + 0.04f * chargeID);
 }
-void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvestableCoords,
-    std::vector<float> playerCoords)
+void EntityList::drawCharges(
+    Harvestable harvestable, std::vector<float> harvestableCoords,
+    std::vector<float> playerCoords
+)
 {
     float_t chargeSize = 12;
     glPointSize(chargeSize);
@@ -382,14 +469,14 @@ void EntityList::drawCharges(Harvestable harvestable, std::vector<float> harvest
                                         playerCoords[0], playerCoords[1]);
         mapCoords = convertToMapCoordinates(x, y);
 
-        if (distance > 10 and distance < 50) {
+        if (distance > 10 and distance < 57) {
             glVertex2f(
-                mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
+                mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _currentLocation._halfSize,
                 mapCoords[1] / distance * 8.5f + 0.24f);
         }
         else {
             glVertex2f(
-                mapCoords[0] + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _halfMapSize,
+                mapCoords[0] + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _currentLocation._halfSize,
                 mapCoords[1] + 0.32f);
         }
     }
@@ -409,12 +496,12 @@ void EntityList::DrawCircle(float_t offsetX, float_t offsetY, float_t radius, si
 
 float_t _cos = 0.7071/*0.8159*/;
 float_t _sin = 0.7071/*0.5781*/;
-std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y)
+std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y) const
 {
-    x = x / _halfMapSize;
-    y = y / _halfMapSize;
-    return { (float)((x * _cos + y * _sin) * 0.56 * scaleFactor * 0.7366),
-             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 * scaleFactor - 0.085)};
+    x = x / _currentLocation._halfSize;
+    y = y / _currentLocation._halfSize;
+    return { (float)((x * _cos + y * _sin)            * scaleFactor * 0.560 * 0.7366 * 23 / 20),
+             (float)((((-1) * x * _sin) + (y * _cos)) * scaleFactor * 0.516 * 23 / 20 - 0.085)};
 }
 float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 {

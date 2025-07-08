@@ -46,20 +46,23 @@ struct HarvestableListFilter
 
     std::vector<HarvestableFilter> _harvestableListFilter = {
         HarvestableFilter(/*wood*/
-            { 4, 5 },
-            { 1, 2 },
-            { 0, 0 }),
+            { 4, 5, 6 },
+            { 2, 2, 2 },
+            { 0, 0, 0 }),
         HarvestableFilter(/*rock*/
-            { 4, 5, 6, 7 },
-            { 2, 2, 2, 1 },
-            { 0, 0, 0, 0 }),
+            /*{ 1, 2, 3, 4, 5, 6, 7, 8 },
+            { 0, 0, 0, 2, 2, 1, 1, 0 },
+            { 1, 3, 3, 0, 0, 0, 0, 0 }),*/
+            { 4, 5, 6, 7, 8 },
+            { 2, 2, 1, 1, 0 },
+            { 0, 0, 0, 0, 0 }),
         HarvestableFilter(/*fiber*/
             { 4, 5, 6, 7 },
             { 2, 2, 2, 1 },
             { 0, 0, 0, 0 }),
         HarvestableFilter(/*hide*/  
             { 4, 5, 6 },
-            { 1, 1, 1 },
+            { 2, 2, 2 },
             { 0, 0, 0 }),
         HarvestableFilter(/*ore*/
             { 4, 5, 6, 7 },
@@ -122,6 +125,16 @@ struct FishNode
     uint8_t     _charges;
 
     FishNode(NetworkCommand& rawHarvestable);
+    FishNode(
+        uint64_t    id,
+        std::string name,
+        uint8_t     type,
+        uint8_t     tier,
+        uint8_t     enchantment,
+        float_t     positionX,
+        float_t     positionY,
+        uint8_t     charges
+    );
 };
 
 // *****************************************************************************
@@ -143,7 +156,7 @@ struct HarvestableList
     void updateState(NetworkCommand& updateState);
 	void update(Harvestable harvestable);
 	void update(HarvestableList harvestableList);
-    static bool isResourceStatic(Harvestable harvestable);
+    static bool isHarvestableStatic(Harvestable harvestable);
 
     void clear();
     size_t size() const;

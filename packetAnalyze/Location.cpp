@@ -44,8 +44,11 @@ void Location::findLocationData(
             }
         }
     }
+    else {
+        location._size = { 930, 930 };
+        location._halfSize = 465;
+    }
 }
-
 void Location::parseLocationXML(const std::string& filePath, Location& location) {
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(filePath.c_str()) != tinyxml2::XML_SUCCESS) {
@@ -80,7 +83,10 @@ void Location::parseLocationXML(const std::string& filePath, Location& location)
         int width = 0, height = 0;
         if (sscanf_s(size, "%d %d", &width, &height) == 2) {
             location._size = { width, height };
-            //std::cout << "Size for " << filePath << " = (" << width << ", " << height << ")\n";
+            location._halfSize = std::max(width, height) / 2;
+            //location._halfSize = width / 2;
+            std::cout << "Size for " << filePath << " = (" << width << ", " << height << ")\n";
+            std::cout << "half size: " << location._halfSize << "\n";
         }
         else {
             std::cerr << "Malformed size attribute in: " << filePath << " -> " << size << "\n";
@@ -88,83 +94,6 @@ void Location::parseLocationXML(const std::string& filePath, Location& location)
     }
     else {
         std::cerr << "No 'size' attribute in: " << filePath << "\n";
-    }
-}
-
-void Location::changeLocation(
-    NetworkCommand& command,
-    std::vector<Location>& locations,
-    Location& currentLocation,
-    bool printInfo
-)
-{
-    DataLayout dataLayout{};
-    dataLayout.findDataLayout(command);
-    //dataLayout.printInfo(command);
-    //command.printCommandInOneString();
-    DataFragment& locationFromFragment = dataLayout.findFragment(65);
-    DataFragment& locationToFragment = dataLayout.findFragment(8);
-    std::string locationFrom = "";
-    std::string locationTo = "";
-    for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
-        locationFrom += (unsigned)command[locationFromFragment._offset + i];
-    }
-    for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
-        locationTo += (unsigned)command[locationToFragment._offset + i];
-    }
-    if (locationTo == "") {
-        dataLayout.printInfo(command);
-    }
-
-    //currentHarvestableList.printInfo();
-    bool locationToIsNew = true;
-    bool locationFromIsNew = true;
-    // order is important
-    for (size_t i = 0; i < locations.size(); i++) {
-        if (locations[i]._locationID == locationFrom) {
-            locations[i]._harvestableList = currentLocation._harvestableList;
-            locations[i]._playerList = PlayerList();
-            locations[i]._mobList = currentLocation._mobList;
-            //locations[i]._playerList      = currentPlayerList;
-            locationFromIsNew = false;
-            break;
-        }
-    }
-    for (size_t i = 0; i < locations.size(); i++) {
-        //locations[i].printInfo();
-        if (locations[i]._locationID == locationTo) {
-            currentLocation._locationID      = locationTo;
-            currentLocation._harvestableList = locations[i]._harvestableList;
-            currentLocation._playerList      = PlayerList();
-            currentLocation._mobList         = locations[i]._mobList;
-            currentLocation._fishNodeList    = locations[i]._fishNodeList;
-            //currentPlayerList    = locations[i]._playerList;
-            locationToIsNew = false;
-            break;
-        }
-    }
-    if (locationFromIsNew == true) {
-        locations.push_back(
-            Location(
-                locationFrom,
-                currentLocation._harvestableList, 
-                currentLocation._playerList, 
-                currentLocation._mobList,
-                currentLocation._fishNodeList
-            )
-        );
-    }
-    if (locationToIsNew == true) {
-        locations.push_back(Location(locationTo, {}, {}, {}, {}));
-        currentLocation._locationID      = locationTo;
-        currentLocation._harvestableList = {};
-        currentLocation._playerList      = {};
-        currentLocation._mobList         = {};
-        currentLocation._fishNodeList    = {};
-    }
-
-    if (printInfo) {
-        Location::printInfo(locations, currentLocation, locationFrom, locationTo);
     }
 }
 
@@ -197,11 +126,11 @@ void Location::printInfo(
 
     // Print information about the location you're coming from (locationFrom)
     std::cout << "From location: " << locationFrom << "\n";
-    for (size_t i = 0; i < locations.size(); i++) {
-        if (locations[i]._locationID == locationFrom) {
-            std::cout << "Number of harvestables: " << locations[i]._harvestableList.size() << "\n";
-            std::cout << "Number of mobs: " << locations[i]._mobList.size() << "\n";
-            locations[i]._harvestableList.printInfo(); // Print detailed info of the harvestables
+    for (Location& location: locations) {
+        if (location._locationID == locationFrom) {
+            std::cout << "Number of harvestables: " << location._harvestableList.size() << "\n";
+            std::cout << "Number of mobs: " << location._mobList.size() << "\n";
+            location._harvestableList.printInfo(); // Print detailed info of the harvestables
             break;
         }
     }

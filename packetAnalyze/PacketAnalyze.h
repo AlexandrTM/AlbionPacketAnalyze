@@ -25,6 +25,12 @@ private:
     NetworkPacket _packet;
     FragmentedCommandsBuffer _fragmentedCommandsBuffer;
 
+    EntityList _entityList{};
+    std::string itemData = "";
+    size_t counter = 0;
+
+    //const std::regex locationRegex(R"(.*)");
+
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition);
     bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string);
@@ -54,6 +60,14 @@ private:
     std::vector<uint8_t> readRawPacket(Tins::RawPDU pdu, size_t regionStart, size_t regionEnd);
 
     void analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo& packetInfo);
+
+    void analyzeCommand(
+        GLFWwindow* window,
+        NetworkCommand& command,
+        std::vector<uint8_t>& packetHeader,
+        NetworkPacketInfo& packetInfo,
+        bool isHikingMode
+    );
 };
 
 #endif // !PACKET_ANALYZE_H

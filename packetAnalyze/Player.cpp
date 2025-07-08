@@ -79,7 +79,7 @@ Player::Player(NetworkCommand& rawPlayer) // find health
 	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(25)._offset);*/
 
 	_positionX = -100;
-	_positionY = 400;
+	_positionY = 500;
 	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }
 

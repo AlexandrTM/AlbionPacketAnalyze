@@ -71,6 +71,10 @@ Harvestable::Harvestable(NetworkCommand& rawHarvestable)
 		this->printInfo();
 	}*/
 
+	/*if (_tier >= 4) {
+		this->printInfo();
+	}*/
+
 	/*if (_type >= harvestableUniqueType::OTHER) {
 		this->printInfo();
 		dataLayout.printInfo(rawHarvestable);
@@ -141,12 +145,12 @@ Harvestable::Harvestable(uint64_t id, uint8_t type, uint8_t tier,
 void Harvestable::printInfo() const
 {
 	std::cout << 
-		"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
-		"type: "		<< std::setw(2) << (unsigned)_type		  << " " <<
+		//"id: "			<< std::setw(7) << (unsigned)_id		  << " " <<
+		//"type: "		<< std::setw(2) << (unsigned)_type		  << " " <<
 		std::setw(7)    << getHarvestableTextType(_type)		  << " " <<
 		"tier: "		<< std::setw(1) << (unsigned)_tier		  << " " <<
-		"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " <<
-		"charges: "     << std::setw(2) << (unsigned)_charges	  << " " <<
+		//"enchantment: " << std::setw(1) << (unsigned)_enchantment << " " <<
+		//"charges: "     << std::setw(2) << (unsigned)_charges	  << " " <<
 		"x: "			<< std::setw(6) << _positionX			  << " " <<
 		"y: "			<< std::setw(6) << _positionY			  << "\n";
 }
@@ -257,7 +261,9 @@ void HarvestableList::printInfo()
 
 	// Count the distributions
 	for (const auto& harvestable : _harvestableList) {
-		if (harvestable._tier > 1 and isResourceStatic(harvestable)) {
+		if (harvestable._tier > 1 and isHarvestableStatic(harvestable)) {
+			harvestable.printInfo();
+
 			std::string harvestableTextType = Harvestable::getHarvestableTextType(harvestable._type);
 			// Count by tier
 			tierDistribution[harvestable._tier]++;
@@ -273,7 +279,7 @@ void HarvestableList::printInfo()
 		}
 	}
 
-	std::cout << "Num of harvestables tier > 1: " << tierDistribution.size() << "\n";
+	//std::cout << "Num of harvestables tier > 1: " << tierDistribution.size() << "\n";
 
 	// Print distribution by tier
 	std::cout << "\nDistribution by Tier:\n";
@@ -331,7 +337,7 @@ void HarvestableList::update(HarvestableList harvestableList)
 		this->update(harvestableList[i]);
 	}
 }
-bool HarvestableList::isResourceStatic(Harvestable harvestable)
+bool HarvestableList::isHarvestableStatic(Harvestable harvestable)
 {
 	// Get the fractional part of _positionX and _positionY
 	float fractionX = harvestable._positionX - floor(harvestable._positionX);
@@ -377,6 +383,27 @@ FishNode::FishNode(NetworkCommand& rawHarvestable)
 		std::cout << _name << "\n";
 		dataLayout.printInfo(rawHarvestable);
 	}*/
+}
+
+FishNode::FishNode(
+	uint64_t    id,
+	std::string name,
+	uint8_t     type,
+	uint8_t     tier,
+	uint8_t     enchantment,
+	float_t     positionX,
+	float_t     positionY,
+	uint8_t     charges
+)
+{
+	_id          = id;
+	_name        = name;
+	_type        = type;
+	_tier        = tier;
+	_enchantment = enchantment;
+	_positionX   = positionX;
+	_positionY   = positionY;
+	_charges     = charges;
 }
 
 FishNodeList::FishNodeList()

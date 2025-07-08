@@ -25,21 +25,18 @@
     <Filter Include="Source Files\Deserialization">
       <UniqueIdentifier>{d7591eea-af46-4167-8be1-140bccc71243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\global">
+      <UniqueIdentifier>{21bcdb6b-ad6c-4c6b-82b1-63a0275dd03b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PacketAnalyze.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NetworkPacket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="namespace_std.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
@@ -81,21 +78,21 @@
     <ClCompile Include="Enumerations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Header Files\global</Filter>
+    </ClCompile>
+    <ClCompile Include="namespace_std.cpp">
+      <Filter>Header Files\global</Filter>
+    </ClCompile>
+    <ClCompile Include="global_data.cpp">
+      <Filter>Header Files\global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NetworkPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Enumerations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="namespace_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
@@ -139,6 +136,18 @@
     </ClInclude>
     <ClInclude Include="Location.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumerations.h">
+      <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="global_data.h">
+      <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="namespace_std.h">
+      <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files\global</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Enumerations.h"
+//#include "global_data.h"
 
 
 #ifndef NETWORK_COMMAND_H
@@ -26,13 +27,6 @@ public:
     NetworkCommand(std::vector<uint8_t> rawCommand);
     NetworkCommand(NetworkCommand& command, size_t beginOffset);
     NetworkCommand();
-
-    void analyzeCommand(
-        GLFWwindow* window,
-        std::vector<uint8_t>& packetHeader,
-        NetworkPacketInfo& packetInfo,
-        bool isHikingMode
-    );
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);

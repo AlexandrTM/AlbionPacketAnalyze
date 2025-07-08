@@ -782,6 +782,90 @@ void net::findUniqueValuesByCriterion(
     //std::cout << "---------------------------------\n";
 }
 
+void net::searchLocationsTemplates(int32_t x, int32_t y)
+{
+    const std::filesystem::path rootFolder = "templates/";
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(rootFolder)) {
+        if (!entry.is_regular_file() || entry.path().extension() != ".xml")
+            continue;
+
+        tinyxml2::XMLDocument doc;
+        if (doc.LoadFile(entry.path().string().c_str()) != tinyxml2::XML_SUCCESS)
+            continue;
+
+        auto checkPosition = [&](const char* posAttr) -> bool {
+            if (!posAttr) return false;
+            int px = 0, py = 0, pz = 0;
+            if (sscanf_s(posAttr, "%d %d %d", &px, &py, &pz) == 3) {
+                return px == x && pz == y;
+            }
+            return false;
+        };
+
+        bool matchFound = false;
+
+        // Recursive check of <tile> and <compoundtile> inside document
+        std::function<void(tinyxml2::XMLElement*)> recursiveSearch = [&](tinyxml2::XMLElement* element) {
+            while (element) {
+                std::string tag = element->Name();
+                if ((/*tag == "tile" || */tag == "compoundtile") && checkPosition(element->Attribute("pos"))) {
+                    std::cout << "Match in: " << entry.path().string() << std::endl;
+                    matchFound = true;
+                    return;
+                }
+                recursiveSearch(element->FirstChildElement());
+                element = element->NextSiblingElement();
+            }
+        };
+
+        tinyxml2::XMLElement* root = doc.FirstChildElement();
+        if (root) recursiveSearch(root);
+    }
+
+    
+    std::cout << "--------------------------\nSearch finished\n";
+}
+void net::parseFishingZonesFromTemplate(const std::string& templateFilePath)
+{
+    std::vector<std::pair<float_t, float_t>> fishingZonePositions;
+
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile(templateFilePath.c_str()) != tinyxml2::XML_SUCCESS) {
+        std::cerr << "Failed to load XML file: " << templateFilePath << std::endl;
+        return;
+    }
+
+    std::regex fishingZoneRegex(R"(FishingZone_.*)");
+
+    auto* root = doc.FirstChildElement();
+    if (!root) return;
+
+    std::function<void(tinyxml2::XMLElement*)> recursiveSearch = [&](tinyxml2::XMLElement* element) {
+        while (element) {
+            const char* tag = element->Name();
+            if (std::string(tag) == "tile") {
+                const char* nameAttr = element->Attribute("name");
+                const char* posAttr = element->Attribute("pos");
+                if (nameAttr && posAttr && std::regex_match(nameAttr, fishingZoneRegex)) {
+                    float_t px = 0, py = 0, pz = 0;
+                    if (sscanf_s(posAttr, "%f %f %f", &px, &py, &pz) == 3) {
+                        fishingZonePositions.emplace_back(px, pz);
+                    }
+                }
+            }
+            recursiveSearch(element->FirstChildElement());
+            element = element->NextSiblingElement();
+        }
+        };
+
+    recursiveSearch(root);
+
+    for (auto& fishingZone : fishingZonePositions) {
+        std::cout << fishingZone.first << " " << fishingZone.second << "\n";
+    }
+}
+
 void net::formatItemsData()
 {
     std::ifstream inputFile("items.txt");  // Replace with your file name

@@ -156,6 +156,7 @@
     <ClCompile Include="Enumerations.cpp" />
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
+    <ClCompile Include="global_data.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="HealthUpdateHandler.cpp" />
     <ClCompile Include="Location.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
+    <ClInclude Include="global_data.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="HealthUpdateHandler.h" />
     <ClInclude Include="Location.h" />
