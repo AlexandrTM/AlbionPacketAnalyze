@@ -28,7 +28,12 @@
 #include "FragmentedNetworkCommand.h"
 #include "FragmentedCommandsBuffer.h"
 #include "NetworkPacket.h"
-#include "Deserialization.h"
+
+extern HANDLE consoleHandle;
+#include "DataType.h"
+#include "DataFragment.h"
+#include "DataLayout.h"
+#include "net.h"
 
 #include "HealthUpdateHandler.h"
 #include "MapCluster.h"

@@ -1,7 +1,8 @@
-#include "Enumerations.h"
-
 #ifndef PACKET_ANALYZE_H
 #define PACKET_ANALYZE_H
+
+#include "Enumerations.h"
+#include "entity_list_instance.h"
 
 class PacketAnalyze {
 
@@ -25,7 +26,7 @@ private:
     NetworkPacket _packet;
     FragmentedCommandsBuffer _fragmentedCommandsBuffer;
 
-    EntityList _entityList{};
+    //EntityList _entityList{};
     std::string itemData = "";
     size_t counter = 0;
 

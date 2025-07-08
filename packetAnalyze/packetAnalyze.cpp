@@ -138,8 +138,6 @@ void PacketAnalyze::colorizeSameText(NetworkPacket paragraph, HANDLE consoleHand
 }
 void PacketAnalyze::outputColorizedNetworkPacket(std::vector<NetworkPacket> text)
 {
-    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-
     for (size_t i = 0; i < text.size(); i++) {
         SetConsoleTextAttribute(consoleHandle, 6);
         std::cout << "\"" << _eventCodes[i] << "\"" << " " << _amountOfSameCommands[i] << "\n";
@@ -533,7 +531,7 @@ void PacketAnalyze::analyzeCommand(
                      "event code: " << command.getEventCode() << "\n";*/
         switch (command.getEventCode()) {
         case operationCode::Join:
-            _entityList.endChangeLocation(command, true);
+            _entityList.endChangeLocation(command, false);
             Location::findLocationData(locationRegex, _entityList._currentLocation);
             break;
         case operationCode::Move:
@@ -642,7 +640,7 @@ int main() {
 
     //sortMobDescriptions(mobDescriptions);
     //net::formatItemsData();
-    //net::searchLocationsTemplates(103, -311);
+    //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseFishingZonesFromTemplate("templates/DEAD/616_L1_M3_S5.template.xml");
     packetAnalyze.run();
 

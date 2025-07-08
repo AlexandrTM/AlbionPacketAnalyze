@@ -19,9 +19,6 @@
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{0dadbccb-5f12-4b36-a354-aaab2898fbb1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Deserialization">
-      <UniqueIdentifier>{9bfec5eb-04f0-4ace-a7c3-eab2126712d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Deserialization">
       <UniqueIdentifier>{d7591eea-af46-4167-8be1-140bccc71243}</UniqueIdentifier>
     </Filter>
@@ -48,7 +45,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Deserialization.cpp">
+    <ClCompile Include="DataLayout.cpp">
       <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
     <ClCompile Include="Auction.cpp">
@@ -84,8 +81,17 @@
     <ClCompile Include="namespace_std.cpp">
       <Filter>Header Files\global</Filter>
     </ClCompile>
-    <ClCompile Include="global_data.cpp">
+    <ClCompile Include="entity_list_instance.cpp">
       <Filter>Header Files\global</Filter>
+    </ClCompile>
+    <ClCompile Include="net.cpp">
+      <Filter>Header Files\global</Filter>
+    </ClCompile>
+    <ClCompile Include="DataFragment.cpp">
+      <Filter>Source Files\Deserialization</Filter>
+    </ClCompile>
+    <ClCompile Include="DataType.cpp">
+      <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,12 +112,6 @@
     </ClInclude>
     <ClInclude Include="PacketAnalyze.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Auction.h">
-      <Filter>Header Files\Deserialization</Filter>
-    </ClInclude>
-    <ClInclude Include="Deserialization.h">
-      <Filter>Header Files\Deserialization</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
@@ -140,7 +140,7 @@
     <ClInclude Include="Enumerations.h">
       <Filter>Header Files\global</Filter>
     </ClInclude>
-    <ClInclude Include="global_data.h">
+    <ClInclude Include="entity_list_instance.h">
       <Filter>Header Files\global</Filter>
     </ClInclude>
     <ClInclude Include="namespace_std.h">
@@ -148,6 +148,21 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="net.h">
+      <Filter>Header Files\global</Filter>
+    </ClInclude>
+    <ClInclude Include="Auction.h">
+      <Filter>Source Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="DataLayout.h">
+      <Filter>Source Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFragment.h">
+      <Filter>Source Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="DataType.h">
+      <Filter>Source Files\Deserialization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

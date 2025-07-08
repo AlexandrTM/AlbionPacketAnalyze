@@ -1,86 +1,4 @@
-#ifndef DATA_FRAGMENT_H
-#define DATA_FRAGMENT_H
-
-
-// **************************************************************************
-// ============================== DataType ==================================
-// **************************************************************************
-
-
-struct DataType
-{
-    uint8_t _size;
-    uint8_t _headerSize;
-    uint8_t _dataTypeId;
-
-    DataType();
-    DataType(uint8_t dataTypeSize, uint8_t dataTypeHeaderSize, uint8_t dataType);
-
-    static uint8_t getDataTypeSize(uint8_t dataType);
-    static uint8_t getDataTypeHeaderSize(uint8_t dataType);
-    static uint16_t getNumOfEntries(NetworkCommand& command, uint8_t dataType, ptrdiff_t offset);
-};
-
-
-// **************************************************************************
-// ============================== DataFragment ==============================
-// **************************************************************************
-
-
-struct DataFragment
-{
-    uint8_t _fragmentId;
-    ptrdiff_t _offset;
-    uint16_t _numOfEntries;
-    DataType _dataType;
-
-    static ptrdiff_t findFragmentsNumOffset(NetworkCommand& command);
-
-    DataFragment(uint8_t fragmentID, ptrdiff_t offset, uint16_t numOfEntries, DataType dataType);
-    DataFragment();
-    void printInfo(NetworkCommand& command) const;
-    void printFragmentInfo(NetworkCommand& command, size_t& currentStringPosition,
-        bool printPayload = true) const;
-};
-
-
-// **************************************************************************
-// ============================== DataLayout ================================
-// **************************************************************************
-
-
-class DataLayout
-{
-private:
-    DataFragment _defaultDataFragment{};
-    std::vector<DataFragment> _dataLayout;
-
-public:
-    DataFragment& findFragment(uint8_t fragmentId);
-    std::vector<std::reference_wrapper<DataFragment>> findFragments(uint8_t fragmentId);
-
-    uint8_t findNumOfFragments(NetworkCommand& command);
-    void findDataLayout(NetworkCommand& command);
-    void processDictionary(NetworkCommand& command, uint8_t& fragmentId, ptrdiff_t& offset,
-        uint16_t numOfEntries, uint8_t& dataTypeHeaderSize, size_t index);
-
-    DataLayout(std::vector<DataFragment> dataFragments);
-    DataLayout();
-
-    void printInfo(NetworkCommand& command, bool printPayload = true) const;
-    void printInfo(NetworkCommand& command, size_t beginFragment, bool printPayload) const;
-    void printInfo(NetworkCommand& command, size_t beginFragment, size_t endFragment, bool printPayload) const;
-
-    size_t size() const;
-    DataFragment operator[](size_t elementIndex);
-
-};
-
-
-// **************************************************************************
-// ============================== net ================================
-// **************************************************************************
-
+#pragma once
 
 namespace net
 {
@@ -199,20 +117,28 @@ namespace net
 
         return std::binToFloat(dataEntry);
     }
-    
+
     static uint64_t read_integer(NetworkCommand& command, DataFragment& dataFragment) {
         uint64_t integer = 0;
         uint8_t dataTypeSize = dataFragment._dataType._size;
         ptrdiff_t fragmentOffset = dataFragment._offset;
 
-        if 
-		    (dataTypeSize == 1) { integer = net::read_uint8 (command, fragmentOffset); }
-	    else if 
-		    (dataTypeSize == 2) { integer = net::read_uint16(command, fragmentOffset); }
-	    else if 
-		    (dataTypeSize == 4) { integer = net::read_uint32(command, fragmentOffset); }
-	    else if 
-		    (dataTypeSize == 8) { integer = net::read_uint64(command, fragmentOffset); }
+        if
+            (dataTypeSize == 1) {
+            integer = net::read_uint8(command, fragmentOffset);
+        }
+        else if
+            (dataTypeSize == 2) {
+            integer = net::read_uint16(command, fragmentOffset);
+        }
+        else if
+            (dataTypeSize == 4) {
+            integer = net::read_uint32(command, fragmentOffset);
+        }
+        else if
+            (dataTypeSize == 8) {
+            integer = net::read_uint64(command, fragmentOffset);
+        }
 
         return integer;
     }
@@ -221,7 +147,7 @@ namespace net
 
     void getMobData(
         const nlohmann::json& data, const uint16_t uniqueValue,
-        uint8_t& tier, std::string& uniqueName, 
+        uint8_t& tier, std::string& uniqueName,
         std::string& category, std::string& typeCategory
     );
     void getMatchingMobs(
@@ -250,4 +176,3 @@ namespace net
     const nlohmann::json harvestablesData = net::readJsonFile("harvestables.json");
 };
 
-#endif

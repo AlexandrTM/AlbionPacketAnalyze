@@ -150,19 +150,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Auction.cpp" />
-    <ClCompile Include="Deserialization.cpp" />
+    <ClCompile Include="DataFragment.cpp" />
+    <ClCompile Include="DataType.cpp" />
+    <ClCompile Include="DataLayout.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityMove.cpp" />
     <ClCompile Include="Enumerations.cpp" />
     <ClCompile Include="FragmentedCommandsBuffer.cpp" />
     <ClCompile Include="FragmentedNetworkCommand.cpp" />
-    <ClCompile Include="global_data.cpp" />
+    <ClCompile Include="entity_list_instance.cpp" />
     <ClCompile Include="Harvestable.cpp" />
     <ClCompile Include="HealthUpdateHandler.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="MapCluster.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="namespace_std.cpp" />
+    <ClCompile Include="net.cpp" />
     <ClCompile Include="NetworkCommand.cpp" />
     <ClCompile Include="NetworkPacket.cpp" />
     <ClCompile Include="PacketAnalyze.cpp" />
@@ -175,19 +178,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Auction.h" />
-    <ClInclude Include="Deserialization.h" />
+    <ClInclude Include="DataFragment.h" />
+    <ClInclude Include="DataType.h" />
+    <ClInclude Include="DataLayout.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityMove.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="FragmentedCommandsBuffer.h" />
     <ClInclude Include="FragmentedNetworkCommand.h" />
-    <ClInclude Include="global_data.h" />
+    <ClInclude Include="entity_list_instance.h" />
     <ClInclude Include="Harvestable.h" />
     <ClInclude Include="HealthUpdateHandler.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="MapCluster.h" />
     <ClInclude Include="Mob.h" />
     <ClInclude Include="namespace_std.h" />
+    <ClInclude Include="net.h" />
     <ClInclude Include="NetworkCommand.h" />
     <ClInclude Include="NetworkPacket.h" />
     <ClInclude Include="PacketAnalyze.h" />
