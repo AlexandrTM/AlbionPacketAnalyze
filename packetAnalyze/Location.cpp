@@ -2,7 +2,7 @@
 
 Location::Location()
 {
-    _locationID      = "";
+    _id      = "";
     _harvestableList = {};
     _playerList      = {};
     _mobList         = {};
@@ -11,13 +11,15 @@ Location::Location()
 
 Location::Location(
     std::string locationID,
+    std::string locationName,
     HarvestableList harvestableList, 
     PlayerList playerList, 
     MobList mobList, 
     FishNodeList fishNodeList
 )
 {
-    _locationID      = locationID;
+    _id              = locationID;
+    _name            = locationName;
     _harvestableList = harvestableList;
     _playerList      = playerList;
     _mobList         = mobList;
@@ -29,7 +31,7 @@ void Location::findLocationData(
 )
 {
     std::smatch match;
-    if (std::regex_search(location._locationID, match, locationRegex)) {
+    if (std::regex_search(location._id, match, locationRegex)) {
         std::string locationCode = match.str();
         std::string xmlFileName = locationCode + "_.*.cluster.xml";
 
@@ -98,36 +100,35 @@ void Location::parseLocationXML(const std::string& filePath, Location& location)
 }
 
 void Location::printInfo(
-    std::vector<Location>& locations, Location& currentLocation,
-    std::string locationFrom, std::string locationTo
+    std::vector<Location>& locations, 
+    Location& currentLocation, Location& previousLocation
 )
 {
     auto timeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     char timeBuffer[30];
     ctime_s(timeBuffer, sizeof(timeBuffer), &timeNow);
 
-    std::cout << "num of locations: " << locations.size() << "\n";
+    std::cout << timeBuffer << "\n" << "num of locations: " << locations.size() << "\n";
     /*for (size_t i = 0; i < locations.size(); i++) {
         std::cout <<
-            "location id" << i << ": " << locations[i]._locationID          << "\n" <<
+            "location id" << i << ": " << locations[i]._id          << "\n" <<
             "num of harvestables: "    << locations[i]._harvestableList.size() << "\n" <<
-            "num of mobs:         "    << locations[i]._mobs.size()         << "\n\n";
+            "num of mobs:         "    << locations[i]._mobList.size()         << "\n\n";
     }*/
 
     std::cout <<
-        "from: " << locationFrom << " -> " <<
-        "to: " << locationTo << "\n" <<
-        timeBuffer;
+        "from: " << previousLocation._name << " -> " <<
+        "to: " << currentLocation._name << "\n";
 
     std::cout <<
-        "current location:    " << locationTo << "\n" <<
+        "current location:    " << currentLocation._id << "\n" <<
         "num of harvestables: " << currentLocation._harvestableList.size() << "\n" <<
         "num of mobs:         " << currentLocation._mobList.size() << "\n\n";
 
     // Print information about the location you're coming from (locationFrom)
-    std::cout << "From location: " << locationFrom << "\n";
+    std::cout << "From location: " << previousLocation._id << "\n";
     for (Location& location: locations) {
-        if (location._locationID == locationFrom) {
+        if (location._id == previousLocation._id) {
             std::cout << "Number of harvestables: " << location._harvestableList.size() << "\n";
             std::cout << "Number of mobs: " << location._mobList.size() << "\n";
             location._harvestableList.printInfo(); // Print detailed info of the harvestables

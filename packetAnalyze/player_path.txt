@@ -1,0 +1,3 @@
+from: Bridgewatch -> to: Lazygrass Plain [ from: 2000 -> to: 2209 ]
+from: Lazygrass Plain -> to: Snapshaft Trough [ from: 2209 -> to: 2210 ]
+teleportation from: Snapshaft Trough -> to: Bridgewatch [ from: 2210 -> to: 2000 ]

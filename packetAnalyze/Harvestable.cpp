@@ -262,7 +262,7 @@ void HarvestableList::printInfo()
 	// Count the distributions
 	for (const auto& harvestable : _harvestableList) {
 		if (harvestable._tier > 1 and isHarvestableStatic(harvestable)) {
-			harvestable.printInfo();
+			//harvestable.printInfo();
 
 			std::string harvestableTextType = Harvestable::getHarvestableTextType(harvestable._type);
 			// Count by tier

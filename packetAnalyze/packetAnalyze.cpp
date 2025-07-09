@@ -432,6 +432,12 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo&
 }
 
 const std::regex locationRegex(R"(TNL-\d+)");
+//const std::regex locationRegex(R"(.*)");
+
+// teleporation event codes 18, 19, 23, 24
+std::vector<uint16_t> nnCodes = { /*18, 23*/ 19, 24 };
+std::vector<uint16_t> nCodes = { /*55, 71*/21, 103, 104, 123, 63, 160, 272, 8, 1, 81 };
+std::vector<std::string> cityLocations = { "0000", "0301" };
 
 void PacketAnalyze::analyzeCommand(
     GLFWwindow* window,
@@ -445,14 +451,15 @@ void PacketAnalyze::analyzeCommand(
     //std::vector<uint8_t>& raw = this->rawNetworkCommand();
     //std::string rawStr(raw.begin(), raw.end());
 
-    //if (/*std::isElementInVector(nCodes, _eventCode) and */
-    //    this->size() != 67 and rawStr.find("TNL") != std::string::npos) {
+    //if (std::isElementInVector(nnCodes, command.getEventCode()) and
+    //    command.size() != 67/* and rawStr.find("TNL") != std::string::npos*/) {
     //    // 544e4c TNL
-    //    dataLayout.findDataLayout(*this);
-    //    dataLayout.printInfo(*this);
+    //    dataLayout.findDataLayout(command);
+    //    dataLayout.printInfo(command);
     //}
-    if (isHikingMode) {
-        if (command.getOperationType() == operationType::event) {
+
+    if (command.getOperationType() == operationType::event) {
+        if (isHikingMode) {
             if (_entityList._isChangingLocation) {
 
             }
@@ -493,15 +500,20 @@ void PacketAnalyze::analyzeCommand(
             case 66: // crafting finished on station
                 break;
             case eventCode::NewCharacter:
-                //if (!std::isElementInVector(cityLocations, _entityList._currentLocation._locationID)) {
                 _entityList._currentLocation._playerList.newPlayer(Player(command));
-                //}
                 break;
             case eventCode::Leave:
                 _entityList._currentLocation._playerList.playerLeave(Player(command));
                 break;
             case eventCode::PlayerMove:
                 //_entityList._currentLocation._playerList.update(Player::playerMove(command)); 
+                break;
+            case eventCode::Teleport:
+                //dataLayout.findDataLayout(command);
+                //dataLayout.printInfo(command);
+            /*case eventCode::BuyJourney:
+                dataLayout.findDataLayout(command);
+                dataLayout.printInfo(command); */
                 break;
             default:
                 break;
@@ -512,45 +524,47 @@ void PacketAnalyze::analyzeCommand(
                     EntityMove::updateEntityListMove(command, _entityList._currentLocation._mobList);
                 }
                 else {
-                    /*dataLayout.findDataLayout(*this);
-                    dataLayout.printInfo(*this);*/
+                    /*dataLayout.findDataLayout(command);
+                    dataLayout.printInfo(command);*/
                 }
             }
             else {
-                /*dataLayout.findDataLayout(*this);
-                dataLayout.printInfo(*this);*/
+                /*dataLayout.findDataLayout(command);
+                dataLayout.printInfo(command);*/
             }
         }
     }
     if (command.getOperationType() == operationType::response) {
         std::chrono::steady_clock::time_point start;
         std::chrono::steady_clock::time_point stop;
-        //dataLayout.findDataLayout(*this);
-        //dataLayout.printInfo(*this);
+        //dataLayout.findDataLayout(command);
+        //dataLayout.printInfo(command);
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << command.getEventCode() << "\n";*/
         switch (command.getEventCode()) {
         case operationCode::Join:
             _entityList.endChangeLocation(command, false);
+            _entityList.trackPlayerPath();
             Location::findLocationData(locationRegex, _entityList._currentLocation);
+            _entityList._isChangingLocation = false;
             break;
         case operationCode::Move:
             _entityList._playerSelf = PlayerSelf(command);
             break;
             /*case operationCode::ChangeCluster: // other player changing location not only me
-                _entityList.ChangeCluster(*this);
+                _entityList.ChangeCluster(command);
                 break;*/
         case operationCode::AuctionSellOrders:
-            //Auction::auctionOrders(*this, true, _entityList._currentLocation, true);
+            //Auction::auctionOrders(command, true, _entityList._currentLocation, true);
             break;
         case operationCode::AuctionBuyOrders:
-            //Auction::auctionOrders(*this, false, _entityList._currentLocation, true);
+            //Auction::auctionOrders(command, false, _entityList._currentLocation, true);
             break;
         case operationCode::RealEstateGetAuctionData:
             break;
         case operationCode::AuctionGetFinishedAuctions: // non standard format
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);
+            /*dataLayout.findDataLayout(command);
+            dataLayout.printInfo(command);
             this->printCommandInOneString();*/
             break;
         case operationCode::AuctionGetFinishedAuctionsCount: // non standard format
@@ -585,9 +599,8 @@ void PacketAnalyze::analyzeCommand(
             //std::cout << _entityList._playerSelf._positionX << " " << _entityList._playerSelf._positionY << "\n";
             break;
         case operationCode::ChangeCluster:
-            /*dataLayout.findDataLayout(*this);
-            dataLayout.printInfo(*this);*/
             _entityList.beginChangeLocation(command, false);
+            _entityList._isChangingLocation = true;
             break;
         case operationCode::AuctionBuyOrders:
             break;
@@ -641,7 +654,7 @@ int main() {
     //sortMobDescriptions(mobDescriptions);
     //net::formatItemsData();
     //net::searchLocationsTemplates(-349.5, 122.5);
-    //net::parseFishingZonesFromTemplate("templates/DEAD/616_L1_M3_S5.template.xml");
+    //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
     packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);

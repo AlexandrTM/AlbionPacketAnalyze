@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "NetworkCommand.h"
 
-std::vector<uint16_t> nnCodes = {};
-std::vector<uint16_t> nCodes = { /*55, 71*/49 };
-std::vector<std::string> cityLocations = { "0000", "0301" };
-
 NetworkCommand::NetworkCommand(std::vector<uint8_t> rawCommand)
 {
     _networkCommand = rawCommand;

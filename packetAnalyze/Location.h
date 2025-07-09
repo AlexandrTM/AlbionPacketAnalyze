@@ -3,7 +3,8 @@
 
 struct Location
 {
-    std::string     _locationID      = "";
+    std::string     _id              = "";
+    std::string     _name            = "";
 
     HarvestableList _harvestableList = {};
     PlayerList      _playerList      = {};
@@ -16,7 +17,8 @@ struct Location
 
     Location();
     Location(
-        std::string locationID,
+        std::string locationId,
+        std::string locationName,
         HarvestableList harvestableList,
         PlayerList playerList,
         MobList mobList,
@@ -28,8 +30,8 @@ struct Location
     static void parseLocationXML(const std::string& filePath, Location& location);
 
     static void printInfo(
-        std::vector<Location>& locations, Location& currentLocation,
-        std::string locationFrom, std::string locationTo
+        std::vector<Location>& locations,
+        Location& currentLocation, Location& previousLocation
     );
 };
 

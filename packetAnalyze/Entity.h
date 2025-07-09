@@ -12,11 +12,13 @@ struct EntityList
     MobListFilter         _mobListFilter;
 
     Location              _currentLocation;
-    Location              _bufferLocation;
+    Location              _previousLocation;
     std::vector<Location> _locationList;
     bool                  _isChangingLocation = false;
 
     EntityList();
+
+    void trackPlayerPath() const;
 
     void drawPlayerSelf();
     void drawCharges(

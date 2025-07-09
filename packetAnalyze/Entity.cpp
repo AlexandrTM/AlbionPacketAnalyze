@@ -19,80 +19,75 @@ void EntityList::draw(GLFWwindow* window)
 
 void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
 {
-    _isChangingLocation = false;
-
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
     //dataLayout.printInfo(command);
     //command.printCommandInOneString();
     DataFragment& locationFromFragment = dataLayout.findFragment(65);
     DataFragment& locationToFragment = dataLayout.findFragment(8);
-    std::string locationFrom = "";
-    std::string locationTo = "";
+    std::string locationFromId = "";
+    std::string locationToId = "";
     for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
-        locationFrom += (unsigned)command[locationFromFragment._offset + i];
+        locationFromId += (unsigned)command[locationFromFragment._offset + i];
     }
     for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
-        locationTo += (unsigned)command[locationToFragment._offset + i];
+        locationToId += (unsigned)command[locationToFragment._offset + i];
     }
-    if (locationTo == "") {
+    if (locationToId == "") {
         dataLayout.printInfo(command);
     }
+
+    std::string locationFromName = net::getLocationNameById(net::locationNames, locationFromId);
+    std::string locationToName = net::getLocationNameById(net::locationNames, locationToId);
 
     //currentHarvestableList.printInfo();
     bool locationToIsNew = true;
     bool locationFromIsNew = true;
     // order is important
     for (Location& location : _locationList) {
-        if (location._locationID == locationFrom) {
-            location._harvestableList = _currentLocation._harvestableList;
+        if (location._id == locationFromId) {
+            location             = _currentLocation;
             location._playerList = PlayerList();
-            location._mobList = _currentLocation._mobList;
-            //location._playerList      = currentPlayerList;
+            _previousLocation = location;
             locationFromIsNew = false;
             break;
         }
     }
     for (Location& location : _locationList) {
         //location.printInfo();
-        if (location._locationID == locationTo) {
-            _currentLocation._locationID = locationTo;
-            _currentLocation._harvestableList = location._harvestableList;
+        if (location._id == locationToId) {
+            _currentLocation             = location;
             _currentLocation._playerList = PlayerList();
-            _currentLocation._mobList = location._mobList;
-            _currentLocation._fishNodeList = location._fishNodeList;
             //currentPlayerList    = location._playerList;
             locationToIsNew = false;
             break;
         }
     }
     if (locationFromIsNew == true) {
-        _locationList.push_back(
+        Location newFromLocation = 
             Location(
-                locationFrom,
+                locationFromId, locationFromName,
                 _currentLocation._harvestableList,
                 _currentLocation._playerList,
                 _currentLocation._mobList,
                 _currentLocation._fishNodeList
-            )
-        );
+            );
+        _locationList.push_back(newFromLocation);
+        _previousLocation = newFromLocation;
     }
     if (locationToIsNew == true) {
-        _locationList.push_back(Location(locationTo, {}, {}, {}, {}));
-        _currentLocation._locationID      = locationTo;
-        _currentLocation._harvestableList = {};
-        _currentLocation._playerList      = {};
-        _currentLocation._mobList         = {};
-        _currentLocation._fishNodeList    = {};
+        Location newCurrentLocation = Location(locationToId, locationToName, {}, {}, {}, {});
+        _locationList.push_back(newCurrentLocation);
+        _currentLocation = newCurrentLocation;
     }
 
     if (printInfo) {
-        Location::printInfo(_locationList, _currentLocation, locationFrom, locationTo);
+        Location::printInfo(_locationList, _currentLocation, _previousLocation);
     }
 }
 void EntityList::beginChangeLocation(NetworkCommand& command, bool printInfo)
 {
-    _isChangingLocation = true;
+    //std::cout << "begin changing cocation\n";
     /*if (abs(_playerSelf._positionX) >= abs(_playerSelf._positionY)) {
         _playerSelf._positionX = _playerSelf._positionX * -1;
     }
@@ -103,8 +98,7 @@ void EntityList::beginChangeLocation(NetworkCommand& command, bool printInfo)
         Location::printInfo(
             _locationList, 
             _currentLocation, 
-            _currentLocation._locationID, 
-            _currentLocation._locationID
+            _previousLocation
         );
     }
 
@@ -123,9 +117,40 @@ EntityList::EntityList()
     _playerSelf      = {};
     _locationList    = {};
 }
+void EntityList::trackPlayerPath() const
+{
+    /*if (_currentLocation._id.find("TNL") == std::string::npos and
+        _previousLocation._id.find("TNL") == std::string::npos) {
+        return;
+    }*/
+
+    const std::string logLine =
+        "from: " + _previousLocation._name + " -> " +
+        "to: " + _currentLocation._name +
+        " [ from: " + _previousLocation._id +
+        " -> to: " + _currentLocation._id + " ]\n";
+
+    std::ofstream logFile("player_path.txt", std::ios::app); // append mode
+
+    if (logFile.is_open()) {
+        if (_isChangingLocation) {
+            //std::cout << "player ended usual changing location\n";
+            logFile << logLine;
+        }
+        else {
+            //std::cout << "player ended teleporation changing location\n";
+            logFile << "teleportation " << logLine;
+        }
+        logFile.close();
+    }
+    else {
+        std::cerr << "Failed to open player_path.txt for writing\n";
+    }
+
+}
 void EntityList::drawWindowFrame(float scale) const
 {
-    if (_currentLocation._locationID.find("TNL") == std::string::npos) {
+    if (_currentLocation._id.find("TNL") == std::string::npos) {
         glPointSize(1);
         glBegin(GL_LINES);
         glColor4f(0.5, 0.5, 0.5, 1);

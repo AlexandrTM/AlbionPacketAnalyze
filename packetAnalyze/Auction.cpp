@@ -180,7 +180,7 @@ void Auction::GetItemData(
 	std::ofstream auctionAverageValues;
 
 	itemData =
-		"currentLocation: " + currentLocation._locationID + " " +
+		"currentLocation: " + currentLocation._id + " " +
 		"itemId: " + std::to_string(itemId)				  + " " +
 		"qualityId: " + std::to_string(qualityId)		  + " " +
 		"dataScaleId: " + std::to_string(dataScaleId);
@@ -303,7 +303,7 @@ void Auction::processAuctionOrders(
 					<< totalSilverPrice / amount << " "
 					<< /*std::string(magic_enum::enum_name(
 						static_cast<locationId>(
-							static_cast<uint32_t>(std::stoul(currentLocation._locationID)))))
+							static_cast<uint32_t>(std::stoul(currentLocation._id)))))
 					<< */"\n";
 				/*auctionOrders <<
 					std::setw(16) << std::left << playerName << " "

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "net.h"
+#include "entity_list_instance.h"
 
 nlohmann::json net::readJsonFile(const std::string& filename)
 {
@@ -207,6 +208,18 @@ void net::findUniqueValuesByCriterion(
     //}
     //std::cout << "---------------------------------\n";
 }
+std::string net::getLocationNameById(const nlohmann::json& locationNames, const std::string& id)
+{
+    for (const auto& location : locationNames) {
+        if (location.contains("Index") && location["Index"] == id) {
+            if (location.contains("UniqueName"))
+                //std::cout << location["UniqueName"].get<std::string>() << "\n";
+                return location["UniqueName"].get<std::string>();
+        }
+    }
+    std::cout << "Location Name not found: " << id << std::endl;
+    return {};
+}
 
 void net::searchLocationsTemplates(int32_t x, int32_t y)
 {
@@ -252,9 +265,9 @@ void net::searchLocationsTemplates(int32_t x, int32_t y)
 
     std::cout << "--------------------------\nSearch finished\n";
 }
-void net::parseFishingZonesFromTemplate(const std::string& templateFilePath)
+void net::parseObjectsFromTemplate(const std::string& templateFilePath)
 {
-    std::vector<std::pair<float_t, float_t>> fishingZonePositions;
+    std::vector<std::pair<float_t, float_t>> objectPositions;
 
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(templateFilePath.c_str()) != tinyxml2::XML_SUCCESS) {
@@ -262,21 +275,21 @@ void net::parseFishingZonesFromTemplate(const std::string& templateFilePath)
         return;
     }
 
-    std::regex fishingZoneRegex(R"(FishingZone_.*)");
+    std::regex fishingZoneRegex(R"(.*_NODE)");
 
     auto* root = doc.FirstChildElement();
     if (!root) return;
 
     std::function<void(tinyxml2::XMLElement*)> recursiveSearch = [&](tinyxml2::XMLElement* element) {
         while (element) {
-            const char* tag = element->Name();
-            if (std::string(tag) == "tile") {
+            std::string tag = element->Name();
+            if (tag == "tile"/* || tag == "compoundtile"*/) {
                 const char* nameAttr = element->Attribute("name");
                 const char* posAttr = element->Attribute("pos");
                 if (nameAttr && posAttr && std::regex_match(nameAttr, fishingZoneRegex)) {
                     float_t px = 0, py = 0, pz = 0;
                     if (sscanf_s(posAttr, "%f %f %f", &px, &py, &pz) == 3) {
-                        fishingZonePositions.emplace_back(px, pz);
+                        objectPositions.emplace_back(px, pz);
                     }
                 }
             }
@@ -287,8 +300,50 @@ void net::parseFishingZonesFromTemplate(const std::string& templateFilePath)
 
     recursiveSearch(root);
 
-    for (auto& fishingZone : fishingZonePositions) {
-        std::cout << fishingZone.first << " " << fishingZone.second << "\n";
+    //tinyxml2::XMLElement* root = doc.FirstChildElement("template");
+    //if (!root) return;
+
+    //// Navigate to <tiles><layergroup><layer name="T8">
+    //tinyxml2::XMLElement* tiles = root->FirstChildElement("tiles");
+    //if (!tiles) return;
+
+    //tinyxml2::XMLElement* layerGroup = tiles->FirstChildElement("layergroup");
+    //while (layerGroup) {
+    //    tinyxml2::XMLElement* layer = layerGroup->FirstChildElement("layer");
+    //    while (layer) {
+    //        const char* layerName = layer->Attribute("name");
+    //        const char* layerId = layer->Attribute("id");
+    //        if (layerName && layerId && std::string(layerName) == "T8" &&
+    //            std::string(layerId) == "f4cd37b2-8abd-46f4-8135-d172356d12a5") {
+
+    //            tinyxml2::XMLElement* tile = layer->FirstChildElement("tile");
+    //            while (tile) {
+    //                const char* tileName = tile->Attribute("name");
+    //                const char* posAttr = tile->Attribute("pos");
+
+    //                if (tileName && posAttr && std::regex_match(tileName, fishingZoneRegex)) {
+
+    //                    float_t x = 0.0f, y = 0.0f, z = 0.0f;
+    //                    if (sscanf_s(posAttr, "%f %f %f", &x, &y, &z) == 3) {
+    //                        objectPositions.emplace_back(x, z);  // only X and Z are used
+    //                    }
+    //                }
+
+    //                tile = tile->NextSiblingElement("tile");
+    //            }
+    //        }
+
+    //        layer = layer->NextSiblingElement("layer");
+    //    }
+    //    layerGroup = layerGroup->NextSiblingElement("layergroup");
+    //}
+
+    for (size_t i = 0; i < objectPositions.size(); i++) {
+        const auto& fishingZone = objectPositions[i];
+        _entityList._currentLocation._fishNodeList.update(
+            FishNode::FishNode(i, "fisn_node", 1, 1, 0, fishingZone.first, fishingZone.second, 1)
+        );
+        //std::cout << fishingZone.first << " " << fishingZone.second << "\n";
     }
 }
 

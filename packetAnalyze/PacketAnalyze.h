@@ -26,11 +26,9 @@ private:
     NetworkPacket _packet;
     FragmentedCommandsBuffer _fragmentedCommandsBuffer;
 
-    //EntityList _entityList{};
     std::string itemData = "";
     size_t counter = 0;
 
-    //const std::regex locationRegex(R"(.*)");
 
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
     bool findStringInString(std::string packet, std::string string, size_t& stringPosition);

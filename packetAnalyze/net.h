@@ -142,7 +142,7 @@ namespace net
 
         return integer;
     }
-
+    
     nlohmann::json readJsonFile(const std::string& filename);
 
     void getMobData(
@@ -168,10 +168,12 @@ namespace net
         const std::string& criterion
     );
     void searchLocationsTemplates(int32_t x, int32_t y);
-    void parseFishingZonesFromTemplate(const std::string& templateFilePath);
+    void parseObjectsFromTemplate(const std::string& templateFilePath);
 
+    std::string getLocationNameById(const nlohmann::json& locationNames, const std::string& id);
     void formatItemsData();
 
+    const nlohmann::json locationNames = net::readJsonFile("world.json");
     const nlohmann::json mobsData = net::readJsonFile("mobs.json");
     const nlohmann::json harvestablesData = net::readJsonFile("harvestables.json");
 };
