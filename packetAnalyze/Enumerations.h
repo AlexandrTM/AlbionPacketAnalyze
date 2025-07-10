@@ -228,66 +228,12 @@ const std::vector<std::pair<std::string, HarvestableType>> harvestableMappings =
 const std::vector<std::string> harvestableSpecialNames = { 
     "ELEMENTAL", "VETERAN", "ELITE", "GUARDIAN", "ROCKGIANT", "OREGIANT"};
 
-enum itemId : uint32_t
-{
-    T1_LOG = 907,
-    T1_ROCK = 935,
-    T2_ORE = 958,
-    T1_HIDE = 985,
-    T2_FIBER = 1013,
-    T2_PLANK = 1040,
-    T2_STONEBLOCK = 1067,
-    T2_METALBAR = 1074,
-    T2_LEATHER = 1101,
-    T2_CLOTH = 1128,
-    T8_4_CLOTH = 1154,
+const std::unordered_map<std::string, std::string> biomeMap = {
+    {"SW", "swamp"},
+    {"FR", "forest"},
+    {"HL", "highlands"},
+    {"ST", "steppe"},
+    {"MN", "mountains"}
 };
-
-enum locationId : uint32_t
-{
-    Thetford = 0007,
-    Fort_Sterling = 4002,
-    Lymhurst = 1002,
-    Bridgewatch = 2004,
-    Martlock = 3008,
-    Caerleon = 3005,
-    Black_market = 3003,
-    Fort_Sterling_portal = 4301,
-    Brecilien = 5003,
-};
-
-enum mobCategory : uint8_t
-{
-    resource = 1,
-    resourceElemental = 2,
-    basicMob = 5,
-    magicMob = 6,
-    mobBlackZone = 7,
-    guard = 8,
-    portal = 90,
-};
-
-//inline bool isMobKnown(uint8_t category, uint8_t mobTypeID) {
-//    auto it = std::find_if(mobDescriptions.begin(), mobDescriptions.end(),
-//        [category, mobTypeID](const MobDescription& mob) {
-//            return (mob._category == category && mob._typeID == mobTypeID);
-//        });
-//    return it != mobDescriptions.end(); // Return true if found
-//}
-//inline const MobDescription& getMobDescription(uint8_t category, uint8_t mobTypeID) {
-//    static const MobDescription invalidMob = MobDescription(0, 0, 0, "MOB_NOT_FOUND");
-//
-//    auto it = std::find_if(mobDescriptions.begin(), mobDescriptions.end(),
-//        [category, mobTypeID](const MobDescription& mob) {
-//            return (mob._category == category && mob._typeID == mobTypeID);
-//        });
-//
-//    if (it != mobDescriptions.end()) {
-//        return *it;
-//    }
-//    else {
-//        return invalidMob;
-//    }
-//}
 
 #endif

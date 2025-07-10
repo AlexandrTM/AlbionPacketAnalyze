@@ -431,9 +431,6 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo&
     }
 }
 
-const std::regex locationRegex(R"(TNL-\d+)");
-//const std::regex locationRegex(R"(.*)");
-
 // teleporation event codes 18, 19, 23, 24
 std::vector<uint16_t> nnCodes = { /*18, 23*/ 19, 24 };
 std::vector<uint16_t> nCodes = { /*55, 71*/21, 103, 104, 123, 63, 160, 272, 8, 1, 81 };
@@ -448,11 +445,11 @@ void PacketAnalyze::analyzeCommand(
 )
 {
     DataLayout dataLayout{};
-    //std::vector<uint8_t>& raw = this->rawNetworkCommand();
-    //std::string rawStr(raw.begin(), raw.end());
 
-    //if (std::isElementInVector(nnCodes, command.getEventCode()) and
-    //    command.size() != 67/* and rawStr.find("TNL") != std::string::npos*/) {
+    //std::vector<uint8_t>& raw = command.rawNetworkCommand();
+    //std::string rawStr(raw.begin(), raw.end());
+    //if (/*std::isElementInVector(nnCodes, command.getEventCode()) and*/
+    //    command.size() != 67 and rawStr.find((char*)"425c0000c386bc29") != std::string::npos) {
     //    // 544e4c TNL
     //    dataLayout.findDataLayout(command);
     //    dataLayout.printInfo(command);
@@ -544,8 +541,16 @@ void PacketAnalyze::analyzeCommand(
         switch (command.getEventCode()) {
         case operationCode::Join:
             _entityList.endChangeLocation(command, false);
-            _entityList.trackPlayerPath();
-            Location::findLocationData(locationRegex, _entityList._currentLocation);
+            Location::findLocationData(_entityList._currentLocation);
+            if (_entityList._previousLocation._tier == 0) {
+                Location::findLocationData(_entityList._previousLocation);
+            }
+            net::makeLocationsConnection(
+                _entityList._previousLocation, 
+                _entityList._currentLocation, 
+                _entityList._isChangingLocation
+            );
+            net::updatePlayerData(_entityList._currentLocation, "player_data.json");
             _entityList._isChangingLocation = false;
             break;
         case operationCode::Move:
@@ -655,7 +660,10 @@ int main() {
     //net::formatItemsData();
     //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
-    packetAnalyze.run();
+    //net::removeAvalonConnections("location_connections.json");
+    net::parseLocationsConnections("world_extended.xml");
+    //net::findLocationsStatistics("cluster");
+    //packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);
     

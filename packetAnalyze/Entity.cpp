@@ -21,7 +21,7 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
 {
     DataLayout dataLayout{};
     dataLayout.findDataLayout(command);
-    //dataLayout.printInfo(command);
+    //dataLayout.printInfo(command, true);
     //command.printCommandInOneString();
     DataFragment& locationFromFragment = dataLayout.findFragment(65);
     DataFragment& locationToFragment = dataLayout.findFragment(8);
@@ -36,9 +36,6 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
     if (locationToId == "") {
         dataLayout.printInfo(command);
     }
-
-    std::string locationFromName = net::getLocationNameById(net::locationNames, locationFromId);
-    std::string locationToName = net::getLocationNameById(net::locationNames, locationToId);
 
     //currentHarvestableList.printInfo();
     bool locationToIsNew = true;
@@ -66,7 +63,7 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
     if (locationFromIsNew == true) {
         Location newFromLocation = 
             Location(
-                locationFromId, locationFromName,
+                locationFromId, "",
                 _currentLocation._harvestableList,
                 _currentLocation._playerList,
                 _currentLocation._mobList,
@@ -76,14 +73,12 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
         _previousLocation = newFromLocation;
     }
     if (locationToIsNew == true) {
-        Location newCurrentLocation = Location(locationToId, locationToName, {}, {}, {}, {});
+        Location newCurrentLocation = Location(locationToId, "", {}, {}, {}, {});
         _locationList.push_back(newCurrentLocation);
         _currentLocation = newCurrentLocation;
     }
 
-    if (printInfo) {
-        Location::printInfo(_locationList, _currentLocation, _previousLocation);
-    }
+    if (printInfo) { this->printInfo(); }
 }
 void EntityList::beginChangeLocation(NetworkCommand& command, bool printInfo)
 {
@@ -94,13 +89,7 @@ void EntityList::beginChangeLocation(NetworkCommand& command, bool printInfo)
     else if (abs(_playerSelf._positionY) > abs(_playerSelf._positionX)) {
         _playerSelf._positionY = _playerSelf._positionY * -1;
     }*/
-    if (printInfo) {
-        Location::printInfo(
-            _locationList, 
-            _currentLocation, 
-            _previousLocation
-        );
-    }
+    if (printInfo) { this->printInfo(); }
 
     _playerSelf._positionX = 10000;
     _playerSelf._positionY = 10000;
@@ -116,37 +105,6 @@ EntityList::EntityList()
     _currentLocation = {};
     _playerSelf      = {};
     _locationList    = {};
-}
-void EntityList::trackPlayerPath() const
-{
-    /*if (_currentLocation._id.find("TNL") == std::string::npos and
-        _previousLocation._id.find("TNL") == std::string::npos) {
-        return;
-    }*/
-
-    const std::string logLine =
-        "from: " + _previousLocation._name + " -> " +
-        "to: " + _currentLocation._name +
-        " [ from: " + _previousLocation._id +
-        " -> to: " + _currentLocation._id + " ]\n";
-
-    std::ofstream logFile("player_path.txt", std::ios::app); // append mode
-
-    if (logFile.is_open()) {
-        if (_isChangingLocation) {
-            //std::cout << "player ended usual changing location\n";
-            logFile << logLine;
-        }
-        else {
-            //std::cout << "player ended teleporation changing location\n";
-            logFile << "teleportation " << logLine;
-        }
-        logFile.close();
-    }
-    else {
-        std::cerr << "Failed to open player_path.txt for writing\n";
-    }
-
 }
 void EntityList::drawWindowFrame(float scale) const
 {
@@ -531,4 +489,39 @@ std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y) c
 float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 {
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+}
+
+void EntityList::printInfo()
+{
+    auto timeNow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char timeBuffer[30];
+    ctime_s(timeBuffer, sizeof(timeBuffer), &timeNow);
+
+    std::cout << timeBuffer << "\n" << "num of locations: " << _locationList.size() << "\n";
+    /*for (size_t i = 0; i < locations.size(); i++) {
+        std::cout <<
+            "location id" << i << ": " << locations[i]._id          << "\n" <<
+            "num of harvestables: "    << locations[i]._harvestableList.size() << "\n" <<
+            "num of mobs:         "    << locations[i]._mobList.size()         << "\n\n";
+    }*/
+
+    std::cout <<
+        "from: " << _previousLocation._name << " -> " <<
+        "to: " << _currentLocation._name << "\n";
+
+    std::cout <<
+        "current location:    " << _currentLocation._id << "\n" <<
+        "num of harvestables: " << _currentLocation._harvestableList.size() << "\n" <<
+        "num of mobs:         " << _currentLocation._mobList.size() << "\n\n";
+
+    // Print information about the location you're coming from (locationFrom)
+    std::cout << "From location: " << _previousLocation._id << "\n";
+    for (Location& location : _locationList) {
+        if (location._id == _previousLocation._id) {
+            std::cout << "Number of harvestables: " << location._harvestableList.size() << "\n";
+            std::cout << "Number of mobs: " << location._mobList.size() << "\n";
+            location._harvestableList.printInfo(); // Print detailed info of the harvestables
+            break;
+        }
+    }
 }

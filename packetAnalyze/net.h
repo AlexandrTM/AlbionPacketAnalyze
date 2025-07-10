@@ -142,7 +142,7 @@ namespace net
 
         return integer;
     }
-    
+
     nlohmann::json readJsonFile(const std::string& filename);
 
     void getMobData(
@@ -167,11 +167,20 @@ namespace net
         const std::string& uniqueKey,
         const std::string& criterion
     );
-    void searchLocationsTemplates(int32_t x, int32_t y);
-    void parseObjectsFromTemplate(const std::string& templateFilePath);
+    void parseObjectsFromTemplate(const std::string& filePath);
 
+    void removeAvalonConnections(const std::string filePath);
+    void makeLocationsConnection(
+        Location& locationFrom, Location& locationTo, const bool& isChangingLocation
+    );
+    void updatePlayerData(Location& currentLocation, const std::string& filePath);
+    void parseLocationsConnections(const std::string& xmlPath);
     std::string getLocationNameById(const nlohmann::json& locationNames, const std::string& id);
+    void searchLocationsTemplates(int32_t x, int32_t y);
+    void findLocationsStatistics(const std::string& filePath);
+
     void formatItemsData();
+    std::string get_utc_time();
 
     const nlohmann::json locationNames = net::readJsonFile("world.json");
     const nlohmann::json mobsData = net::readJsonFile("mobs.json");

@@ -212,66 +212,175 @@ std::string net::getLocationNameById(const nlohmann::json& locationNames, const 
 {
     for (const auto& location : locationNames) {
         if (location.contains("Index") && location["Index"] == id) {
-            if (location.contains("UniqueName"))
+            if (location.contains("UniqueName")) {
                 //std::cout << location["UniqueName"].get<std::string>() << "\n";
                 return location["UniqueName"].get<std::string>();
+            }
         }
     }
     std::cout << "Location Name not found: " << id << std::endl;
     return {};
 }
 
-void net::searchLocationsTemplates(int32_t x, int32_t y)
+void net::removeAvalonConnections(const std::string filePath)
 {
-    const std::filesystem::path rootFolder = "templates/";
-
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(rootFolder)) {
-        if (!entry.is_regular_file() || entry.path().extension() != ".xml")
-            continue;
-
-        tinyxml2::XMLDocument doc;
-        if (doc.LoadFile(entry.path().string().c_str()) != tinyxml2::XML_SUCCESS)
-            continue;
-
-        auto checkPosition = [&](const char* posAttr) -> bool {
-            if (!posAttr) return false;
-            int px = 0, py = 0, pz = 0;
-            if (sscanf_s(posAttr, "%d %d %d", &px, &py, &pz) == 3) {
-                return px == x && pz == y;
-            }
-            return false;
-            };
-
-        bool matchFound = false;
-
-        // Recursive check of <tile> and <compoundtile> inside document
-        std::function<void(tinyxml2::XMLElement*)> recursiveSearch = [&](tinyxml2::XMLElement* element) {
-            while (element) {
-                std::string tag = element->Name();
-                if ((/*tag == "tile" || */tag == "compoundtile") && checkPosition(element->Attribute("pos"))) {
-                    std::cout << "Match in: " << entry.path().string() << std::endl;
-                    matchFound = true;
-                    return;
-                }
-                recursiveSearch(element->FirstChildElement());
-                element = element->NextSiblingElement();
-            }
-            };
-
-        tinyxml2::XMLElement* root = doc.FirstChildElement();
-        if (root) recursiveSearch(root);
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << '\n';
+        return;
     }
 
+    nlohmann::ordered_json data;
+    try {
+        inFile >> data;
+    }
+    catch (...) {
+        std::cerr << "Failed to parse JSON from: " << filePath << '\n';
+        return;
+    }
 
-    std::cout << "--------------------------\nSearch finished\n";
+    inFile.close();
+
+    if (!data.is_array()) {
+        std::cerr << "JSON root is not an array.\n";
+        return;
+    }
+
+    // Filter out entries where from.id or to.id starts with "TNL"
+    nlohmann::ordered_json filtered = nlohmann::json::array();
+
+    for (const auto& entry : data) {
+        if (!entry.contains("from") || !entry.contains("to")) continue;
+
+        const auto& fromId = entry["from"]["id"];
+        const auto& toId = entry["to"]["id"];
+
+        if (fromId.is_string() && toId.is_string() &&
+            (fromId.get<std::string>().starts_with("TNL") || toId.get<std::string>().starts_with("TNL"))) {
+            continue;
+        }
+
+        // Rebuild entry with consistent key order
+        nlohmann::ordered_json orderedEntry;
+        /*orderedEntry["timestamp"] = entry["timestamp"];
+        orderedEntry["type"] = entry["type"];
+        orderedEntry["from"] = entry["from"];
+        orderedEntry["to"] = entry["to"];*/
+        orderedEntry = entry;
+
+        filtered.push_back(orderedEntry);
+    }
+
+    std::ofstream outFile(filePath);
+    if (!outFile.is_open()) {
+        std::cerr << "Failed to open file for writing: " << filePath << '\n';
+        return;
+    }
+
+    outFile << filtered.dump(4); // Pretty-print with 4 spaces
+    outFile.close();
 }
-void net::parseObjectsFromTemplate(const std::string& templateFilePath)
+
+void net::makeLocationsConnection(
+    Location& locationFrom, Location& locationTo, const bool& isChangingLocation
+)
+{
+    /*if (_currentLocation._id.find("TNL") == std::string::npos and
+        _previousLocation._id.find("TNL") == std::string::npos) {
+        return;
+    }*/
+
+    nlohmann::ordered_json logEntry;
+
+    logEntry["timestamp"] = get_utc_time();
+    logEntry["type"] = isChangingLocation ? "walk" : "teleportation";
+    logEntry["from"] = {
+        { "id", locationFrom._id },
+        { "name", locationFrom._name },
+        { "type", locationFrom._type },
+        { "tier", locationFrom._tier },
+        { "biome", locationFrom._biome }
+    };
+
+    logEntry["to"] = {
+        { "id", locationTo._id },
+        { "name", locationTo._name },
+        { "type", locationTo._type },
+        { "tier", locationTo._tier },
+        { "biome", locationTo._biome }
+    };
+
+    const std::string filePath = "location_connections.json";
+    nlohmann::ordered_json existingData = nlohmann::json::array();
+
+    std::ifstream inputFile(filePath);
+    if (inputFile.is_open()) {
+        try {
+            inputFile >> existingData;
+            if (!existingData.is_array()) {
+                existingData = nlohmann::json::array(); // fallback
+            }
+        }
+        catch (...) {
+            existingData = nlohmann::json::array(); // malformed file
+        }
+        inputFile.close();
+    }
+
+    bool isConnectionAlreadyExist = false;
+    for (auto& entry : existingData) {
+        if (!entry.contains("from") || !entry.contains("to") || !entry.contains("type")) continue;
+
+        const auto& from = entry["from"];
+        const auto& to = entry["to"];
+        const auto& type = entry["type"];
+
+        bool same = from["id"] == logEntry["from"]["id"] && to["id"] == logEntry["to"]["id"];
+        bool mirrored = from["id"] == logEntry["to"]["id"] && to["id"] == logEntry["from"]["id"];
+        bool sameType = type == logEntry["type"];
+
+        if ((same || mirrored) && sameType) {
+            entry["timestamp"] = logEntry["timestamp"]; // update timestamp only
+            isConnectionAlreadyExist = true;
+            break;
+        }
+    }
+
+    if (!isConnectionAlreadyExist) {
+        existingData.push_back(logEntry);
+    }
+
+    std::ofstream logFile(filePath);
+    if (logFile.is_open()) {
+        logFile << existingData.dump(4);
+        logFile.close();
+    }
+    else {
+        std::cerr << "Failed to open location_connections.txt for writing\n";
+    }
+}
+void net::updatePlayerData(Location& currentLocation, const std::string& filePath)
+{
+    nlohmann::ordered_json playerData;
+
+    playerData["player"]["location"]["id"] = currentLocation._id;
+
+    std::ofstream outFile(filePath);
+    if (!outFile.is_open()) {
+        std::cerr << "Failed to open file for writing: " << filePath << '\n';
+        return;
+    }
+
+    outFile << playerData.dump(4); // Pretty-print with 4 spaces
+    outFile.close();
+}
+void net::parseObjectsFromTemplate(const std::string& filePath)
 {
     std::vector<std::pair<float_t, float_t>> objectPositions;
 
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(templateFilePath.c_str()) != tinyxml2::XML_SUCCESS) {
-        std::cerr << "Failed to load XML file: " << templateFilePath << std::endl;
+    if (doc.LoadFile(filePath.c_str()) != tinyxml2::XML_SUCCESS) {
+        std::cerr << "Failed to load XML file: " << filePath << std::endl;
         return;
     }
 
@@ -346,6 +455,175 @@ void net::parseObjectsFromTemplate(const std::string& templateFilePath)
         //std::cout << fishingZone.first << " " << fishingZone.second << "\n";
     }
 }
+void net::parseLocationsConnections(const std::string& xmlPath)
+{
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile(xmlPath.c_str()) != tinyxml2::XML_SUCCESS) {
+        std::cerr << "Failed to load XML file: " << xmlPath << '\n';
+        return;
+    }
+
+    std::regex idRegex("^(\\d{4}|DNG.*)$"); // Only IDs with exactly 4 digits
+    std::unordered_map<std::string, tinyxml2::XMLElement*> validClusters;
+
+    // Step 1: Collect all clusters with 4-digit numeric ids
+    auto* clusters = doc.FirstChildElement("world")->FirstChildElement("clusters");
+    if (!clusters) {
+        std::cerr << "No <clusters> element found.\n";
+        return;
+    }
+
+    for (auto* cluster = clusters->FirstChildElement("cluster"); cluster; cluster = cluster->NextSiblingElement("cluster")) {
+        std::string clusterId = cluster->Attribute("id");
+        if (std::regex_match(clusterId, idRegex)) {
+            //std::cout << clusterId << "\n";
+            validClusters[clusterId] = cluster;
+        }
+    }
+
+    std::regex targetIdRegex("@(.*)$");
+
+    // Step 2: For each valid cluster, parse exits
+    for (const auto& [clusterId, clusterElem] : validClusters) {
+        auto* exits = clusterElem->FirstChildElement("exits");
+        if (!exits) continue;
+
+        for (auto* exit = exits->FirstChildElement("exit"); exit; exit = exit->NextSiblingElement("exit")) {
+            const char* targetIdAttr = exit->Attribute("targetid");
+            if (!targetIdAttr) continue;
+
+            std::smatch match;
+            std::string targetIdStr = targetIdAttr;
+            if (!std::regex_search(targetIdStr, match, targetIdRegex)) continue;
+
+            std::string targetClusterId = match[1];
+            //std::cout << "targetClusterId: " << targetClusterId << "\n";
+            //if (validClusters.find(targetClusterId) == validClusters.end()) continue;
+
+            // Prepare both location structures
+            Location locationFrom, locationTo;
+            locationFrom._id = clusterId;
+            locationTo._id = targetClusterId;
+
+            Location::findLocationData(locationFrom);
+            Location::findLocationData(locationTo);
+
+            if (!locationFrom._id.empty() && !locationTo._id.empty()) {
+                net::makeLocationsConnection(locationFrom, locationTo, true);
+            }
+        }
+    }
+}
+void net::searchLocationsTemplates(int32_t x, int32_t y)
+{
+    const std::filesystem::path rootFolder = "templates/";
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(rootFolder)) {
+        if (!entry.is_regular_file() || entry.path().extension() != ".xml")
+            continue;
+
+        tinyxml2::XMLDocument doc;
+        if (doc.LoadFile(entry.path().string().c_str()) != tinyxml2::XML_SUCCESS)
+            continue;
+
+        auto checkPosition = [&](const char* posAttr) -> bool {
+            if (!posAttr) return false;
+            int px = 0, py = 0, pz = 0;
+            if (sscanf_s(posAttr, "%d %d %d", &px, &py, &pz) == 3) {
+                return px == x && pz == y;
+            }
+            return false;
+            };
+
+        bool matchFound = false;
+
+        // Recursive check of <tile> and <compoundtile> inside document
+        std::function<void(tinyxml2::XMLElement*)> recursiveSearch = [&](tinyxml2::XMLElement* element) {
+            while (element) {
+                std::string tag = element->Name();
+                if ((/*tag == "tile" || */tag == "compoundtile") && checkPosition(element->Attribute("pos"))) {
+                    std::cout << "Match in: " << entry.path().string() << std::endl;
+                    matchFound = true;
+                    return;
+                }
+                recursiveSearch(element->FirstChildElement());
+                element = element->NextSiblingElement();
+            }
+            };
+
+        tinyxml2::XMLElement* root = doc.FirstChildElement();
+        if (root) recursiveSearch(root);
+    }
+
+
+    std::cout << "--------------------------\nSearch finished\n";
+}
+void net::findLocationsStatistics(const std::string& filePath)
+{
+    std::regex locationRegex("^(\\d{4})_(?:WRL|HBS)");
+
+    std::map<int, int> tierDistribution;
+    std::map<std::string, int> biomeDistribution;
+    std::unordered_map<std::string, std::vector<std::string>> tierBiomeLocations;
+
+    for (const auto& entry : std::filesystem::directory_iterator(filePath)) {
+        if (!entry.is_regular_file()) continue;
+
+        std::string filename = entry.path().filename().string();
+        std::smatch match;
+        if (!std::regex_search(filename, match, locationRegex)) continue;
+
+        std::string locationId = match.str(1);
+        Location location;
+        location._id = locationId;
+
+        Location::findLocationData(location);
+
+        if (location._tier == 0 || location._biome.empty()) continue;
+
+        tierDistribution[location._tier]++;
+        biomeDistribution[location._biome]++;
+
+        std::string tierBiomeKey = "T" + std::to_string(location._tier) + "_" + location._biome;
+        tierBiomeLocations[tierBiomeKey].push_back(location._name);
+    }
+
+    size_t totalLocations = 0;
+    for (const auto& [tier, count] : tierDistribution) {
+        totalLocations += count;
+    }
+    std::cout << "Total locations: " << totalLocations << "\n\n";
+
+    std::cout << "Tier Distribution:\n";
+    for (const auto& [tier, count] : tierDistribution) {
+        std::cout << "  Tier " << tier << ": " << count << "\n";
+    }
+
+    std::cout << "\nBiome Distribution:\n";
+    for (const auto& [biome, count] : biomeDistribution) {
+        std::cout << "  " << biome << ": " << count << "\n";
+    }
+
+    std::cout << "\nCombined Tier + Biome Distribution:\n";
+    std::vector<std::pair<std::string, std::vector<std::string>>> combined(tierBiomeLocations.begin(), tierBiomeLocations.end());
+
+    std::sort(combined.begin(), combined.end(), [](const auto& a, const auto& b) {
+        auto extract = [](const std::string& key) {
+            size_t underscore = key.find('_');
+            int tier = std::stoi(key.substr(1, underscore - 1));
+            std::string biome = key.substr(underscore + 1);
+            return std::pair{ tier, biome };
+            };
+        return extract(a.first) < extract(b.first);
+        });
+
+    for (const auto& [key, names] : combined) {
+        std::cout << key << ": " << names.size() << " locations\n";
+        for (const std::string& name : names) {
+            std::cout << " - " << name << "\n";
+        }
+    }
+}
 
 void net::formatItemsData()
 {
@@ -378,4 +656,18 @@ void net::formatItemsData()
     outputFile.close();
 
     std::cout << "Formatting complete. Output saved to formatted_items.txt" << std::endl;
+}
+
+std::string net::get_utc_time()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    std::tm utc_tm = {};
+    gmtime_s(&utc_tm, &now_c);  // Use gmtime_s instead of gmtime
+
+    std::stringstream ss;
+    ss << std::put_time(&utc_tm, "%FT%TZ");  // ISO 8601 with 'Z' for UTC
+
+    return ss.str();
 }

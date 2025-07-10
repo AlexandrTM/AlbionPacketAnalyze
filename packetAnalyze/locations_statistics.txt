@@ -1,0 +1,465 @@
+Total locations: 414
+
+Tier Distribution:
+  Tier 3: 15
+  Tier 4: 21
+  Tier 5: 154
+  Tier 6: 108
+  Tier 7: 81
+  Tier 8: 35
+
+Biome Distribution:
+  forest: 82
+  highlands: 82
+  mountains: 82
+  other: 4
+  steppe: 82
+  swamp: 82
+
+Combined Tier + Biome Distribution:
+T3_forest: 3 locations
+ - Larchroad
+ - Redlake
+ - Stagbourne
+T3_highlands: 3 locations
+ - Brent Knoll
+ - Mase Knoll
+ - Goffers Knoll
+T3_mountains: 3 locations
+ - Bryn Gorge
+ - Crose Gorge
+ - Gwan Gorge
+T3_steppe: 3 locations
+ - Cracked Earth
+ - Fractured Ground
+ - Prospector's Hope
+T3_swamp: 3 locations
+ - Chillhag
+ - Stinkhag
+ - Slimehag
+T4_forest: 4 locations
+ - Birchcopse
+ - Ferndell
+ - Flynsdell
+ - Cedarcopse
+T4_highlands: 4 locations
+ - Haytor
+ - Blackthorn Quarry
+ - Vixen Tor
+ - Haldon Tor
+T4_mountains: 4 locations
+ - Pen Kerrig
+ - Pen Gent
+ - Mawar Gorge
+ - Pen Uchaf
+T4_steppe: 4 locations
+ - Drywater Meadow
+ - Smoothfloor Cleft
+ - Longmarch Meadow
+ - Dryfield Meadow
+T4_swamp: 5 locations
+ - Windripple Fen
+ - Dusklight Fen
+ - Curlew Fen
+ - Murky Fen
+ - Fog Fen
+T5_forest: 31 locations
+ - Inis Mon
+ - Russerdell
+ - Oakcopse
+ - Willow Wood
+ - Yew Wood
+ - Hornbeam Wood
+ - Pinecopse
+ - Aspenwood
+ - 1302
+ - 1303
+ - 1304
+ - Brambleshore Hinterlands
+ - Deepwood Dell
+ - Greenshore Peninsula
+ - Giantweald Dale
+ - Timberscar Dell
+ - Giantweald Copse
+ - Watchwood Precipice
+ - Deadpine Forest
+ - Hightree Steep
+ - Southgrove Escarp
+ - Watchwood Grove
+ - Hightree Lake
+ - Hightree Dale
+ - Rivercopse Crossing
+ - Hightree Strand
+ - Hightree Glade
+ - Driftwood Vale
+ - Hightree Enclave
+ - Westweald Thicket
+ - Greenhollow Vale
+T5_highlands: 32 locations
+ - Lewsdon Hill
+ - Eldon Hill
+ - Gutras Hill
+ - Saddle Tor
+ - Croker Hill
+ - Kilmar Tor
+ - Adrens Hill
+ - Bellever Tor
+ - 3302
+ - 3303
+ - 3304
+ - Flatrock Cliffs
+ - Murdergulch Cross
+ - Murdergulch Gap
+ - Razorrock Passage
+ - Braemore Upland
+ - Razorrock Valley
+ - Highstone Meadow
+ - Battlebrae Plain
+ - Battlebrae Lake
+ - Stonemouth Northbluff
+ - Highstone Plains
+ - Battlebrae Flatland
+ - Battlebrae Peaks
+ - Windgrass Border
+ - Highstone Grassland
+ - Windgrass Gully
+ - Windgrass Rill
+ - Windgrass Precipice
+ - Gravemound Brim
+ - Gravemound Hills
+ - Stonelake Fields
+T5_mountains: 28 locations
+ - Pen Garn
+ - Cairn Gorm
+ - Tharcal Fissure
+ - Cairn Darg
+ - Cairn Glascore
+ - Cairn Camain
+ - Cairn Fidair
+ - Pen Fenair
+ - 4302
+ - 4303
+ - 4304
+ - Whitebank Descent
+ - Frostpeak Vista
+ - Everwinter Crossing
+ - Whitebank Stream
+ - Whitebank Shore
+ - Everwinter Shores
+ - Whitebank Cross
+ - Glacierfall Passage
+ - Floatshoal Floe
+ - Avalanche Ravine
+ - Munten Rise
+ - Frostbite Chasm
+ - Whitepeak Ascent
+ - Iceburn Firth
+ - Flammog Fork
+ - Frostseep Ravine
+ - Everwinter Reach
+T5_other: 1 locations
+ - Brecilien Grove
+T5_steppe: 32 locations
+ - Slowtree Plain
+ - Lazygrass Plain
+ - Snapshaft Trough
+ - Steelhide Meadow
+ - Sandgust Cleft
+ - Longshadow Plain
+ - Flatriver Trough
+ - Redstone Plain
+ - 2302
+ - 2303
+ - 2304
+ - Northstrand Dunes
+ - Swiftsands Plain
+ - Skysand Plateau
+ - Drybasin Riverbed
+ - Slakesands Canyon
+ - Sunfang Ravine
+ - Thirstwater Steppe
+ - Sandmount Strand
+ - Dryvein Riverbed
+ - Bleachskull Steppe
+ - Dryvein Cross
+ - Sunstrand Shoal
+ - Sunstrand Delta
+ - Sandmount Esker
+ - Dryvein Plain
+ - Farshore Esker
+ - Sandrift Steppe
+ - Sandrift Prairie
+ - Sandrift Coast
+ - Sandrift Shore
+ - Farshore Bay
+T5_swamp: 30 locations
+ - Sleetwater Basin
+ - Willowsigh Marsh
+ - Nightcreak Marsh
+ - Dewleaf Fen
+ - Drownhorse Basin
+ - Slithertail Marsh
+ - Wanderlure Basin
+ - Falsestep Marsh
+ - 0302
+ - 0303
+ - 0304
+ - Wetgrave Bog
+ - Scuttlesink Pools
+ - Meltwater Bog
+ - Drownfield Course
+ - Widemoor Shore
+ - Drownfield Mire
+ - Runnelvein Slough
+ - Widemoor Pool
+ - Drownfield Fen
+ - Willowshade Wetlands
+ - Skullmarsh Lower
+ - Widemoor Estuary
+ - Widemoor Delta
+ - Willowshade Mire
+ - Willowshade Lake
+ - Willowshade Icemarsh
+ - Springsump Basin
+ - Longfen Marsh
+ - Mudfoot Sump
+T6_forest: 21 locations
+ - Rowanwood
+ - Highbole Glen
+ - Longtimber Glen
+ - Wyre Forest
+ - Deeproot Wood
+ - Spindlewood
+ - Owlsong Glen
+ - Nightbloom Forest
+ - Timbertop Dale
+ - Timberslope Dell
+ - Deepwood Gorge
+ - Giantweald Woods
+ - Watchwood Lakeside
+ - Watchwood Bluffs
+ - Giantweald Roots
+ - Hightree Pass
+ - Hightree Borderlands
+ - Driftwood Glen
+ - Hightree Levee
+ - Hightree Cliffs
+ - Southgrove Copse
+T6_highlands: 20 locations
+ - Birken Fell
+ - Mardale
+ - Bowscale Fell
+ - Carns Hill
+ - Brons Hill
+ - Felniks Hill
+ - Garrow Fell
+ - Broken Fell
+ - Shaleheath Hills
+ - Skylake Bridge
+ - Flatrock Plateau
+ - Thunderrock Rapids
+ - Razorrock Ravine
+ - Braemore Lowland
+ - Razorrock Edge
+ - Windgrass Fields
+ - Windgrass Coast
+ - Stonemouth Bay
+ - Stonelake Hillock
+ - Gravemound Slope
+T6_mountains: 23 locations
+ - Creag Garr
+ - Malag Crevasse
+ - Creag Morr
+ - Cairn Drain
+ - Caulder Fissure
+ - Cairn Cloch
+ - Creag Dhor
+ - Creag Meagir
+ - Everwinter Peak
+ - Everwinter Plain
+ - Frostpeak Ascent
+ - Everwinter Gorge
+ - Whitebank Wall
+ - Floatshoal Fissure
+ - Iceburn Peaks
+ - Glacierfall Canyon
+ - Flammog Valley
+ - Munten Tundra
+ - Glacierbreak Summit
+ - Firesink Caldera
+ - Whitecliff Peak
+ - Frostbite Mountain
+ - Frostspring Passage
+T6_other: 3 locations
+ - Brecilien Weald
+ - Brecilien Copse
+ - Brecilien Thicket
+T6_steppe: 20 locations
+ - Astolat
+ - Kindlegrass Steppe
+ - Roastcorpse Steppe
+ - Deadvein Gully
+ - Parchthroat Plain
+ - Flimmerair Steppe
+ - Goldshimmer Plain
+ - Northstrand Beach
+ - Drytop Riverbed
+ - Drytop Pillars
+ - Thirstwater Waste
+ - Sunfang Approach
+ - Parchsand Cliffs
+ - Dryvein Steppe
+ - Bleachskull Desert
+ - Dryvein Oasis
+ - Sunstrand Dunes
+ - Farshore Heath
+ - Sandrift Expanse
+ - Farshore Lagoon
+T6_swamp: 21 locations
+ - Stumprot Swamp
+ - Wispwhisper Marsh
+ - Spectral Sump
+ - Bonepool Marsh
+ - Darkground Swamp
+ - Anklesnag Mire
+ - Dusktree Swamp
+ - Scuttlesink Mouth
+ - Meltwater Delta
+ - Runnelvein Bog
+ - Widemoor Hills
+ - Drownfield Wetland
+ - Drownfield Slough
+ - Widemoor End
+ - Willowshade Pools
+ - Drownfield Rut
+ - Widemoor Woods
+ - Widemoor Flats
+ - Springsump Wetland
+ - Longfen Arms
+ - Mudfoot Mounds
+T7_forest: 16 locations
+ - Murkweald
+ - Timbertop Wood
+ - Timberslope Grove
+ - Deepwood Pines
+ - Giantweald Edge
+ - Timberscar Copse
+ - Deepwood Copse
+ - Giantweald Glade
+ - Hightree Isle
+ - Rivercopse Curve
+ - Hightree Hillock
+ - Driftwood Hollow
+ - Rivercopse Path
+ - Southgrove Thicket
+ - Westweald Shore
+ - Greenhollow Copse
+T7_highlands: 16 locations
+ - Runnel Sink
+ - Shaleheath Steep
+ - Skylake Hinterlands
+ - Thunderrock Ascent
+ - Thunderrock Upland
+ - Murdergulch Trail
+ - Razorrock Chasm
+ - Razorrock Verge
+ - Razorrock Bank
+ - Highstone Mound
+ - Highstone Plateau
+ - Battlebrae Grassland
+ - Battlebrae Meadow
+ - Windgrass Terrace
+ - Gravemound Knoll
+ - Gravemound Cliffs
+T7_mountains: 17 locations
+ - Domhain Chasm
+ - Everwinter Passage
+ - Whitebank Ridge
+ - Floatshoal Bight
+ - Everwinter Expanse
+ - Everwinter Gap
+ - Iceburn Cliffs
+ - Glacierfall Cross
+ - Glacierfall Valley
+ - Munten Fell
+ - Iceburn Tundra
+ - Frostseep Crevasse
+ - Whitepeak Spring
+ - Firesink Trench
+ - Whitecliff Expanse
+ - Frostspring Volcano
+ - Whitewall Ridge
+T7_steppe: 16 locations
+ - Shiftshadow Expanse
+ - Swiftsands Basin
+ - Skysand Ridge
+ - Drybasin Oasis
+ - Slakesands Mesa
+ - Sunfang Cliffs
+ - Sunfang Wasteland
+ - Dryvein End
+ - Thirstwater Gully
+ - Dryvein Confluence
+ - Sunstrand Quicksands
+ - Sandmount Desert
+ - Sandrift Dunes
+ - Farshore Drylands
+ - Sandrift Fringe
+ - Farshore Cape
+T7_swamp: 16 locations
+ - Camlann
+ - Meltwater Sump
+ - Wetgrave Swale
+ - Drownfield Quag
+ - Runnelvein Sink
+ - Wetgrave Marsh
+ - Skullmarsh Upper
+ - Willowshade Hills
+ - Willowshade Sink
+ - Deathwisp Sink
+ - Deathwisp Bog
+ - Widemoor Fen
+ - Sunkenbough Woods
+ - Twinchannel Narrows
+ - Springsump Melt
+ - Longfen Veins
+T8_forest: 7 locations
+ - Timbertop Escarp
+ - Timberslope Bridge
+ - Greenshore Bay
+ - Eye of the Forest
+ - Eldersleep
+ - Darkbough Snag
+ - Rivercopse Fount
+T8_highlands: 7 locations
+ - Thunderrock Draw
+ - Murdergulch Divide
+ - Murdergulch Ravine
+ - Razorrock Gulch
+ - Highstone Loch
+ - Stonemouth Southbluff
+ - Redtree Enclave
+T8_mountains: 7 locations
+ - Everwinter Incline
+ - Flammog Desolation
+ - Glacierfall Pass
+ - Glacierfall Fissure
+ - Whitepeak Tundra
+ - Avalanche Incline
+ - Whitewall Pass
+T8_steppe: 7 locations
+ - Swiftsands Chaparral
+ - Citadel of Ash
+ - Wailing Bulwark
+ - Sunfang Dawn
+ - Sandmount Ascent
+ - Parchsand Drought
+ - Daemonium Keep
+T8_swamp: 7 locations
+ - Scuttlesink Marsh
+ - Meltwater Channel
+ - Drownfield Sink
+ - Black Monastery
+ - Unhallowed Cloister
+ - Sunkenbough Spring
+ - Deathreach Priory

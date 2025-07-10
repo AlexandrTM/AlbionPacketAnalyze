@@ -5,15 +5,18 @@ struct Location
 {
     std::string     _id              = "";
     std::string     _name            = "";
-
-    HarvestableList _harvestableList = {};
-    PlayerList      _playerList      = {};
-    MobList         _mobList         = {};
-    FishNodeList    _fishNodeList    = {};
+    std::string     _biome           = "";
+    std::string     _type            = "";
+    int32_t         _tier            = 0;
 
     glm::ivec2      _origin          = glm::ivec2(0, 0);
     glm::ivec2      _size            = glm::ivec2(930, 930);
     size_t          _halfSize        = 465;
+
+    HarvestableList _harvestableList = {};
+    PlayerList      _playerList = {};
+    MobList         _mobList = {};
+    FishNodeList    _fishNodeList = {};
 
     Location();
     Location(
@@ -24,15 +27,10 @@ struct Location
         MobList mobList,
         FishNodeList fishNodeList
     );
-    static void findLocationData(
-        const std::regex& locationRegex, Location& location
-    );
+    static void findLocationData(Location& location);
+    static std::string findLocationType(const std::string& fileName);
     static void parseLocationXML(const std::string& filePath, Location& location);
-
-    static void printInfo(
-        std::vector<Location>& locations,
-        Location& currentLocation, Location& previousLocation
-    );
+    static void adjustAvalonNumber(std::string& locationId);
 };
 
 #endif

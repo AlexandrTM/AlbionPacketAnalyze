@@ -18,8 +18,6 @@ struct EntityList
 
     EntityList();
 
-    void trackPlayerPath() const;
-
     void drawPlayerSelf();
     void drawCharges(
         Harvestable harvestable, std::vector<float> harvestableCoords, 
@@ -45,6 +43,8 @@ struct EntityList
     void beginChangeLocation(NetworkCommand& command, bool printInfo);
     void endChangeLocation(NetworkCommand& command, bool printInfo);
     void clear();
+
+    void printInfo();
 };
 
 #endif // !ENTITY_H

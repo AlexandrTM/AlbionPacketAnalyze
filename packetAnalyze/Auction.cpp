@@ -301,10 +301,7 @@ void Auction::processAuctionOrders(
 					<< std::setw(10) << totalSilverPrice << " "
 					<< std::setw(5) << amount << " "
 					<< totalSilverPrice / amount << " "
-					<< /*std::string(magic_enum::enum_name(
-						static_cast<locationId>(
-							static_cast<uint32_t>(std::stoul(currentLocation._id)))))
-					<< */"\n";
+					<< "\n";
 				/*auctionOrders <<
 					std::setw(16) << std::left << playerName << " "
 					<< itemTypeId << " "

@@ -33,7 +33,6 @@ extern HANDLE consoleHandle;
 #include "DataType.h"
 #include "DataFragment.h"
 #include "DataLayout.h"
-#include "net.h"
 
 #include "HealthUpdateHandler.h"
 #include "MapCluster.h"
@@ -44,5 +43,6 @@ extern HANDLE consoleHandle;
 #include "Location.h"
 #include "Auction.h"
 #include "Entity.h"
+#include "net.h"
 
 #endif // PCH_H

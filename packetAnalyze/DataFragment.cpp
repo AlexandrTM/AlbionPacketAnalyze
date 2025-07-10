@@ -65,9 +65,12 @@ void DataFragment::printFragmentInfo(NetworkCommand& command, size_t& currentStr
         currentStringPosition = 0;
     }
 
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+    std::cout << "dec " << (unsigned)_fragmentId << " ";
+
     std::cout.setf(std::ios::hex, std::ios::basefield);
     // fragment id
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY);
     if (_fragmentId < 16) {
         std::cout << "0";
     }
