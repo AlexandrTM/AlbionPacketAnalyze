@@ -497,7 +497,9 @@ void PacketAnalyze::analyzeCommand(
             case 66: // crafting finished on station
                 break;
             case eventCode::NewCharacter:
-                _entityList._currentLocation._playerList.newPlayer(Player(command));
+                //if (_entityList._currentLocation._type != "city") {
+                    _entityList._currentLocation._playerList.newPlayer(Player(command));
+                //}
                 break;
             case eventCode::Leave:
                 _entityList._currentLocation._playerList.playerLeave(Player(command));
@@ -554,7 +556,9 @@ void PacketAnalyze::analyzeCommand(
             _entityList._isChangingLocation = false;
             break;
         case operationCode::Move:
-            _entityList._playerSelf = PlayerSelf(command);
+            if (_entityList._currentLocation._type != "city") {
+                _entityList._playerSelf.update(command);
+            }
             break;
             /*case operationCode::ChangeCluster: // other player changing location not only me
                 _entityList.ChangeCluster(command);
@@ -600,7 +604,9 @@ void PacketAnalyze::analyzeCommand(
             Auction::GetItemData(command, _entityList._currentLocation, itemData, false);
             break;
         case operationCode::Move:
-            _entityList._playerSelf.update(command);
+            if (_entityList._currentLocation._type != "city") {
+                _entityList._playerSelf.update(command);
+            }
             //std::cout << _entityList._playerSelf._positionX << " " << _entityList._playerSelf._positionY << "\n";
             break;
         case operationCode::ChangeCluster:
@@ -660,7 +666,7 @@ int main() {
     //net::formatItemsData();
     //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
-    //net::removeAvalonConnections("location_connections.json");
+    //net::removeTemporaryConnections("location_connections.json");
     net::parseLocationsConnections("world_extended.xml");
     //net::findLocationsStatistics("cluster");
     //packetAnalyze.run();

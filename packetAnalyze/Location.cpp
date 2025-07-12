@@ -2,11 +2,20 @@
 
 Location::Location()
 {
-    _id      = "";
+    _id = "";
+    _name = "";
+    _biome = "";
+    _type = "";
+    _tier = 0;
+
+    _origin = glm::ivec2(0, 0);
+    _size = glm::ivec2(930, 930);
+    _halfSize = 465;
+
     _harvestableList = {};
-    _playerList      = {};
-    _mobList         = {};
-    _fishNodeList    = {};
+    _playerList = {};
+    _mobList = {};
+    _fishNodeList = {};
 }
 
 Location::Location(
@@ -37,6 +46,13 @@ void Location::findLocationData(Location& location)
     if (location._name == "") return;
 
     std::string locationId = location._id;
+
+    size_t hashPos = locationId.find('#');
+    // remove suffix and everything after that like "#1"
+    if (hashPos != std::string::npos) {
+        locationId = locationId.substr(0, hashPos);
+    }
+
     bool isAvalonRoad = locationId.starts_with("TNL-");
     if (isAvalonRoad) {
         adjustAvalonNumber(locationId);
@@ -78,27 +94,26 @@ void Location::findLocationData(Location& location)
     location._size = { 930, 930 };
     location._halfSize = 465;
 }
-
 std::string Location::findLocationType(const std::string& fileName)
 {
     std::string locationType = {};
 
-    if (std::regex_search(fileName, std::regex(R"(^\d{4}_WRL)"))) {
-        locationType = "world";
-    }
-    else if (std::regex_search(fileName, std::regex(R"(^\d{4}_CTY)"))) {
+    if (std::regex_search(fileName, std::regex(R"(^\d{4}(_CTY|_STT|-HellDen|-HALL|-Auction2|_TUT))"))) {
         locationType = "city";
+    }
+    else if (std::regex_search(fileName, std::regex(R"(^\d{4}_WRL)"))) {
+        locationType = "world";
     }
     else if (std::regex_search(fileName, std::regex(R"(^\d{4}_HBS)"))) {
         locationType = "world_boss";
     }
-    else if (fileName.starts_with("BLACKBANK")) {
-        locationType = "smuggler";
-    }
     else if (fileName.starts_with("DNG")) {
         locationType = "static_dungeon";
     }
-    else if (fileName.starts_with("PSG")) {
+    else if (fileName.starts_with("BLACKBANK")) {
+        locationType = "smuggler";
+    }
+    else if (fileName.starts_with("PSG") || fileName.starts_with("CenterCity")) {
         locationType = "passage";
     }
     else if (fileName.starts_with("TNL")) {
@@ -127,6 +142,7 @@ void Location::adjustAvalonNumber(std::string& locationId)
         // Ignore malformed number, fallback to original locationId
     }
 }
+
 void Location::parseLocationXML(const std::string& filePath, Location& location) {
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(filePath.c_str()) != tinyxml2::XML_SUCCESS) {

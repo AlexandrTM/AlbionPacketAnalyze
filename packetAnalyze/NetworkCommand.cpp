@@ -184,7 +184,7 @@ std::vector<uint8_t>& NetworkCommand::rawNetworkCommand()
 {
     return _networkCommand;
 }
-uint16_t NetworkCommand::size()
+uint16_t NetworkCommand::size() const
 {
     return static_cast<uint16_t>(_networkCommand.size());
 }
@@ -234,6 +234,12 @@ NetworkCommand::iterator NetworkCommand::begin()
 }
 NetworkCommand::iterator NetworkCommand::end()
 {
+    return _networkCommand.end();
+}
+NetworkCommand::const_iterator NetworkCommand::begin() const {
+    return _networkCommand.begin();
+}
+NetworkCommand::const_iterator NetworkCommand::end() const {
     return _networkCommand.end();
 }
 uint8_t NetworkCommand::findCommandType(std::vector<uint8_t>& rawCommand) const

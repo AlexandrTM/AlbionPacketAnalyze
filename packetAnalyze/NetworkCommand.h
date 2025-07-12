@@ -45,7 +45,7 @@ public:
     uint8_t getCommandIndexInChain() const;
 
     std::vector<uint8_t>& rawNetworkCommand();
-    uint16_t size();
+    uint16_t size() const;
     void push_back(uint8_t element);
     void clear();
 
@@ -56,8 +56,11 @@ public:
     bool operator==(NetworkCommand& command);
 
     using iterator = std::vector<uint8_t>::iterator;
+    using const_iterator = std::vector<uint8_t>::const_iterator;
     iterator begin();
     iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
 
 };
 

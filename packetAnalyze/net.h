@@ -2,14 +2,14 @@
 
 namespace net
 {
-    static inline uint8_t read_uint8(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint8_t read_uint8(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             return command[offset];
         }
         return 0;
     }
-    static inline uint16_t read_uint16(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint16_t read_uint16(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint16_t dataEntry = 0;
@@ -20,7 +20,7 @@ namespace net
         }
         return 0;
     }
-    static inline uint32_t read_uint32(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint32_t read_uint32(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
@@ -31,7 +31,7 @@ namespace net
         }
         return 0;
     }
-    static inline uint32_t read_uint32(std::vector<uint8_t> rawCommand, ptrdiff_t offset)
+    static inline uint32_t read_uint32(const std::vector<uint8_t> rawCommand, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
@@ -42,7 +42,7 @@ namespace net
         }
         return 0;
     }
-    static inline uint64_t read_uint64(NetworkCommand& command, ptrdiff_t offset)
+    static inline uint64_t read_uint64(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint64_t dataEntry = 0;
@@ -53,7 +53,7 @@ namespace net
         }
         return 0;
     }
-    static inline float_t read_float32(NetworkCommand& command, ptrdiff_t offset)
+    static inline float_t read_float32(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
@@ -64,7 +64,7 @@ namespace net
         }
         return 0;
     }
-    static inline float_t read_float32big(NetworkCommand& command, ptrdiff_t offset)
+    static inline float_t read_float32big(const NetworkCommand& command, ptrdiff_t offset)
     {
         if (offset != std::numeric_limits<ptrdiff_t>::min()) {
             uint32_t dataEntry = 0;
@@ -75,7 +75,7 @@ namespace net
         }
         return 0;
     }
-    static inline float_t read_float32big_from_bits(NetworkCommand& command, ptrdiff_t bitOffset) {
+    static inline float_t read_float32big_from_bits(const NetworkCommand& command, ptrdiff_t bitOffset) {
         // Calculate byte offset and bit shift within the first byte
         ptrdiff_t byteOffset = bitOffset / 8;
         uint8_t bitShift = bitOffset % 8;
@@ -99,7 +99,7 @@ namespace net
         // Convert the 32-bit integer to a float using your existing converter
         return std::binToFloat(dataEntry);
     }
-    static inline float_t read_float32_from_bits(NetworkCommand& command, ptrdiff_t bitOffset) {
+    static inline float_t read_float32_from_bits(const NetworkCommand& command, ptrdiff_t bitOffset) {
         ptrdiff_t byteOffset = bitOffset / 8;
         uint8_t bitShift = bitOffset % 8;
 
@@ -117,7 +117,13 @@ namespace net
 
         return std::binToFloat(dataEntry);
     }
-
+    static inline std::string readString(const NetworkCommand& command, ptrdiff_t offset, size_t length) {
+        return std::string(command.begin() + offset, command.begin() + offset + length);
+    }
+    static inline std::string readString(const NetworkCommand& command, DataFragment& dataFragment) {
+        return readString(command, dataFragment._offset, dataFragment._numOfEntries);
+    }
+    
     static uint64_t read_integer(NetworkCommand& command, DataFragment& dataFragment) {
         uint64_t integer = 0;
         uint8_t dataTypeSize = dataFragment._dataType._size;
@@ -169,7 +175,7 @@ namespace net
     );
     void parseObjectsFromTemplate(const std::string& filePath);
 
-    void removeAvalonConnections(const std::string filePath);
+    void removeTemporaryConnections(const std::string filePath);
     void makeLocationsConnection(
         Location& locationFrom, Location& locationTo, const bool& isChangingLocation
     );

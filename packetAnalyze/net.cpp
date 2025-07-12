@@ -218,11 +218,11 @@ std::string net::getLocationNameById(const nlohmann::json& locationNames, const 
             }
         }
     }
-    std::cout << "Location Name not found: " << id << std::endl;
+    std::cout << "Location Name not found for id: " << id << std::endl;
     return {};
 }
 
-void net::removeAvalonConnections(const std::string filePath)
+void net::removeTemporaryConnections(const std::string filePath)
 {
     std::ifstream inFile(filePath);
     if (!inFile.is_open()) {
@@ -255,9 +255,15 @@ void net::removeAvalonConnections(const std::string filePath)
         const auto& fromId = entry["from"]["id"];
         const auto& toId = entry["to"]["id"];
 
-        if (fromId.is_string() && toId.is_string() &&
-            (fromId.get<std::string>().starts_with("TNL") || toId.get<std::string>().starts_with("TNL"))) {
-            continue;
+        if (fromId.is_string() && toId.is_string()) {
+            std::string from = fromId.get<std::string>();
+            std::string to = toId.get<std::string>();
+
+            if (from.starts_with("TNL") || to.starts_with("TNL") ||
+                from.starts_with("@MISTS") || to.starts_with("@MISTS") ||
+                from.starts_with("@RANDOMDUNGEON") || to.starts_with("@RANDOMDUNGEON")) {
+                continue;
+            }
         }
 
         // Rebuild entry with consistent key order
@@ -289,6 +295,9 @@ void net::makeLocationsConnection(
         _previousLocation._id.find("TNL") == std::string::npos) {
         return;
     }*/
+
+    // temporary locations
+    if (locationFrom._name.empty() || locationTo._name.empty()) return;
 
     nlohmann::ordered_json logEntry;
 
@@ -463,7 +472,7 @@ void net::parseLocationsConnections(const std::string& xmlPath)
         return;
     }
 
-    std::regex idRegex("^(\\d{4}|DNG.*)$"); // Only IDs with exactly 4 digits
+    std::regex idRegex("^(\\d{4}|DNG.*|PSG.*)$"); // Only IDs with exactly 4 digits
     std::unordered_map<std::string, tinyxml2::XMLElement*> validClusters;
 
     // Step 1: Collect all clusters with 4-digit numeric ids
@@ -508,9 +517,7 @@ void net::parseLocationsConnections(const std::string& xmlPath)
             Location::findLocationData(locationFrom);
             Location::findLocationData(locationTo);
 
-            if (!locationFrom._id.empty() && !locationTo._id.empty()) {
-                net::makeLocationsConnection(locationFrom, locationTo, true);
-            }
+            net::makeLocationsConnection(locationFrom, locationTo, true);
         }
     }
 }

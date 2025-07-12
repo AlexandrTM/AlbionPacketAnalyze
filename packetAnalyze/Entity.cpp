@@ -27,12 +27,17 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
     DataFragment& locationToFragment = dataLayout.findFragment(8);
     std::string locationFromId = "";
     std::string locationToId = "";
-    for (size_t i = 0; i < locationFromFragment._numOfEntries; i++) {
-        locationFromId += (unsigned)command[locationFromFragment._offset + i];
-    }
-    for (size_t i = 0; i < locationToFragment._numOfEntries; i++) {
-        locationToId += (unsigned)command[locationToFragment._offset + i];
-    }
+    locationFromId = net::readString(command, locationFromFragment);
+    locationToId = net::readString(command, locationToFragment);
+    
+    DataFragment& playerGuildFragment = dataLayout.findFragment(57);
+    DataFragment& playerAllianceFragment = dataLayout.findFragment(77);
+
+    _playerSelf._guild = net::readString(command, playerGuildFragment);
+    _playerSelf._alliance = net::readString(command, playerAllianceFragment);
+
+    //std::cout << "locationFromId: " << locationFromId << " " << "locationToId: " << locationToId << "\n"; 
+    //std::cout << "_playerSelf._guild: " << _playerSelf._guild << " " << "_playerSelf._alliance: " << _playerSelf._alliance << "\n";
     if (locationToId == "") {
         dataLayout.printInfo(command);
     }
@@ -108,26 +113,28 @@ EntityList::EntityList()
 }
 void EntityList::drawWindowFrame(float scale) const
 {
-    if (_currentLocation._id.find("TNL") == std::string::npos) {
-        glPointSize(1);
-        glBegin(GL_LINES);
-        glColor4f(0.5, 0.5, 0.5, 1);
+    if (_currentLocation._type == "avalon" || _currentLocation._type == "city") return;
 
-        glVertex2f(0, -0.821 * scale);
-        glVertex2f(0.59 * scale, -0.085 * scale);
-        glVertex2f(0.59 * scale, -0.085 * scale);
-        glVertex2f(0, 0.653 * scale);
+    glPointSize(1);
+    glBegin(GL_LINES);
+    glColor4f(0.5, 0.5, 0.5, 1);
+
+    glVertex2f(0, -0.821 * scale);
+    glVertex2f(0.59 * scale, -0.085 * scale);
+    glVertex2f(0.59 * scale, -0.085 * scale);
+    glVertex2f(0, 0.653 * scale);
         
-        glVertex2f(0, 0.653 * scale);
-        glVertex2f(-0.59 * scale, -0.085 * scale);
-        glVertex2f(-0.59 * scale, -0.085 * scale);
-        glVertex2f(0, -0.821 * scale);
+    glVertex2f(0, 0.653 * scale);
+    glVertex2f(-0.59 * scale, -0.085 * scale);
+    glVertex2f(-0.59 * scale, -0.085 * scale);
+    glVertex2f(0, -0.821 * scale);
 
-        glEnd();
-    }
+    glEnd();
 }
 void EntityList::drawPlayerSelf()
 {
+    if (_currentLocation._type == "city") return;
+
     std::vector<GLfloat> playerCoords = { _playerSelf._positionX, _playerSelf._positionY };
     std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_playerSelf._positionX, _playerSelf._positionY);
 
@@ -203,18 +210,39 @@ void EntityList::drawHarvestables()
 }
 void EntityList::drawPlayers()
 {
+    if (_currentLocation._type == "city") return;
+
     std::vector<GLfloat> playerSelfCoords = { _playerSelf._positionX, _playerSelf._positionY };
+    //_playerSelf.printInfo();
     for (const Player& player : _currentLocation._playerList._playerList) {
+        bool playerFromSelfGuild = player._guild == _playerSelf._guild && !_playerSelf._guild.empty();
+        bool playerFromSelfAlliance = player._alliance == _playerSelf._alliance && !_playerSelf._alliance.empty();
+
+        if (playerFromSelfGuild || playerFromSelfAlliance) {
+            //player.printInfo();
+            continue;
+        }
+
         std::vector<GLfloat> playerCoords = { player._positionX, player._positionY};
         GLfloat x = playerCoords[0];
         GLfloat y = playerCoords[1];
         std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(x, y);
 
-        if (player._isVisible == true) {
+        if (player._isVisible) {
             glPointSize(5);
             glBegin(GL_POINTS);
-            glColor3f(0.9, 0.65, 0.65);
-            glVertex3f(playerMapCoords[0], playerMapCoords[1], 0.0f);
+            /*if (playerFromSelfGuild) {
+                glColor3f(0.5, 0.9, 0.5);
+                glVertex3f(0.0f, 0.0f, 0.0f);
+            }
+            else if (playerFromSelfAlliance) {
+                glColor3f(0.9, 0.2, 0.9);
+                glVertex3f(20.0f, 0.0f, 0.0f);
+            }
+            else {*/
+                glColor3f(0.9, 0.65, 0.65);
+                glVertex3f(playerMapCoords[0], playerMapCoords[1], 0.0f);
+            //}
             glEnd();
 
             x = (x - playerSelfCoords[0]) * _pixelsInMeter;
@@ -452,7 +480,7 @@ void EntityList::drawCharges(
                                         playerCoords[0], playerCoords[1]);
         mapCoords = convertToMapCoordinates(x, y);
 
-        if (distance > 10 and distance < 57) {
+        if (distance > 10 and distance < 61) {
             glVertex2f(
                 mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _currentLocation._halfSize,
                 mapCoords[1] / distance * 8.5f + 0.24f);
@@ -483,8 +511,8 @@ std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y) c
 {
     x = x / _currentLocation._halfSize;
     y = y / _currentLocation._halfSize;
-    return { (float)((x * _cos + y * _sin)            * scaleFactor * 0.560 * 0.7366 * 23 / 20),
-             (float)((((-1) * x * _sin) + (y * _cos)) * scaleFactor * 0.516 * 23 / 20 - 0.085)};
+    return { (float)((x * _cos + y * _sin)            * 0.560 * 0.7366 * 23 / 20) * scaleFactor,
+             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 * 23 / 20 - 0.085) * scaleFactor };
 }
 float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 {
