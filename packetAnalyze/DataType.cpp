@@ -53,7 +53,7 @@ uint8_t DataType::getDataTypeHeaderSize(uint8_t dataType)
     case dataType::listOfType:
         return 3;
     default:
-        std::cout << "new data type: " << (unsigned)dataType << "\n";
+        std::cout << "new data type: " << (unsigned)dataType << " ";
         return 1;
         break;
     }

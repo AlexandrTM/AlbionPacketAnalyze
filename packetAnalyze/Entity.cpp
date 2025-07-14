@@ -25,6 +25,8 @@ void EntityList::endChangeLocation(NetworkCommand& command, bool printInfo)
     //command.printCommandInOneString();
     DataFragment& locationFromFragment = dataLayout.findFragment(65);
     DataFragment& locationToFragment = dataLayout.findFragment(8);
+    // поворот по часовой стрелке от оси Х
+    //DataFragment& locationToFragment = dataLayout.findFragment(10);
     std::string locationFromId = "";
     std::string locationToId = "";
     locationFromId = net::readString(command, locationFromFragment);
@@ -113,7 +115,7 @@ EntityList::EntityList()
 }
 void EntityList::drawWindowFrame(float scale) const
 {
-    if (_currentLocation._type == "avalon" || _currentLocation._type == "city") return;
+    if (/*_currentLocation._type == "avalon" || */_currentLocation._type == "city") return;
 
     glPointSize(1);
     glBegin(GL_LINES);
@@ -144,9 +146,11 @@ void EntityList::drawPlayerSelf()
     glVertex3f(playerMapCoords[0], playerMapCoords[1], 0.0f);
     glEnd();
 
+    //if (_currentLocation._type == "avalon") return;
+
     glPointSize(2);
     glColor3f(0.85, 0.85, 0.85);
-    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)53 / _currentLocation._halfSize, 25);
+    DrawCircle(playerMapCoords[0], playerMapCoords[1], (float_t)50 / _currentLocation._halfSize, 25);
 }
 void EntityList::drawHarvestables()
 {
@@ -480,7 +484,7 @@ void EntityList::drawCharges(
                                         playerCoords[0], playerCoords[1]);
         mapCoords = convertToMapCoordinates(x, y);
 
-        if (distance > 10 and distance < 61) {
+        if (distance > 10 and distance < 60) {
             glVertex2f(
                 mapCoords[0] / distance * 8.5f + ((chargeSize * 0.58f) * (j - (float)charges / 2)) / _currentLocation._halfSize,
                 mapCoords[1] / distance * 8.5f + 0.24f);
@@ -509,10 +513,12 @@ float_t _cos = 0.7071/*0.8159*/;
 float_t _sin = 0.7071/*0.5781*/;
 std::vector<GLfloat> EntityList::convertToMapCoordinates(float_t x, float_t y) const
 {
-    x = x / _currentLocation._halfSize;
-    y = y / _currentLocation._halfSize;
-    return { (float)((x * _cos + y * _sin)            * 0.560 * 0.7366 * 23 / 20) * scaleFactor,
-             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 * 23 / 20 - 0.085) * scaleFactor };
+    x = (x - _currentLocation._fromCenterOffset.x) / _currentLocation._halfSize;
+    y = (y - _currentLocation._fromCenterOffset.y) / _currentLocation._halfSize;
+    //x = x / _currentLocation._halfSize;
+    //y = y / _currentLocation._halfSize;
+    return { (float)((x * _cos + y * _sin)            * 0.560 * 0.7366 * 83 / 80) * scaleFactor,
+             (float)((((-1) * x * _sin) + (y * _cos)) * 0.516 * 83 / 80 - 0.085) * scaleFactor };
 }
 float_t EntityList::findDistance(float_t x1, float_t y1, float_t x2, float_t y2)
 {

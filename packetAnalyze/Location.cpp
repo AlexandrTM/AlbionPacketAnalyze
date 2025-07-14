@@ -8,9 +8,9 @@ Location::Location()
     _type = "";
     _tier = 0;
 
-    _origin = glm::ivec2(0, 0);
-    _size = glm::ivec2(930, 930);
-    _halfSize = 465;
+    _fromCenterOffset = glm::ivec2(0, 0);
+    _size = glm::ivec2(830, 330);
+    _halfSize = 415;
 
     _harvestableList = {};
     _playerList = {};
@@ -83,16 +83,13 @@ void Location::findLocationData(Location& location)
                 }
                 location._type = findLocationType(filename);
 
-                if (isAvalonRoad) {
+                //if (isAvalonRoad) {
                     parseLocationXML(entry.path().string(), location);
                     return;
-                }
+                //}
             }
         }
     }
-
-    location._size = { 930, 930 };
-    location._halfSize = 465;
 }
 std::string Location::findLocationType(const std::string& fileName)
 {
@@ -150,6 +147,8 @@ void Location::parseLocationXML(const std::string& filePath, Location& location)
         return;
     }
 
+    //std::cout << "load XML file: " << filePath << "\n";
+
     tinyxml2::XMLElement* cluster = doc.FirstChildElement("cluster");
     if (!cluster) {
         std::cerr << "No <cluster> tag found in: " << filePath << "\n";
@@ -158,33 +157,79 @@ void Location::parseLocationXML(const std::string& filePath, Location& location)
 
     const char* origin = cluster->Attribute("origin");
     const char* size = cluster->Attribute("size");
+    const char* minimapBoundsMin = cluster->Attribute("minimapBoundsMin");
+    const char* minimapBoundsMax = cluster->Attribute("minimapBoundsMax");
+
+    glm::ivec2 minimapBoundsMinVector = {};
+    glm::ivec2 minimapBoundsMaxVector = {};
 
     //std::cout << "location file name: " << filePath << "\n";
-    if (origin) {
-        int x = 0, y = 0;
-        if (sscanf_s(origin, "%d %d", &x, &y) == 2) {
-            location._origin = { x, y };
+
+    //if (size) {
+    //    int sizeX = 0, sizeY = 0;
+    //    if (sscanf_s(size, "%d %d", &sizeX, &sizeY) == 2) {
+    //        location._size = { sizeX, sizeY };
+    //        location._halfSize = std::max(sizeX, sizeY) / 2;
+    //        //location._halfSize = sizeX / 2;
+    //    }
+    //    else {
+    //        std::cerr << "Malformed size attribute in: " << filePath << " -> " << size << "\n";
+    //    }
+    //}
+    //else {
+    //    std::cerr << "No 'size' attribute in: " << filePath << "\n";
+    //}
+
+    if (minimapBoundsMin && minimapBoundsMax && origin && size) {
+        int originX = 0, originY = 0;
+        if (sscanf_s(origin, "%d %d", &originX, &originY) == 2) {
         }
         else {
             std::cerr << "Malformed origin attribute in: " << filePath << " -> " << origin << "\n";
         }
-    }
-    else {
-        std::cerr << "No 'origin' attribute in: " << filePath << "\n";
-    }
 
-    if (size) {
-        int width = 0, height = 0;
-        if (sscanf_s(size, "%d %d", &width, &height) == 2) {
-            location._size = { width, height };
-            location._halfSize = std::max(width, height) / 2;
-            //location._halfSize = width / 2;
+        int centerX = 0, centerY = 0;
+        int sizeX = 0, sizeY = 0;
+        if (sscanf_s(size, "%d %d", &sizeX, &sizeY) == 2) {
         }
         else {
             std::cerr << "Malformed size attribute in: " << filePath << " -> " << size << "\n";
         }
+
+        int minX = 0, minY = 0;
+        if (sscanf_s(minimapBoundsMin, "%d %d", &minX, &minY) == 2) {
+            minimapBoundsMinVector = { minX, minY };
+        }
+        else {
+            std::cerr << "Malformed minimapBoundsMin in: " << filePath << " -> " << minimapBoundsMin << "\n";
+        }
+        int maxX = 0, maxY = 0;
+        if (sscanf_s(minimapBoundsMax, "%d %d", &maxX, &maxY) == 2) {
+            minimapBoundsMaxVector = { maxX, maxY };
+        }
+        else {
+            std::cerr << "Malformed minimapBoundsMax in: " << filePath << " -> " << minimapBoundsMax << "\n";
+        }
+        
+        centerX = sizeX / 2;
+        centerY = sizeY / 2;
+        /*originX = sizeX + originX;
+        originY = sizeY + originY;*/
+        location._size = { maxX - minX, maxY - minY };
+        location._halfSize = location._size[0] / 2;
+        location._fromCenterOffset = { centerX + originX, centerY + originY };
+
+        /*std::cout << "Debug info for: " << filePath << '\n';
+        std::cout << "  Minimap bounds: min(" << minX << ", " << minY << "), max(" << maxX << ", " << maxY << ")\n";
+        std::cout << "  Calculated size: (" << location._size.x << ", " << location._size.y << ")\n";
+        std::cout << "  Half size: " << location._halfSize << '\n';
+        std::cout << "  Center: (" << centerX << ", " << centerY << ")\n";
+        std::cout << "  Origin: (" << originX << ", " << originY << ")\n";
+        std::cout << "  Center offset: (" << 
+            location._fromCenterOffset.x << ", " << location._fromCenterOffset.y << ")\n";*/
     }
     else {
-        std::cerr << "No 'size' attribute in: " << filePath << "\n";
+        location._fromCenterOffset = { 0, 0 };
+        std::cerr << "No some of location attributes in: " << filePath << "\n";
     }
 }

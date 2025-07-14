@@ -230,52 +230,42 @@ void net::removeTemporaryConnections(const std::string filePath)
         return;
     }
 
-    nlohmann::ordered_json data;
+    nlohmann::ordered_json rootJson;
     try {
-        inFile >> data;
+        inFile >> rootJson;
     }
     catch (...) {
         std::cerr << "Failed to parse JSON from: " << filePath << '\n';
         return;
     }
-
     inFile.close();
 
-    if (!data.is_array()) {
-        std::cerr << "JSON root is not an array.\n";
+    if (!rootJson.contains("connections") || !rootJson["connections"].is_array()) {
+        std::cerr << "No 'connections' array found in JSON.\n";
         return;
     }
 
-    // Filter out entries where from.id or to.id starts with "TNL"
-    nlohmann::ordered_json filtered = nlohmann::json::array();
+    nlohmann::ordered_json& connections = rootJson["connections"];
+    nlohmann::ordered_json filteredConnections = nlohmann::json::array();
 
-    for (const auto& entry : data) {
+    for (const auto& entry : connections) {
         if (!entry.contains("from") || !entry.contains("to")) continue;
 
-        const auto& fromId = entry["from"]["id"];
-        const auto& toId = entry["to"]["id"];
+        std::string fromId = entry["from"].get<std::string>();
+        std::string toId = entry["to"].get<std::string>();
 
-        if (fromId.is_string() && toId.is_string()) {
-            std::string from = fromId.get<std::string>();
-            std::string to = toId.get<std::string>();
+        bool isTemporary =
+            fromId.starts_with("TNL") || toId.starts_with("TNL") ||
+            fromId.starts_with("@MISTS") || toId.starts_with("@MISTS") ||
+            fromId.starts_with("@RANDOMDUNGEON") || toId.starts_with("@RANDOMDUNGEON");
 
-            if (from.starts_with("TNL") || to.starts_with("TNL") ||
-                from.starts_with("@MISTS") || to.starts_with("@MISTS") ||
-                from.starts_with("@RANDOMDUNGEON") || to.starts_with("@RANDOMDUNGEON")) {
-                continue;
-            }
-        }
+        if (isTemporary) continue;
 
-        // Rebuild entry with consistent key order
-        nlohmann::ordered_json orderedEntry;
-        /*orderedEntry["timestamp"] = entry["timestamp"];
-        orderedEntry["type"] = entry["type"];
-        orderedEntry["from"] = entry["from"];
-        orderedEntry["to"] = entry["to"];*/
-        orderedEntry = entry;
-
-        filtered.push_back(orderedEntry);
+        filteredConnections.push_back(entry);
     }
+
+    // Replace old connections with filtered ones
+    rootJson["connections"] = filteredConnections;
 
     std::ofstream outFile(filePath);
     if (!outFile.is_open()) {
@@ -283,7 +273,7 @@ void net::removeTemporaryConnections(const std::string filePath)
         return;
     }
 
-    outFile << filtered.dump(4); // Pretty-print with 4 spaces
+    outFile << rootJson.dump(4);
     outFile.close();
 }
 
@@ -299,73 +289,88 @@ void net::makeLocationsConnection(
     // temporary locations
     if (locationFrom._name.empty() || locationTo._name.empty()) return;
 
-    nlohmann::ordered_json logEntry;
-
-    logEntry["timestamp"] = get_utc_time();
-    logEntry["type"] = isChangingLocation ? "walk" : "teleportation";
-    logEntry["from"] = {
-        { "id", locationFrom._id },
-        { "name", locationFrom._name },
-        { "type", locationFrom._type },
-        { "tier", locationFrom._tier },
-        { "biome", locationFrom._biome }
-    };
-
-    logEntry["to"] = {
-        { "id", locationTo._id },
-        { "name", locationTo._name },
-        { "type", locationTo._type },
-        { "tier", locationTo._tier },
-        { "biome", locationTo._biome }
-    };
-
     const std::string filePath = "location_connections.json";
-    nlohmann::ordered_json existingData = nlohmann::json::array();
-
-    std::ifstream inputFile(filePath);
-    if (inputFile.is_open()) {
-        try {
-            inputFile >> existingData;
-            if (!existingData.is_array()) {
-                existingData = nlohmann::json::array(); // fallback
+    nlohmann::ordered_json rootJson;
+    
+    // Load existing file
+    {
+        std::ifstream inputFile(filePath);
+        if (inputFile.is_open()) {
+            try {
+                inputFile >> rootJson;
+                if (!rootJson.contains("locations") || !rootJson["locations"].is_array())
+                    rootJson["locations"] = nlohmann::json::array();
+                if (!rootJson.contains("connections") || !rootJson["connections"].is_array())
+                    rootJson["connections"] = nlohmann::json::array();
             }
+            catch (...) {
+                rootJson["locations"] = nlohmann::json::array();
+                rootJson["connections"] = nlohmann::json::array();
+            }
+            inputFile.close();
         }
-        catch (...) {
-            existingData = nlohmann::json::array(); // malformed file
+        else {
+            rootJson["locations"] = nlohmann::json::array();
+            rootJson["connections"] = nlohmann::json::array();
         }
-        inputFile.close();
     }
 
-    bool isConnectionAlreadyExist = false;
-    for (auto& entry : existingData) {
-        if (!entry.contains("from") || !entry.contains("to") || !entry.contains("type")) continue;
+    auto& locationsArray = rootJson["locations"];
+    auto& connectionsArray = rootJson["connections"];
 
-        const auto& from = entry["from"];
-        const auto& to = entry["to"];
-        const auto& type = entry["type"];
+    // Helper to add location only once by id
+    auto addUniqueLocation = [&](const Location& location) {
+        for (const auto& existingLoc : locationsArray) {
+            if (existingLoc["id"] == location._id) return; // already exists
+        }
 
-        bool same = from["id"] == logEntry["from"]["id"] && to["id"] == logEntry["to"]["id"];
-        bool mirrored = from["id"] == logEntry["to"]["id"] && to["id"] == logEntry["from"]["id"];
-        bool sameType = type == logEntry["type"];
+        locationsArray.push_back({
+            { "id", location._id },
+            { "name", location._name },
+            { "type", location._type },
+            { "tier", location._tier },
+            { "biome", location._biome }
+        });
+    };
+
+    // Ensure both locations are added
+    addUniqueLocation(locationFrom);
+    addUniqueLocation(locationTo);
+
+    // Construct new connection entry
+    nlohmann::ordered_json newConnection = {
+        { "timestamp", get_utc_time() },
+        { "type", isChangingLocation ? "walk" : "teleportation" },
+        { "from", locationFrom._id },
+        { "to", locationTo._id }
+    };
+
+    // Check if this connection already exists (bidirectionally and same type)
+    bool alreadyExists = false;
+    for (auto& connection : connectionsArray) {
+        bool same = connection["from"] == newConnection["from"] && connection["to"] == newConnection["to"];
+        bool mirrored = connection["from"] == newConnection["to"] && connection["to"] == newConnection["from"];
+        bool sameType = connection["type"] == newConnection["type"];
 
         if ((same || mirrored) && sameType) {
-            entry["timestamp"] = logEntry["timestamp"]; // update timestamp only
-            isConnectionAlreadyExist = true;
+            connection["timestamp"] = newConnection["timestamp"]; // update timestamp
+            alreadyExists = true;
             break;
         }
     }
 
-    if (!isConnectionAlreadyExist) {
-        existingData.push_back(logEntry);
+    if (!alreadyExists) {
+        connectionsArray.push_back(newConnection);
     }
 
-    std::ofstream logFile(filePath);
-    if (logFile.is_open()) {
-        logFile << existingData.dump(4);
-        logFile.close();
+    // Save updated JSON
+    std::ofstream outFile(filePath);
+    if (outFile.is_open()) {
+        outFile << rootJson.dump(4);
+        outFile.close();
     }
     else {
-        std::cerr << "Failed to open location_connections.txt for writing\n";
+        std::cerr << "Failed to open " << filePath << " for writing\n";
     }
 }
 void net::updatePlayerData(Location& currentLocation, const std::string& filePath)
@@ -518,6 +523,7 @@ void net::parseLocationsConnections(const std::string& xmlPath)
             Location::findLocationData(locationTo);
 
             net::makeLocationsConnection(locationFrom, locationTo, true);
+            std::cout << "made connection: " << locationFrom._name << " -> " << locationTo._name << "\n";
         }
     }
 }
@@ -567,7 +573,8 @@ void net::searchLocationsTemplates(int32_t x, int32_t y)
 }
 void net::findLocationsStatistics(const std::string& filePath)
 {
-    std::regex locationRegex("^(\\d{4})_(?:WRL|HBS)");
+    //std::regex locationRegex("^(\\d{4})_(?:WRL|HBS)");
+    std::regex locationRegex("^TNL-(\\d{3})");
 
     std::map<int, int> tierDistribution;
     std::map<std::string, int> biomeDistribution;
@@ -580,19 +587,40 @@ void net::findLocationsStatistics(const std::string& filePath)
         std::smatch match;
         if (!std::regex_search(filename, match, locationRegex)) continue;
 
-        std::string locationId = match.str(1);
+        std::string locationId = "TNL-" + match.str(1);
         Location location;
         location._id = locationId;
 
         Location::findLocationData(location);
 
-        if (location._tier == 0 || location._biome.empty()) continue;
+        Location secondAvalon;
 
-        tierDistribution[location._tier]++;
-        biomeDistribution[location._biome]++;
+        std::smatch numberMatch;
+        if (std::regex_search(locationId, numberMatch, locationRegex)) {
+            int avalonNum = std::stoi(numberMatch[1]);
+            if (avalonNum <= 200) {
+                std::ostringstream secondAvalonId;
+                secondAvalonId << "TNL-" << std::setw(3) << std::setfill('0') << (avalonNum + 200);
+                secondAvalon._id = secondAvalonId.str();
+                Location::findLocationData(secondAvalon);
+            }
+        }
 
-        std::string tierBiomeKey = "T" + std::to_string(location._tier) + "_" + location._biome;
-        tierBiomeLocations[tierBiomeKey].push_back(location._name);
+        if (location._tier != 0 && !location._biome.empty()) {
+            tierDistribution[location._tier]++;
+            biomeDistribution[location._biome]++;
+
+            std::string tierBiomeKey = "T" + std::to_string(location._tier) + "_" + location._biome;
+            tierBiomeLocations[tierBiomeKey].push_back(location._name);
+        }
+
+        if (secondAvalon._tier != 0 && !secondAvalon._biome.empty()) {
+            tierDistribution[secondAvalon._tier]++;
+            biomeDistribution[secondAvalon._biome]++;
+
+            std::string tierBiomeKey = "T" + std::to_string(secondAvalon._tier) + "_" + secondAvalon._biome;
+            tierBiomeLocations[tierBiomeKey].push_back(secondAvalon._name);
+        }
     }
 
     size_t totalLocations = 0;
@@ -622,11 +650,29 @@ void net::findLocationsStatistics(const std::string& filePath)
             return std::pair{ tier, biome };
             };
         return extract(a.first) < extract(b.first);
-        });
+    });
 
     for (const auto& [key, names] : combined) {
-        std::cout << key << ": " << names.size() << " locations\n";
-        for (const std::string& name : names) {
+        std::vector<std::string> sortedNames = names;
+
+        //std::sort(sortedNames.begin(), sortedNames.end(), [](const std::string& a, const std::string& b) {
+        //    auto extractLastPart = [](const std::string& name) -> std::string {
+        //        size_t lastDash = name.rfind('-');
+        //        return (lastDash != std::string::npos) ? name.substr(lastDash + 1) : name;
+        //        };
+        //
+        //    // First compare by first character
+        //    char firstCharA = !a.empty() ? a[0] : '\0';
+        //    char firstCharB = !b.empty() ? b[0] : '\0';
+        //    if (firstCharA != firstCharB)
+        //        return firstCharA < firstCharB;
+        //
+        //    // If first characters are equal, compare by last part
+        //    return extractLastPart(a) < extractLastPart(b);
+        //});
+
+        std::cout << key << ": " << sortedNames.size() << " locations\n";
+        for (const std::string& name : sortedNames) {
             std::cout << " - " << name << "\n";
         }
     }

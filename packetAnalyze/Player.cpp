@@ -35,6 +35,7 @@ void PlayerSelf::update(NetworkCommand& rawPlayer)
 	PlayerSelf player = PlayerSelf(rawPlayer);
 	_positionX = player._positionX;
 	_positionY = player._positionY;
+	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }
 void PlayerSelf::printInfo() const
 {
@@ -119,7 +120,7 @@ void PlayerList::newPlayer(Player newPlayer)
 {
 	for (auto& player: _playerList) {
 		if (player._id == newPlayer._id) {
-			player = newPlayer;
+			player._health = newPlayer._health;
 			player._isVisible = true;
 			return;
 		}

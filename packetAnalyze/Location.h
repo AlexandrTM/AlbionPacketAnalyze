@@ -9,9 +9,9 @@ struct Location
     std::string     _type            = "";
     int32_t         _tier            = 0;
 
-    glm::ivec2      _origin          = glm::ivec2(0, 0);
-    glm::ivec2      _size            = glm::ivec2(930, 930);
-    size_t          _halfSize        = 465;
+    glm::ivec2      _fromCenterOffset    = glm::ivec2(0, 0);
+    glm::ivec2      _size            = glm::ivec2(830, 830);
+    size_t          _halfSize        = 415;
 
     HarvestableList _harvestableList = {};
     PlayerList      _playerList = {};

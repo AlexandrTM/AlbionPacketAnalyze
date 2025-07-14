@@ -65,9 +65,9 @@ struct HarvestableListFilter
             { 2, 2, 2 },
             { 0, 0, 0 }),
         HarvestableFilter(/*ore*/
-            { 4, 5, 6, 7 },
-            { 2, 2, 2, 1 },
-            { 0, 0, 0, 0 }),
+            { 4, 5, 6, 7, 8 },
+            { 2, 2, 1, 1, 0 },
+            { 0, 0, 0, 0, 0 }),
         HarvestableFilter(/*other*/)
     };
 

@@ -103,6 +103,7 @@ enum eventCode : uint16_t
     ActiveSpellEffectsUpdate = 11,
     ChannelingEnded = 24,
     NewCharacter = 29,
+    NewSimpleItem = 32,
     NewSimpleHarvestableObjectList = 39,
     NewHarvestableObject = 40,
     NewSilverObject = 44,

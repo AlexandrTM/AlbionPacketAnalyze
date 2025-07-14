@@ -431,10 +431,71 @@ void PacketAnalyze::analyzePacket(RawNetworkPacket rawPacket, NetworkPacketInfo&
     }
 }
 
+//---------------NewLocationMarker = 378----------------
+// NewHuntTrack = 551
+// NewSmugglerCrateDeliveryStation = 605,
+// NewUnreadMails = 200,
+// NewRandomDungeonExit = 319,
+
+// ava portal event code 32
+
 // teleporation event codes 18, 19, 23, 24
-std::vector<uint16_t> nnCodes = { /*18, 23*/ 19, 24 };
-std::vector<uint16_t> nCodes = { /*55, 71*/21, 103, 104, 123, 63, 160, 272, 8, 1, 81 };
+std::vector<uint16_t> nnCodes = { 
+    1, 8, 11, 18, 19, 21, 23, 24, 30, 35, 90, 103, 104, 154, 
+    160, 163, 216, 221, 245, 266, 295, 296, 364, 591,  };
+std::vector<uint16_t> nCodes = { 
+    32
+};
 std::vector<std::string> cityLocations = { "0000", "0301" };
+
+ 	/*
+ 	NewSimpleItem = 32,
+ 	NewEquipmentItemLegendarySoul = 37,
+ 	NewTreasureDestinationObject = 41,
+ 	NewMonolithObject = 109,
+ 	NewOrbObject = 111,
+ 	NewCastleObject = 112,
+ 	NewChainSpell = 115,
+ 	NewTreasureChest = 117,
+ 	NewRealEstate = 190,
+ 	NewTravelpoint = 212,
+ 	NewExit = 214,
+ 	NewTeleportStone = 225,
+ 	NewExpeditionExit = 247,
+ 	NewExpeditionNarrator = 248,
+ 	NewQuestGiverObject = 252,
+ 	NewMountObject = 306,
+ 	NewExpeditionAgent = 309,
+ 	NewExpeditionCheckPoint = 310,
+ 	NewPortalEntrance = 317,
+ 	NewPortalExit = 318,
+ 	NewRandomDungeonExit = 319,
+ 	NewFloatObject = 354,
+ 	NewOutpostObject = 360,
+ 	NewUnlockedPersonalSeasonRewards = 370,
+ 	NewLocationMarker = 378,
+ 	NewTutorialBlocker = 379,
+ 	NewTileSwitch = 380,
+ 	NewInformationProvider = 381,
+ 	NewDynamicGuildLogo = 382,
+ 	NewDecoration = 383,
+ 	NewLootChest = 387,
+ 	NewShrine = 391,
+ 	NewRandomResourceBlocker = 438,
+ 	NewHomeObject = 439,
+ 	NewTunnelExit = 443,
+ 	NewCorruptedShrine = 453,
+ 	NewTunnelExitTemp = 517,
+ 	NewCagedObject = 525,
+ 	NewUnrestrictedPvpZone = 537,
+ 	NewDynamicCompound = 562,
+ 	NewBuildingBaseEvent = 577,
+ 	NewPiledObject = 603,
+ 	NewKillTrophyFurnitureBuilding = 612,
+ 	NewTileSwitchTrigger = 614,
+ 	NewMultiRewardObject = 615,
+    */
+
 
 void PacketAnalyze::analyzeCommand(
     GLFWwindow* window,
@@ -448,10 +509,11 @@ void PacketAnalyze::analyzeCommand(
 
     //std::vector<uint8_t>& raw = command.rawNetworkCommand();
     //std::string rawStr(raw.begin(), raw.end());
-    //if (/*std::isElementInVector(nnCodes, command.getEventCode()) and*/
-    //    command.size() != 67 and rawStr.find((char*)"425c0000c386bc29") != std::string::npos) {
+    //if (command.size() != 67 and std::isElementInVector(nCodes, command.getEventCode()))
+    //    /* and rawStr.find((char*)"425c0000c386bc29") != std::string::npos*/ {
     //    // 544e4c TNL
     //    dataLayout.findDataLayout(command);
+    //    //dataLayout.printInfo(command, 0, 255, true);
     //    dataLayout.printInfo(command);
     //}
 
@@ -514,6 +576,10 @@ void PacketAnalyze::analyzeCommand(
                 dataLayout.findDataLayout(command);
                 dataLayout.printInfo(command); */
                 break;
+            case eventCode::NewSimpleItem:
+                /*dataLayout.findDataLayout(command);
+                dataLayout.printInfo(command);*/
+                break;
             default:
                 break;
             }
@@ -556,9 +622,9 @@ void PacketAnalyze::analyzeCommand(
             _entityList._isChangingLocation = false;
             break;
         case operationCode::Move:
-            if (_entityList._currentLocation._type != "city") {
+            //if (_entityList._currentLocation._type != "city") {
                 _entityList._playerSelf.update(command);
-            }
+            //}
             break;
             /*case operationCode::ChangeCluster: // other player changing location not only me
                 _entityList.ChangeCluster(command);
@@ -604,9 +670,9 @@ void PacketAnalyze::analyzeCommand(
             Auction::GetItemData(command, _entityList._currentLocation, itemData, false);
             break;
         case operationCode::Move:
-            if (_entityList._currentLocation._type != "city") {
+            //if (_entityList._currentLocation._type != "city") {
                 _entityList._playerSelf.update(command);
-            }
+            //}
             //std::cout << _entityList._playerSelf._positionX << " " << _entityList._playerSelf._positionY << "\n";
             break;
         case operationCode::ChangeCluster:
@@ -667,9 +733,9 @@ int main() {
     //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
     //net::removeTemporaryConnections("location_connections.json");
-    net::parseLocationsConnections("world_extended.xml");
+    //net::parseLocationsConnections("world_extended.xml");
     //net::findLocationsStatistics("cluster");
-    //packetAnalyze.run();
+    packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);
     
