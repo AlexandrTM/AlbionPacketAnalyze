@@ -1,27 +1,34 @@
-#include "Location.h"
-
 #ifndef AUCTION_H
 #define AUCTION_H
 
-struct Auction
+#include "Location.h"
+
+namespace Auction
 {
-	static void findAuctionAverageValues(NetworkCommand& command, std::string& itemData, std::string dataSeparator);
-	static void GetItemData(
+	void findAuctionAverageValues(NetworkCommand& command, std::string& itemData, std::string dataSeparator);
+	void GetItemData(
 		NetworkCommand& command,
 		Location& currentLocation,
 		std::string& itemData,
 		bool printInfo
 	);
-	static void processAuctionOrders(
+	void processAuctionOrders(
 		const std::string& auctionSellOrdersString, bool isSellOrders, 
 		Location& currentLocation, bool isFilterEnabled
 	);
-	static void auctionOrders(
+	void auctionOrders(
 		NetworkCommand& command, bool isSellOrders, 
 		Location& currentLocation, bool isFilterEnabled
 	);
+	void printAuctionOrders(
+		bool isFilterEnabled,
+		std::unordered_map
+			<std::string, // player name
+			std::unordered_map<std::string, std::pair<size_t, size_t>>> // item id | amount | total silver
+		auctionOrdersData
+	);
 
-	static void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
+	void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
 };
 
 #endif // !AUCTION_H

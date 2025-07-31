@@ -10,7 +10,7 @@ void EntityList::draw(GLFWwindow* window)
 
     drawPlayerSelf();
     drawPlayers();
-    drawHarvestables();
+    //drawHarvestables();
     drawMobs();
     drawWindowFrame(scaleFactor);
     
@@ -377,12 +377,12 @@ bool EntityList::isMobFiltered(Mob mob, float_t& pointSize, std::vector<float_t>
         pointSize = 3;
         color = { 0.6f, 0.3f, 0.3f };
         return true;
-    }
-    if (mob._uniqueName.find("_CRYSTAL") != std::string::npos) {
-        pointSize = 3;
-        color = { 0.6f, 0.3f, 0.3f };
-        return true;
     }*/
+    if (mob._uniqueName.find("_CRYSTAL") != std::string::npos) {
+        pointSize = 5;
+        color = { 0.38, 0.733, 0.937 };
+        return true;
+    }
     if (mob._category == "hiddentreasures") {
         pointSize = 4;
         color = { 0.811f, 0.709f, 0.231f };

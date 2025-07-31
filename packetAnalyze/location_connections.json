@@ -4682,6 +4682,2806 @@
             "type": "static_dungeon",
             "tier": 7,
             "biome": "forest"
+        },
+        {
+            "id": "TNL-084",
+            "name": "Cilos-Avioaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-132",
+            "name": "Siros-Ofurlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-021",
+            "name": "Oasos-Eraerom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-008",
+            "name": "Cetos-Obaelos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-260",
+            "name": "Feritos-Enomaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-243",
+            "name": "Heritos-Exozlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-160",
+            "name": "Qiient-Odesas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-144",
+            "name": "Foros-Uzazlum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-075",
+            "name": "Sases-Avuotum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-270",
+            "name": "Tieitos-Eyexrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-209",
+            "name": "Oonitos-Umiutum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-003",
+            "name": "Puros-Amayam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-138",
+            "name": "Filos-Abalam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-178",
+            "name": "Sectun-Tersas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-198",
+            "name": "Settun-Al-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-322",
+            "name": "Hynitos-Oyezam",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-153",
+            "name": "Quaent-Viesom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-174",
+            "name": "Qiient-In-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-073",
+            "name": "Fasos-Ayiotum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-234",
+            "name": "Soritos-Avamsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-031",
+            "name": "Hasos-Iuimaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-197",
+            "name": "Setent-Qintis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-398",
+            "name": "Settun-In-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-099",
+            "name": "Ooros-Ataltum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-335",
+            "name": "Sasitos-Oyarlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-188",
+            "name": "Sectun-In-Odesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-336",
+            "name": "Fasitos-Oleraum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-137",
+            "name": "Fieos-Aiuttum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-231",
+            "name": "Huritos-Iuimaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-072",
+            "name": "Hasos-Ayousum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-168",
+            "name": "Qiient-Et-Tertum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-191",
+            "name": "Setent-Vietis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-122",
+            "name": "Honos-Oyezam",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-161",
+            "name": "Qiient-Nutis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-267",
+            "name": "Xetitos-Emimsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-240",
+            "name": "Heritos-Inayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-368",
+            "name": "Qiient-Si-Tertum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-100",
+            "name": "Hynes-Ieatun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-360",
+            "name": "Qiient-Qi-Odesas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-274",
+            "name": "Petitos-Avosrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-259",
+            "name": "Turitos-Atatlos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-156",
+            "name": "Quatun-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-349",
+            "name": "Siritos-Oyohun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-152",
+            "name": "Quaent-Tersis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-369",
+            "name": "Qiient-Et-Qinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-029",
+            "name": "Oures-Araosum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-057",
+            "name": "Xynos-Oyogam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-294",
+            "name": "Soritos-Apenlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-001",
+            "name": "Ouyos-Aoeuam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-297",
+            "name": "Feritos-Osinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-002",
+            "name": "Coues-Exakrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-296",
+            "name": "Fynitos-Ezatam",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-291",
+            "name": "Hilitos-Aiigaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-004",
+            "name": "Pures-Ouozlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-290",
+            "name": "Tetitos-Ayoslum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-005",
+            "name": "Soros-Axaesum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-293",
+            "name": "Conitos-Ofailos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-006",
+            "name": "Huyos-Uxeulum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-292",
+            "name": "Ponitos-Aiayrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-007",
+            "name": "Ceres-Iooinum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-009",
+            "name": "Oieos-Umiutum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-010",
+            "name": "Sebos-Avoirom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-011",
+            "name": "Teros-Auiusum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-012",
+            "name": "Oebos-Ixakaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-013",
+            "name": "Touos-Uoemtum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-014",
+            "name": "Xasos-Aeoilos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-015",
+            "name": "Xuros-Eyoztum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-254",
+            "name": "Oebitos-Oyozam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-049",
+            "name": "Huyos-Eyoztum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-016",
+            "name": "Pasos-Avosam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-255",
+            "name": "Casitos-Atinaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-048",
+            "name": "Fouos-Agosaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-017",
+            "name": "Oasos-Uromlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-047",
+            "name": "Fetos-Aiaylos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-018",
+            "name": "Casos-Uruxtum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-046",
+            "name": "Fynes-Unavtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-019",
+            "name": "Ceros-Aeaylum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-051",
+            "name": "Fouos-Amaurom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-020",
+            "name": "Xouos-Aioblos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-050",
+            "name": "Poues-Unatam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-053",
+            "name": "Xasos-Oneulum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-022",
+            "name": "Tetos-Igaelum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-052",
+            "name": "Suyos-Onaytum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-023",
+            "name": "Hynos-Oiaelos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-055",
+            "name": "Coros-Atinaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-024",
+            "name": "Hebos-Ulamsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-054",
+            "name": "Oynos-Oyozam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-025",
+            "name": "Hiros-Iuaerom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-026",
+            "name": "Cynos-Avixnum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-056",
+            "name": "Sasos-Oiozlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-027",
+            "name": "Conos-Avaelum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-059",
+            "name": "Tynos-Atatlos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-028",
+            "name": "Tetos-Ulaurom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-058",
+            "name": "Cynos-Oxaeaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-063",
+            "name": "Foues-Aeaosum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-030",
+            "name": "Hures-Ugumtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-062",
+            "name": "Hebes-Ouaylos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-061",
+            "name": "Hynes-Exemrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-032",
+            "name": "Foros-Egoisum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-060",
+            "name": "Firos-Enomaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-033",
+            "name": "Hasos-Agoitum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-034",
+            "name": "Setos-Avamsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-035",
+            "name": "Tonos-Obayam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-036",
+            "name": "Honos-Umayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-064",
+            "name": "Xilos-Osayam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-037",
+            "name": "Huyes-Ogozlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-038",
+            "name": "Curos-Avulsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-039",
+            "name": "Cebos-Avemlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-040",
+            "name": "Hasos-Inayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-041",
+            "name": "Sasos-Egeylos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-042",
+            "name": "Coros-Aiayrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-043",
+            "name": "Hiros-Exozlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-044",
+            "name": "Tiros-Ouultum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-258",
+            "name": "Conitos-Oxaeaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-045",
+            "name": "Cases-Ugumlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-065",
+            "name": "Casos-Ayosrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-066",
+            "name": "Souos-Ososlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-067",
+            "name": "Xebos-Emimsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-068",
+            "name": "Oetos-Oyexlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-069",
+            "name": "Xebos-Exostum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-070",
+            "name": "Tynos-Eyexrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-071",
+            "name": "Casos-Aximam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-074",
+            "name": "Pebos-Avosrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-076",
+            "name": "Xases-Oxoulum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-077",
+            "name": "Hieos-Avaolum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-078",
+            "name": "Xasos-Aoemaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-079",
+            "name": "Hasos-Osuorom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-215",
+            "name": "Xouitos-Eyoztum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-080",
+            "name": "Oynos-Eramtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-214",
+            "name": "Xouitos-Aeoilos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-081",
+            "name": "Couos-Ayayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-217",
+            "name": "Oynitos-Uromlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-082",
+            "name": "Siros-Obobrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-216",
+            "name": "Peritos-Avosam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-083",
+            "name": "Souos-Umogaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-211",
+            "name": "Tuyitos-Auiusum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-210",
+            "name": "Siritos-Avoirom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-085",
+            "name": "Fonos-Aiugsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-213",
+            "name": "Turitos-Uoemtum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-086",
+            "name": "Synos-Ayailos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-212",
+            "name": "Oieitos-Ixakaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-087",
+            "name": "Xiles-Aiavlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-088",
+            "name": "Sases-Aoarsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-089",
+            "name": "Casos-Aiagsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-263",
+            "name": "Fynites-Aeaosum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-090",
+            "name": "Tieos-Ayoslum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-262",
+            "name": "Hurites-Ouaylos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-091",
+            "name": "Hieos-Aiigaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-261",
+            "name": "Hebites-Exemrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-092",
+            "name": "Poros-Aiayrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-093",
+            "name": "Cilos-Ofailos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-094",
+            "name": "Silos-Apenlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-266",
+            "name": "Synitos-Ososlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-095",
+            "name": "Fynos-Alodrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-265",
+            "name": "Cieitos-Ayosrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-096",
+            "name": "Firos-Ezatam",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-264",
+            "name": "Xoritos-Osayam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-097",
+            "name": "Firos-Osinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-098",
+            "name": "Soues-Uzurtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-101",
+            "name": "Fuyes-Izohun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-102",
+            "name": "Xetos-Obursum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-103",
+            "name": "Oetos-Ofailos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-104",
+            "name": "Tynos-Igurlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-105",
+            "name": "Puros-Ofavam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-249",
+            "name": "Heritos-Eyoztum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-106",
+            "name": "Setos-Aiaitum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-248",
+            "name": "Fynitos-Agosaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-107",
+            "name": "Tynos-Uxavrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-247",
+            "name": "Foritos-Aiaylos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-108",
+            "name": "Souos-Availos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-246",
+            "name": "Fieites-Unavtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-109",
+            "name": "Sebos-Ugersum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-110",
+            "name": "Peros-Aiataum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-111",
+            "name": "Pieos-Ofairom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-112",
+            "name": "Sieos-Ofugtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-113",
+            "name": "Tasos-Iriglos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-389",
+            "name": "Secent-Al-Duosom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-114",
+            "name": "Tiros-Odoxlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-388",
+            "name": "Sectun-Oc-Odesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-115",
+            "name": "Xases-Ataglos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-116",
+            "name": "Oires-Oloblum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-117",
+            "name": "Firos-Aiavam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-385",
+            "name": "Sectun-In-Vyntis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-118",
+            "name": "Heros-Atoyam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-384",
+            "name": "Secent-Qi-Qinsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-119",
+            "name": "Petos-Aietam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-393",
+            "name": "Setent-Et-Nusum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-120",
+            "name": "Touos-Ataglos",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-392",
+            "name": "Settun-Et-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-121",
+            "name": "Poros-Oconun",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-391",
+            "name": "Setent-Al-Vietis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-390",
+            "name": "Secent-Si-Qinsas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-123",
+            "name": "Fieos-Atezsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-397",
+            "name": "Setent-Et-Qintis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-124",
+            "name": "Ooros-Ecunsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-396",
+            "name": "Setent-Al-Duosas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-125",
+            "name": "Coros-Alieam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-395",
+            "name": "Settun-Al-Tersom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-126",
+            "name": "Couos-Opodam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-394",
+            "name": "Settun-Al-Vynsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-127",
+            "name": "Horos-Ohenlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-128",
+            "name": "Files-Azazsum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-129",
+            "name": "Sasos-Abizaum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-130",
+            "name": "Fones-Opavun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-131",
+            "name": "Fiees-Ohohtum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-133",
+            "name": "Oiros-Alaiam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-134",
+            "name": "Xiros-Aiairom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-135",
+            "name": "Silos-Oyarlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-136",
+            "name": "Fonos-Oleraum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-139",
+            "name": "Synos-Oyarlos",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-140",
+            "name": "Febos-Acalun",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-141",
+            "name": "Pieos-Eterrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-142",
+            "name": "Feros-Oyuctum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-143",
+            "name": "Pynos-Opabrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-145",
+            "name": "Cieos-Atatlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-146",
+            "name": "Huros-Atontum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-147",
+            "name": "Tonos-Aboysum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-148",
+            "name": "Hiles-Izizaum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-149",
+            "name": "Sebos-Oyohun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-150",
+            "name": "Cilos-Otatrom",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-201",
+            "name": "Oasitos-Aoeuam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-202",
+            "name": "Curites-Exakrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-203",
+            "name": "Petitos-Amayam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-204",
+            "name": "Pynites-Ouozlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-205",
+            "name": "Suyitos-Axaesum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-206",
+            "name": "Honitos-Uxeulum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-207",
+            "name": "Cuyites-Iooinum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-208",
+            "name": "Cieitos-Obaelos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-218",
+            "name": "Conitos-Uruxtum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-219",
+            "name": "Cebitos-Aeaylum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-220",
+            "name": "Xuyitos-Aioblos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-221",
+            "name": "Oebitos-Eraerom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-169",
+            "name": "Qiient-Qinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-222",
+            "name": "Tebitos-Igaelum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-223",
+            "name": "Huritos-Oiaelos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-224",
+            "name": "Hynitos-Ulamsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-225",
+            "name": "Hetitos-Iuaerom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-226",
+            "name": "Cetitos-Avixnum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-227",
+            "name": "Casitos-Avaelum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-163",
+            "name": "Qiient-Al-Odesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-228",
+            "name": "Tasitos-Ulaurom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-162",
+            "name": "Qiient-Vyntum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-229",
+            "name": "Oynites-Araosum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-230",
+            "name": "Hilites-Ugumtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-232",
+            "name": "Fynitos-Egoisum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-233",
+            "name": "Huyitos-Agoitum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-159",
+            "name": "Qiient-Tersom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-158",
+            "name": "Quaent-Al-Nusis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-235",
+            "name": "Tasitos-Obayam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-236",
+            "name": "Hasitos-Umayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-237",
+            "name": "Hynites-Ogozlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-155",
+            "name": "Quaent-Qintis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-238",
+            "name": "Ceritos-Avulsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-154",
+            "name": "Quatun-Nusas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-239",
+            "name": "Coritos-Avemlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-241",
+            "name": "Seritos-Egeylos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-242",
+            "name": "Cetitos-Aiayrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-244",
+            "name": "Tieitos-Ouultum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-245",
+            "name": "Cieites-Ugumlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-250",
+            "name": "Pirites-Unatam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-251",
+            "name": "Fonitos-Amaurom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-252",
+            "name": "Seritos-Onaytum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-253",
+            "name": "Xetitos-Oneulum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-256",
+            "name": "Souitos-Oiozlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-257",
+            "name": "Xebitos-Oyogam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-268",
+            "name": "Oeritos-Oyexlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-269",
+            "name": "Xoritos-Exostum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-271",
+            "name": "Cetitos-Aximam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-272",
+            "name": "Hynitos-Ayousum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-273",
+            "name": "Fuyitos-Ayiotum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-275",
+            "name": "Suyites-Avuotum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-359",
+            "name": "Qiient-In-Tersom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-276",
+            "name": "Xerites-Oxoulum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-358",
+            "name": "Quaent-In-Nusis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-277",
+            "name": "Hasitos-Avaolum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-357",
+            "name": "Quaent-In-Odesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-278",
+            "name": "Xilitos-Aoemaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-356",
+            "name": "Quatun-Et-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-279",
+            "name": "Hilitos-Osuorom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-280",
+            "name": "Oiritos-Eramtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-281",
+            "name": "Curitos-Ayayaum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-282",
+            "name": "Setitos-Obobrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-283",
+            "name": "Sasitos-Umogaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-284",
+            "name": "Cieitos-Avioaum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-199",
+            "name": "Setent-Al-Qinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-285",
+            "name": "Fynitos-Aiugsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-286",
+            "name": "Sonitos-Ayailos",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-287",
+            "name": "Xonites-Aiavlum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-194",
+            "name": "Settun-Vynsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-288",
+            "name": "Synites-Aoarsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-195",
+            "name": "Settun-Tersom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-289",
+            "name": "Cynitos-Aiagsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-295",
+            "name": "Firitos-Alodrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-298",
+            "name": "Suyites-Uzurtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-299",
+            "name": "Ouritos-Ataltum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-300",
+            "name": "Hurites-Ieatun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-301",
+            "name": "Filites-Izohun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-302",
+            "name": "Xynitos-Obursum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-303",
+            "name": "Ouritos-Ofailos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-304",
+            "name": "Tonitos-Igurlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-305",
+            "name": "Piritos-Ofavam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-306",
+            "name": "Soritos-Aiaitum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-307",
+            "name": "Tonitos-Uxavrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-308",
+            "name": "Synitos-Availos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-309",
+            "name": "Sasitos-Ugersum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-310",
+            "name": "Puyitos-Aiataum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-311",
+            "name": "Pouitos-Ofairom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-312",
+            "name": "Suyitos-Ofugtum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-313",
+            "name": "Toritos-Iriglos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-314",
+            "name": "Tebitos-Odoxlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-315",
+            "name": "Xurites-Ataglos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-316",
+            "name": "Oynites-Oloblum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-317",
+            "name": "Furitos-Aiavam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-318",
+            "name": "Hynitos-Atoyam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-319",
+            "name": "Pynitos-Aietam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-320",
+            "name": "Tilitos-Ataglos",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-321",
+            "name": "Peritos-Oconun",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-323",
+            "name": "Fasitos-Atezsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-179",
+            "name": "Secent-Al-Odetis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-324",
+            "name": "Oeritos-Ecunsum",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-325",
+            "name": "Casitos-Alieam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-326",
+            "name": "Cilitos-Opodam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-327",
+            "name": "Huyitos-Ohenlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-175",
+            "name": "Qiitun-Duosum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-328",
+            "name": "Fasites-Azazsum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-329",
+            "name": "Silitos-Abizaum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-187",
+            "name": "Secent-Al-Tersum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-330",
+            "name": "Febites-Opavun",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-186",
+            "name": "Secent-Nutum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-331",
+            "name": "Ferites-Ohohtum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-185",
+            "name": "Sectun-Al-Vyntis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-332",
+            "name": "Synitos-Ofurlos",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-184",
+            "name": "Secent-Al-Qinsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-333",
+            "name": "Oouitos-Alaiam",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-183",
+            "name": "Sectun-Qinsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-334",
+            "name": "Xoritos-Aiairom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-182",
+            "name": "Secent-Et-Odesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-181",
+            "name": "Secent-Viesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-180",
+            "name": "Secent-Vyntum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-337",
+            "name": "Fouitos-Aiuttum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-338",
+            "name": "Fynitos-Abalam",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-339",
+            "name": "Suyitos-Oyarlos",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-340",
+            "name": "Fuyitos-Acalun",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-341",
+            "name": "Pilitos-Eterrom",
+            "type": "avalon",
+            "tier": 4,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-342",
+            "name": "Fasitos-Oyuctum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-343",
+            "name": "Piritos-Opabrom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-344",
+            "name": "Filitos-Uzazlum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-345",
+            "name": "Cynitos-Atatlum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-346",
+            "name": "Hebitos-Atontum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-347",
+            "name": "Tuyitos-Aboysum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-348",
+            "name": "Honites-Izizaum",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-350",
+            "name": "Cieitos-Otatrom",
+            "type": "avalon",
+            "tier": 8,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-151",
+            "name": "Quaent-Vynsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-351",
+            "name": "Quaent-Al-Vynsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-352",
+            "name": "Quaent-Al-Tersis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-353",
+            "name": "Quaent-Al-Viesom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-354",
+            "name": "Quatun-Et-Nusas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-355",
+            "name": "Quaent-Al-Qintis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-157",
+            "name": "Quaent-Al-Odesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-361",
+            "name": "Qiient-In-Nutis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-362",
+            "name": "Qiient-In-Vyntum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-363",
+            "name": "Qiient-Si-Odesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-164",
+            "name": "Qiient-Al-Vynsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-364",
+            "name": "Qiient-Qi-Vynsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-165",
+            "name": "Qiitun-Et-Vynsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-365",
+            "name": "Qiitun-Si-Vynsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-166",
+            "name": "Qiient-Al-Tersas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-366",
+            "name": "Qiient-Qi-Tersas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-167",
+            "name": "Qiitun-Vietis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-367",
+            "name": "Qiitun-Et-Vietis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-170",
+            "name": "Qiient-Al-Viesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-370",
+            "name": "Qiient-In-Viesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-171",
+            "name": "Qiient-Al-Nusom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-371",
+            "name": "Qiient-Qi-Nusom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-172",
+            "name": "Qiient-Et-Nusas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-372",
+            "name": "Qiient-Si-Nusas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-173",
+            "name": "Qiient-Et-Odetis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-373",
+            "name": "Qiient-Sa-Odetis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-374",
+            "name": "Qiient-Oc-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-375",
+            "name": "Qiitun-Al-Duosum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-176",
+            "name": "Qiient-Al-Qinsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-376",
+            "name": "Qiient-In-Qinsis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-177",
+            "name": "Secent-Odesom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-377",
+            "name": "Secent-Qi-Odesom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-378",
+            "name": "Sectun-Et-Tersas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-379",
+            "name": "Secent-Si-Odetis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-380",
+            "name": "Secent-Et-Vyntum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-381",
+            "name": "Secent-Al-Viesum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-382",
+            "name": "Secent-Sa-Odesis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-383",
+            "name": "Sectun-In-Qinsom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-386",
+            "name": "Secent-Al-Nutum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-387",
+            "name": "Secent-In-Tersum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-189",
+            "name": "Secent-Duosom",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-190",
+            "name": "Secent-Et-Qinsas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-192",
+            "name": "Settun-Odetum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-193",
+            "name": "Setent-Nusum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-196",
+            "name": "Setent-Duosas",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-399",
+            "name": "Setent-In-Qinsum",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-200",
+            "name": "Settun-Al-Nusis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
+        },
+        {
+            "id": "TNL-400",
+            "name": "Settun-In-Nusis",
+            "type": "avalon",
+            "tier": 6,
+            "biome": "other"
         }
     ],
     "connections": [
@@ -4794,13 +7594,13 @@
             "to": "1000"
         },
         {
-            "timestamp": "2025-07-14T15:52:57Z",
+            "timestamp": "2025-07-17T15:39:45Z",
             "type": "walk",
             "from": "1339",
             "to": "2354"
         },
         {
-            "timestamp": "2025-07-14T15:52:45Z",
+            "timestamp": "2025-07-17T15:38:30Z",
             "type": "walk",
             "from": "1339",
             "to": "1326"
@@ -4872,7 +7672,7 @@
             "to": "0212"
         },
         {
-            "timestamp": "2025-07-14T15:54:05Z",
+            "timestamp": "2025-07-15T23:15:23Z",
             "type": "walk",
             "from": "3203",
             "to": "0219"
@@ -4920,7 +7720,7 @@
             "to": "0202"
         },
         {
-            "timestamp": "2025-07-14T15:52:41Z",
+            "timestamp": "2025-07-28T23:02:21Z",
             "type": "walk",
             "from": "2305",
             "to": "2326"
@@ -4974,7 +7774,7 @@
             "to": "DNG-KPR-02-MAIN-04"
         },
         {
-            "timestamp": "2025-07-14T15:52:03Z",
+            "timestamp": "2025-07-15T20:50:07Z",
             "type": "walk",
             "from": "4206",
             "to": "4213"
@@ -5334,7 +8134,7 @@
             "to": "3213"
         },
         {
-            "timestamp": "2025-07-14T15:52:28Z",
+            "timestamp": "2025-07-16T11:42:03Z",
             "type": "walk",
             "from": "4213",
             "to": "4214"
@@ -5346,7 +8146,7 @@
             "to": "PSG-0006"
         },
         {
-            "timestamp": "2025-07-14T15:52:31Z",
+            "timestamp": "2025-07-16T11:40:38Z",
             "type": "walk",
             "from": "4213",
             "to": "4000"
@@ -5442,7 +8242,7 @@
             "to": "4201"
         },
         {
-            "timestamp": "2025-07-14T15:52:31Z",
+            "timestamp": "2025-07-15T21:14:06Z",
             "type": "walk",
             "from": "4207",
             "to": "4000"
@@ -5466,13 +8266,13 @@
             "to": "PSG-0005"
         },
         {
-            "timestamp": "2025-07-14T15:52:24Z",
+            "timestamp": "2025-07-15T08:55:12Z",
             "type": "walk",
             "from": "0221",
             "to": "0222"
         },
         {
-            "timestamp": "2025-07-14T15:52:22Z",
+            "timestamp": "2025-07-15T08:40:06Z",
             "type": "walk",
             "from": "0221",
             "to": "0223"
@@ -5628,7 +8428,7 @@
             "to": "DNG-KPR-02-MAIN-033"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-18T07:32:55Z",
             "type": "walk",
             "from": "4308",
             "to": "4301"
@@ -5640,7 +8440,7 @@
             "to": "4338"
         },
         {
-            "timestamp": "2025-07-14T15:52:44Z",
+            "timestamp": "2025-07-19T12:49:05Z",
             "type": "walk",
             "from": "4308",
             "to": "4326"
@@ -5832,7 +8632,7 @@
             "to": "2222"
         },
         {
-            "timestamp": "2025-07-14T15:52:24Z",
+            "timestamp": "2025-07-25T18:54:17Z",
             "type": "walk",
             "from": "1210",
             "to": "1213"
@@ -5898,13 +8698,13 @@
             "to": "4315"
         },
         {
-            "timestamp": "2025-07-14T15:52:23Z",
+            "timestamp": "2025-07-25T17:52:53Z",
             "type": "walk",
             "from": "3201",
             "to": "3202"
         },
         {
-            "timestamp": "2025-07-14T15:52:36Z",
+            "timestamp": "2025-07-25T17:51:31Z",
             "type": "walk",
             "from": "3201",
             "to": "3003"
@@ -5934,13 +8734,13 @@
             "to": "0317"
         },
         {
-            "timestamp": "2025-07-14T15:52:13Z",
+            "timestamp": "2025-07-15T20:26:28Z",
             "type": "walk",
             "from": "0006",
             "to": "0000"
         },
         {
-            "timestamp": "2025-07-14T15:52:38Z",
+            "timestamp": "2025-07-15T09:40:50Z",
             "type": "walk",
             "from": "0006",
             "to": "0007"
@@ -5976,13 +8776,13 @@
             "to": "1000"
         },
         {
-            "timestamp": "2025-07-14T15:53:25Z",
+            "timestamp": "2025-07-18T08:16:59Z",
             "type": "walk",
             "from": "PSG-0051#3",
             "to": "0346"
         },
         {
-            "timestamp": "2025-07-14T15:52:47Z",
+            "timestamp": "2025-07-18T08:17:41Z",
             "type": "walk",
             "from": "PSG-0051#3",
             "to": "3342"
@@ -6054,7 +8854,7 @@
             "to": "2219"
         },
         {
-            "timestamp": "2025-07-14T15:52:45Z",
+            "timestamp": "2025-07-14T18:42:32Z",
             "type": "walk",
             "from": "4307",
             "to": "4338"
@@ -6066,7 +8866,7 @@
             "to": "4323"
         },
         {
-            "timestamp": "2025-07-14T15:52:48Z",
+            "timestamp": "2025-07-14T18:43:34Z",
             "type": "walk",
             "from": "4307",
             "to": "4325"
@@ -6078,13 +8878,13 @@
             "to": "1213"
         },
         {
-            "timestamp": "2025-07-14T15:54:02Z",
+            "timestamp": "2025-07-25T18:11:22Z",
             "type": "walk",
             "from": "1209",
             "to": "1223"
         },
         {
-            "timestamp": "2025-07-14T15:52:12Z",
+            "timestamp": "2025-07-25T18:12:13Z",
             "type": "walk",
             "from": "1209",
             "to": "CenterCity-DNG-01"
@@ -6114,31 +8914,31 @@
             "to": "3220"
         },
         {
-            "timestamp": "2025-07-14T15:53:15Z",
+            "timestamp": "2025-07-29T01:03:39Z",
             "type": "walk",
             "from": "0332",
             "to": "0313"
         },
         {
-            "timestamp": "2025-07-14T15:53:50Z",
+            "timestamp": "2025-07-17T21:02:15Z",
             "type": "walk",
             "from": "0332",
             "to": "DNG-MOR-01-MAIN-010"
         },
         {
-            "timestamp": "2025-07-14T15:52:41Z",
+            "timestamp": "2025-07-18T08:31:16Z",
             "type": "walk",
             "from": "0332",
             "to": "3354"
         },
         {
-            "timestamp": "2025-07-14T15:53:17Z",
+            "timestamp": "2025-07-18T08:49:29Z",
             "type": "walk",
             "from": "0332",
             "to": "0355"
         },
         {
-            "timestamp": "2025-07-14T15:54:16Z",
+            "timestamp": "2025-07-17T20:50:48Z",
             "type": "walk",
             "from": "0332",
             "to": "DNG-MOR-01-MAIN-03"
@@ -6174,7 +8974,7 @@
             "to": "2321"
         },
         {
-            "timestamp": "2025-07-14T15:52:38Z",
+            "timestamp": "2025-07-20T16:53:47Z",
             "type": "walk",
             "from": "0000",
             "to": "0007"
@@ -6186,19 +8986,19 @@
             "to": "0360-HALL-01"
         },
         {
-            "timestamp": "2025-07-14T15:52:17Z",
+            "timestamp": "2025-07-15T23:34:29Z",
             "type": "walk",
             "from": "0000",
             "to": "0203"
         },
         {
-            "timestamp": "2025-07-14T15:52:26Z",
+            "timestamp": "2025-07-15T09:08:02Z",
             "type": "walk",
             "from": "0000",
             "to": "0202"
         },
         {
-            "timestamp": "2025-07-14T15:52:16Z",
+            "timestamp": "2025-07-15T23:23:41Z",
             "type": "walk",
             "from": "0000",
             "to": "0204"
@@ -6210,7 +9010,7 @@
             "to": "0206"
         },
         {
-            "timestamp": "2025-07-14T15:52:13Z",
+            "timestamp": "2025-07-20T16:27:41Z",
             "type": "walk",
             "from": "0000",
             "to": "0000-HellDen"
@@ -6282,13 +9082,13 @@
             "to": "DNG-KPR-02-MAIN-027"
         },
         {
-            "timestamp": "2025-07-14T15:52:47Z",
+            "timestamp": "2025-07-17T15:36:13Z",
             "type": "walk",
             "from": "4306",
             "to": "PSG-0039#2"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-17T18:22:29Z",
             "type": "walk",
             "from": "4306",
             "to": "4301"
@@ -6384,7 +9184,7 @@
             "to": "DNG-KPR-02-MAIN-031"
         },
         {
-            "timestamp": "2025-07-14T15:52:46Z",
+            "timestamp": "2025-07-18T17:16:05Z",
             "type": "walk",
             "from": "4309",
             "to": "4324"
@@ -6396,13 +9196,13 @@
             "to": "DNG-MOR-01-MAIN-017"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-17T14:32:28Z",
             "type": "walk",
             "from": "4309",
             "to": "4301"
         },
         {
-            "timestamp": "2025-07-14T15:52:43Z",
+            "timestamp": "2025-07-17T14:33:16Z",
             "type": "walk",
             "from": "4309",
             "to": "1306"
@@ -6582,7 +9382,7 @@
             "to": "0201"
         },
         {
-            "timestamp": "2025-07-14T15:52:28Z",
+            "timestamp": "2025-07-15T23:35:41Z",
             "type": "walk",
             "from": "0203",
             "to": "0207"
@@ -6894,7 +9694,7 @@
             "to": "DNG-UND-01-MAIN-05"
         },
         {
-            "timestamp": "2025-07-14T15:52:21Z",
+            "timestamp": "2025-07-25T18:28:05Z",
             "type": "walk",
             "from": "2204",
             "to": "CenterCity-DNG-01"
@@ -6906,7 +9706,7 @@
             "to": "1213"
         },
         {
-            "timestamp": "2025-07-14T15:52:23Z",
+            "timestamp": "2025-07-25T18:19:28Z",
             "type": "walk",
             "from": "2204",
             "to": "2203"
@@ -6930,13 +9730,13 @@
             "to": "4220"
         },
         {
-            "timestamp": "2025-07-14T15:52:28Z",
+            "timestamp": "2025-07-15T16:53:42Z",
             "type": "walk",
             "from": "0223",
             "to": "0207"
         },
         {
-            "timestamp": "2025-07-14T15:52:24Z",
+            "timestamp": "2025-07-15T09:21:30Z",
             "type": "walk",
             "from": "0223",
             "to": "0005"
@@ -7020,7 +9820,7 @@
             "to": "DNG-UND-01-MAIN-010"
         },
         {
-            "timestamp": "2025-07-14T15:52:36Z",
+            "timestamp": "2025-07-25T18:18:17Z",
             "type": "walk",
             "from": "2203",
             "to": "3003"
@@ -7080,13 +9880,13 @@
             "to": "4311"
         },
         {
-            "timestamp": "2025-07-14T15:53:27Z",
+            "timestamp": "2025-07-19T15:51:24Z",
             "type": "walk",
             "from": "DNG-KPR-02-MAIN-08",
             "to": "1327"
         },
         {
-            "timestamp": "2025-07-14T15:52:23Z",
+            "timestamp": "2025-07-25T17:57:36Z",
             "type": "walk",
             "from": "3202",
             "to": "CenterCity-DNG-01"
@@ -7116,7 +9916,7 @@
             "to": "DNG-KPR-02-MAIN-019"
         },
         {
-            "timestamp": "2025-07-14T15:52:25Z",
+            "timestamp": "2025-07-15T09:31:31Z",
             "type": "walk",
             "from": "0005",
             "to": "0208"
@@ -7128,7 +9928,7 @@
             "to": "0222"
         },
         {
-            "timestamp": "2025-07-14T15:52:36Z",
+            "timestamp": "2025-07-25T18:52:42Z",
             "type": "walk",
             "from": "1213",
             "to": "3003"
@@ -7308,13 +10108,13 @@
             "to": "DNG-MOR-01-MAIN-021"
         },
         {
-            "timestamp": "2025-07-14T15:52:32Z",
+            "timestamp": "2025-07-16T12:40:26Z",
             "type": "walk",
             "from": "2211",
             "to": "2000"
         },
         {
-            "timestamp": "2025-07-14T15:54:06Z",
+            "timestamp": "2025-07-16T12:42:05Z",
             "type": "walk",
             "from": "2211",
             "to": "2220"
@@ -7332,13 +10132,13 @@
             "to": "1309"
         },
         {
-            "timestamp": "2025-07-14T15:53:10Z",
+            "timestamp": "2025-07-15T23:46:57Z",
             "type": "walk",
             "from": "0330",
             "to": "0312"
         },
         {
-            "timestamp": "2025-07-14T15:53:13Z",
+            "timestamp": "2025-07-15T23:45:55Z",
             "type": "walk",
             "from": "0330",
             "to": "1342"
@@ -7374,13 +10174,13 @@
             "to": "3218"
         },
         {
-            "timestamp": "2025-07-14T15:54:24Z",
+            "timestamp": "2025-07-29T01:13:33Z",
             "type": "walk",
             "from": "DNG-UND-01-MAIN-014",
             "to": "DNG-UND-01-SUB-014"
         },
         {
-            "timestamp": "2025-07-14T15:53:18Z",
+            "timestamp": "2025-07-29T01:15:01Z",
             "type": "walk",
             "from": "DNG-UND-01-MAIN-014",
             "to": "4341"
@@ -7452,7 +10252,7 @@
             "to": "4221"
         },
         {
-            "timestamp": "2025-07-14T15:54:05Z",
+            "timestamp": "2025-07-15T23:37:06Z",
             "type": "walk",
             "from": "0207",
             "to": "0218"
@@ -7590,7 +10390,7 @@
             "to": "4356"
         },
         {
-            "timestamp": "2025-07-14T15:53:28Z",
+            "timestamp": "2025-07-18T09:17:17Z",
             "type": "walk",
             "from": "1357",
             "to": "1343"
@@ -7608,7 +10408,7 @@
             "to": "3014-HALL-01"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-20T16:29:17Z",
             "type": "walk",
             "from": "3004",
             "to": "3007"
@@ -7620,31 +10420,31 @@
             "to": "3004-HellDen"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-29T02:15:57Z",
             "type": "walk",
             "from": "3004",
             "to": "3008"
         },
         {
-            "timestamp": "2025-07-14T15:52:31Z",
+            "timestamp": "2025-07-20T13:42:58Z",
             "type": "walk",
             "from": "4000",
             "to": "4000-HellDen"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-17T16:52:37Z",
             "type": "walk",
             "from": "4000",
             "to": "4002"
         },
         {
-            "timestamp": "2025-07-14T15:52:31Z",
+            "timestamp": "2025-07-16T19:58:10Z",
             "type": "walk",
             "from": "4000",
             "to": "4007-HALL-01"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-16T19:55:30Z",
             "type": "walk",
             "from": "4000",
             "to": "4001"
@@ -7680,7 +10480,7 @@
             "to": "3322"
         },
         {
-            "timestamp": "2025-07-14T15:52:31Z",
+            "timestamp": "2025-07-20T14:21:56Z",
             "type": "walk",
             "from": "1000",
             "to": "1000-HellDen"
@@ -7692,13 +10492,13 @@
             "to": "1013-HALL-01"
         },
         {
-            "timestamp": "2025-07-14T15:52:39Z",
+            "timestamp": "2025-07-25T19:47:42Z",
             "type": "walk",
             "from": "1000",
             "to": "1002"
         },
         {
-            "timestamp": "2025-07-14T15:52:39Z",
+            "timestamp": "2025-07-25T19:41:06Z",
             "type": "walk",
             "from": "1000",
             "to": "1001"
@@ -7740,19 +10540,19 @@
             "to": "2205"
         },
         {
-            "timestamp": "2025-07-14T15:52:39Z",
+            "timestamp": "2025-07-20T16:29:53Z",
             "type": "walk",
             "from": "2000",
             "to": "2003"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-20T16:31:59Z",
             "type": "walk",
             "from": "2000",
             "to": "2004"
         },
         {
-            "timestamp": "2025-07-14T15:52:32Z",
+            "timestamp": "2025-07-20T16:46:14Z",
             "type": "walk",
             "from": "2000",
             "to": "2000-HellDen"
@@ -7782,7 +10582,7 @@
             "to": "2330"
         },
         {
-            "timestamp": "2025-07-14T15:53:48Z",
+            "timestamp": "2025-07-20T11:28:29Z",
             "type": "walk",
             "from": "2345",
             "to": "0358"
@@ -7806,7 +10606,7 @@
             "to": "BLACKBANK-2342"
         },
         {
-            "timestamp": "2025-07-14T15:53:29Z",
+            "timestamp": "2025-07-17T14:12:50Z",
             "type": "walk",
             "from": "1358",
             "to": "4318"
@@ -7860,7 +10660,7 @@
             "to": "2344"
         },
         {
-            "timestamp": "2025-07-14T15:53:37Z",
+            "timestamp": "2025-07-16T09:34:13Z",
             "type": "walk",
             "from": "2343",
             "to": "3356"
@@ -7980,19 +10780,19 @@
             "to": "1222"
         },
         {
-            "timestamp": "2025-07-14T15:52:36Z",
+            "timestamp": "2025-07-25T18:28:31Z",
             "type": "walk",
             "from": "3003",
             "to": "CenterCity-DNG-01"
         },
         {
-            "timestamp": "2025-07-14T15:52:38Z",
+            "timestamp": "2025-07-31T02:13:14Z",
             "type": "walk",
             "from": "3003",
             "to": "3006"
         },
         {
-            "timestamp": "2025-07-14T15:52:38Z",
+            "timestamp": "2025-07-25T19:05:59Z",
             "type": "walk",
             "from": "3003",
             "to": "3005"
@@ -8178,7 +10978,7 @@
             "to": "DNG-MOR-01-MAIN-02"
         },
         {
-            "timestamp": "2025-07-14T15:52:39Z",
+            "timestamp": "2025-07-25T19:44:58Z",
             "type": "walk",
             "from": "1001",
             "to": "1002"
@@ -8208,7 +11008,7 @@
             "to": "4218"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-20T16:31:17Z",
             "type": "walk",
             "from": "2003",
             "to": "2004"
@@ -8262,13 +11062,13 @@
             "to": "4316"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-16T12:37:30Z",
             "type": "walk",
             "from": "3007",
             "to": "3008"
         },
         {
-            "timestamp": "2025-07-14T15:52:40Z",
+            "timestamp": "2025-07-16T19:56:25Z",
             "type": "walk",
             "from": "4001",
             "to": "4002"
@@ -8352,19 +11152,19 @@
             "to": "1325"
         },
         {
-            "timestamp": "2025-07-14T15:52:44Z",
+            "timestamp": "2025-07-19T15:48:27Z",
             "type": "walk",
             "from": "PSG-0038#2",
             "to": "4326"
         },
         {
-            "timestamp": "2025-07-14T15:52:45Z",
+            "timestamp": "2025-07-19T15:47:45Z",
             "type": "walk",
             "from": "PSG-0038#2",
             "to": "0307"
         },
         {
-            "timestamp": "2025-07-14T15:53:25Z",
+            "timestamp": "2025-07-18T08:07:27Z",
             "type": "walk",
             "from": "3354",
             "to": "0346"
@@ -8376,7 +11176,7 @@
             "to": "DNG-MOR-01-MAIN-010"
         },
         {
-            "timestamp": "2025-07-14T15:53:53Z",
+            "timestamp": "2025-07-18T08:29:59Z",
             "type": "walk",
             "from": "3354",
             "to": "3306"
@@ -8478,25 +11278,25 @@
             "to": "4311"
         },
         {
-            "timestamp": "2025-07-14T15:52:45Z",
+            "timestamp": "2025-07-17T14:34:26Z",
             "type": "walk",
             "from": "1306",
             "to": "1340"
         },
         {
-            "timestamp": "2025-07-14T15:53:27Z",
+            "timestamp": "2025-07-19T15:50:42Z",
             "type": "walk",
             "from": "4311",
             "to": "1327"
         },
         {
-            "timestamp": "2025-07-14T15:52:44Z",
+            "timestamp": "2025-07-19T15:49:46Z",
             "type": "walk",
             "from": "4311",
             "to": "4326"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-19T13:12:44Z",
             "type": "walk",
             "from": "4311",
             "to": "4301"
@@ -8532,7 +11332,7 @@
             "to": "1325"
         },
         {
-            "timestamp": "2025-07-14T15:53:17Z",
+            "timestamp": "2025-07-19T15:44:05Z",
             "type": "walk",
             "from": "0307",
             "to": "0354"
@@ -8556,25 +11356,25 @@
             "to": "4325"
         },
         {
-            "timestamp": "2025-07-14T15:52:47Z",
+            "timestamp": "2025-07-22T11:17:34Z",
             "type": "walk",
             "from": "4305",
             "to": "0325"
         },
         {
-            "timestamp": "2025-07-14T15:52:45Z",
+            "timestamp": "2025-07-22T11:27:17Z",
             "type": "walk",
             "from": "4305",
             "to": "4338"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-22T11:27:58Z",
             "type": "walk",
             "from": "4305",
             "to": "4301"
         },
         {
-            "timestamp": "2025-07-14T15:52:47Z",
+            "timestamp": "2025-07-17T15:36:53Z",
             "type": "walk",
             "from": "1326",
             "to": "PSG-0039#2"
@@ -8604,7 +11404,7 @@
             "to": "DNG-KPR-02-MAIN-027"
         },
         {
-            "timestamp": "2025-07-14T15:52:47Z",
+            "timestamp": "2025-07-17T14:54:58Z",
             "type": "walk",
             "from": "1340",
             "to": "4327"
@@ -8670,7 +11470,7 @@
             "to": "3221"
         },
         {
-            "timestamp": "2025-07-14T15:53:29Z",
+            "timestamp": "2025-07-17T15:02:08Z",
             "type": "walk",
             "from": "4327",
             "to": "4313"
@@ -8700,13 +11500,13 @@
             "to": "2315"
         },
         {
-            "timestamp": "2025-07-14T15:53:53Z",
+            "timestamp": "2025-07-18T08:28:53Z",
             "type": "walk",
             "from": "3342",
             "to": "3306"
         },
         {
-            "timestamp": "2025-07-14T15:53:49Z",
+            "timestamp": "2025-07-15T11:01:08Z",
             "type": "walk",
             "from": "3342",
             "to": "1321"
@@ -8724,7 +11524,7 @@
             "to": "4323"
         },
         {
-            "timestamp": "2025-07-14T15:52:50Z",
+            "timestamp": "2025-07-22T10:49:59Z",
             "type": "walk",
             "from": "0338",
             "to": "4337"
@@ -8742,7 +11542,7 @@
             "to": "PSG-0042#1"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-15T23:48:24Z",
             "type": "walk",
             "from": "0309",
             "to": "0301"
@@ -8754,7 +11554,7 @@
             "to": "0327"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-14T18:45:02Z",
             "type": "walk",
             "from": "4325",
             "to": "4341"
@@ -8880,7 +11680,7 @@
             "to": "DNG-MOR-01-MAIN-018"
         },
         {
-            "timestamp": "2025-07-14T15:52:50Z",
+            "timestamp": "2025-07-22T11:05:42Z",
             "type": "walk",
             "from": "4322",
             "to": "4337"
@@ -8892,7 +11692,7 @@
             "to": "BLACKBANK-4322"
         },
         {
-            "timestamp": "2025-07-14T15:52:51Z",
+            "timestamp": "2025-07-22T11:04:25Z",
             "type": "walk",
             "from": "4322",
             "to": "4353"
@@ -8928,7 +11728,7 @@
             "to": "DNG-MOR-01-MAIN-011"
         },
         {
-            "timestamp": "2025-07-14T15:52:52Z",
+            "timestamp": "2025-07-17T11:00:33Z",
             "type": "walk",
             "from": "0311",
             "to": "0341"
@@ -8940,7 +11740,7 @@
             "to": "4354"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-17T10:43:02Z",
             "type": "walk",
             "from": "0311",
             "to": "4328"
@@ -9126,7 +11926,7 @@
             "to": "0342"
         },
         {
-            "timestamp": "2025-07-14T15:52:57Z",
+            "timestamp": "2025-07-17T15:54:22Z",
             "type": "walk",
             "from": "0339",
             "to": "2354"
@@ -9192,13 +11992,13 @@
             "to": "DNG-UND-01-MAIN-010"
         },
         {
-            "timestamp": "2025-07-14T15:53:15Z",
+            "timestamp": "2025-07-14T19:12:06Z",
             "type": "walk",
             "from": "0328",
             "to": "0310"
         },
         {
-            "timestamp": "2025-07-14T15:53:13Z",
+            "timestamp": "2025-07-15T23:44:35Z",
             "type": "walk",
             "from": "0328",
             "to": "1342"
@@ -9210,13 +12010,13 @@
             "to": "DNG-UND-01-MAIN-012"
         },
         {
-            "timestamp": "2025-07-14T15:53:12Z",
+            "timestamp": "2025-07-14T19:04:13Z",
             "type": "walk",
             "from": "0328",
             "to": "1309"
         },
         {
-            "timestamp": "2025-07-14T15:53:38Z",
+            "timestamp": "2025-07-16T17:38:17Z",
             "type": "walk",
             "from": "5103",
             "to": "5000"
@@ -9504,25 +12304,25 @@
             "to": "DNG-UND-01-MAIN-011"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-29T01:08:10Z",
             "type": "walk",
             "from": "0008",
             "to": "4341"
         },
         {
-            "timestamp": "2025-07-14T15:53:15Z",
+            "timestamp": "2025-07-29T01:04:58Z",
             "type": "walk",
             "from": "0008",
             "to": "0313"
         },
         {
-            "timestamp": "2025-07-14T15:53:16Z",
+            "timestamp": "2025-07-15T16:23:09Z",
             "type": "walk",
             "from": "0008",
             "to": "0329"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-19T13:19:17Z",
             "type": "walk",
             "from": "0008",
             "to": "4343"
@@ -9636,13 +12436,13 @@
             "to": "4351"
         },
         {
-            "timestamp": "2025-07-14T15:54:20Z",
+            "timestamp": "2025-07-14T19:30:37Z",
             "type": "walk",
             "from": "1316",
             "to": "1301"
         },
         {
-            "timestamp": "2025-07-14T15:53:55Z",
+            "timestamp": "2025-07-14T19:28:50Z",
             "type": "walk",
             "from": "1316",
             "to": "3329"
@@ -9774,13 +12574,13 @@
             "to": "DNG-KPR-02-MAIN-015"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-16T17:37:25Z",
             "type": "walk",
             "from": "0314",
             "to": "0301"
         },
         {
-            "timestamp": "2025-07-14T15:54:30Z",
+            "timestamp": "2025-07-16T07:08:10Z",
             "type": "walk",
             "from": "0312",
             "to": "0301"
@@ -9810,7 +12610,7 @@
             "to": "3314"
         },
         {
-            "timestamp": "2025-07-14T15:54:31Z",
+            "timestamp": "2025-07-15T22:35:00Z",
             "type": "walk",
             "from": "0316",
             "to": "0301"
@@ -9996,7 +12796,7 @@
             "to": "PSG-0052#1"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-20T11:37:15Z",
             "type": "walk",
             "from": "0326",
             "to": "4342"
@@ -10014,13 +12814,13 @@
             "to": "DNG-MOR-01-MAIN-020"
         },
         {
-            "timestamp": "2025-07-14T15:53:16Z",
+            "timestamp": "2025-07-15T16:11:58Z",
             "type": "walk",
             "from": "0310",
             "to": "0329"
         },
         {
-            "timestamp": "2025-07-14T15:53:20Z",
+            "timestamp": "2025-07-15T16:10:40Z",
             "type": "walk",
             "from": "0310",
             "to": "4357"
@@ -10038,13 +12838,13 @@
             "to": "4351"
         },
         {
-            "timestamp": "2025-07-14T15:53:20Z",
+            "timestamp": "2025-07-19T14:55:05Z",
             "type": "walk",
             "from": "0313",
             "to": "4355"
         },
         {
-            "timestamp": "2025-07-14T15:53:16Z",
+            "timestamp": "2025-07-15T15:53:14Z",
             "type": "walk",
             "from": "0313",
             "to": "0340"
@@ -10092,7 +12892,7 @@
             "to": "PSG-0050#1"
         },
         {
-            "timestamp": "2025-07-14T15:53:40Z",
+            "timestamp": "2025-07-21T14:31:35Z",
             "type": "walk",
             "from": "2338",
             "to": "2353"
@@ -10122,7 +12922,7 @@
             "to": "DNG-MOR-01-MAIN-07"
         },
         {
-            "timestamp": "2025-07-14T15:53:20Z",
+            "timestamp": "2025-07-15T16:09:30Z",
             "type": "walk",
             "from": "0340",
             "to": "4357"
@@ -10158,7 +12958,7 @@
             "to": "3347"
         },
         {
-            "timestamp": "2025-07-14T15:54:22Z",
+            "timestamp": "2025-07-29T02:10:38Z",
             "type": "walk",
             "from": "0354",
             "to": "DNG-UND-01-MAIN-015"
@@ -10176,7 +12976,7 @@
             "to": "4343"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-29T01:16:11Z",
             "type": "walk",
             "from": "0354",
             "to": "4341"
@@ -10194,7 +12994,7 @@
             "to": "DNG-MOR-01-MAIN-027"
         },
         {
-            "timestamp": "2025-07-14T15:53:39Z",
+            "timestamp": "2025-07-16T09:37:14Z",
             "type": "walk",
             "from": "3310",
             "to": "3345"
@@ -10206,7 +13006,7 @@
             "to": "DNG-MOR-01-MAIN-03"
         },
         {
-            "timestamp": "2025-07-14T15:53:18Z",
+            "timestamp": "2025-07-18T08:57:18Z",
             "type": "walk",
             "from": "0355",
             "to": "1312"
@@ -10230,7 +13030,7 @@
             "to": "2311"
         },
         {
-            "timestamp": "2025-07-14T15:53:31Z",
+            "timestamp": "2025-07-18T09:00:18Z",
             "type": "walk",
             "from": "1312",
             "to": "4356"
@@ -10254,13 +13054,13 @@
             "to": "BLACKBANK-1312"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-19T13:16:43Z",
             "type": "walk",
             "from": "4312",
             "to": "4344"
         },
         {
-            "timestamp": "2025-07-14T15:53:27Z",
+            "timestamp": "2025-07-19T13:15:39Z",
             "type": "walk",
             "from": "4312",
             "to": "1327"
@@ -10284,7 +13084,7 @@
             "to": "DNG-UND-01-MAIN-013"
         },
         {
-            "timestamp": "2025-07-14T15:53:19Z",
+            "timestamp": "2025-07-19T13:17:43Z",
             "type": "walk",
             "from": "4343",
             "to": "4344"
@@ -10296,7 +13096,7 @@
             "to": "DNG-UND-01-MAIN-015"
         },
         {
-            "timestamp": "2025-07-14T15:53:20Z",
+            "timestamp": "2025-07-19T13:00:00Z",
             "type": "walk",
             "from": "4343",
             "to": "4355"
@@ -10320,7 +13120,7 @@
             "to": "DNG-MOR-01-SUB-08"
         },
         {
-            "timestamp": "2025-07-14T15:53:28Z",
+            "timestamp": "2025-07-18T09:21:53Z",
             "type": "walk",
             "from": "4344",
             "to": "1343"
@@ -10368,19 +13168,19 @@
             "to": "BLACKBANK-4357"
         },
         {
-            "timestamp": "2025-07-14T15:53:32Z",
+            "timestamp": "2025-07-28T22:53:33Z",
             "type": "walk",
             "from": "5003",
             "to": "5002"
         },
         {
-            "timestamp": "2025-07-14T15:53:38Z",
+            "timestamp": "2025-07-25T19:32:51Z",
             "type": "walk",
             "from": "5003",
             "to": "5000"
         },
         {
-            "timestamp": "2025-07-14T15:53:43Z",
+            "timestamp": "2025-07-28T22:54:08Z",
             "type": "walk",
             "from": "5003",
             "to": "5001"
@@ -10668,7 +13468,7 @@
             "to": "DNG-MOR-01-MAIN-01"
         },
         {
-            "timestamp": "2025-07-14T15:53:51Z",
+            "timestamp": "2025-07-15T09:52:14Z",
             "type": "walk",
             "from": "0346",
             "to": "1348"
@@ -10698,7 +13498,7 @@
             "to": "DNG-KPR-02-MAIN-026"
         },
         {
-            "timestamp": "2025-07-14T15:53:37Z",
+            "timestamp": "2025-07-21T14:33:08Z",
             "type": "walk",
             "from": "3325",
             "to": "2325"
@@ -10758,7 +13558,7 @@
             "to": "PSG-0053#1"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-20T11:34:04Z",
             "type": "walk",
             "from": "1327",
             "to": "4342"
@@ -10770,13 +13570,13 @@
             "to": "BLACKBANK-1343"
         },
         {
-            "timestamp": "2025-07-14T15:53:31Z",
+            "timestamp": "2025-07-17T13:18:17Z",
             "type": "walk",
             "from": "1343",
             "to": "PSG-0053#1"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-17T13:33:49Z",
             "type": "walk",
             "from": "1343",
             "to": "4328"
@@ -10788,7 +13588,7 @@
             "to": "1012"
         },
         {
-            "timestamp": "2025-07-14T15:53:29Z",
+            "timestamp": "2025-07-17T15:03:53Z",
             "type": "walk",
             "from": "3339",
             "to": "4313"
@@ -10806,7 +13606,7 @@
             "to": "4318"
         },
         {
-            "timestamp": "2025-07-14T15:53:29Z",
+            "timestamp": "2025-07-20T11:13:05Z",
             "type": "walk",
             "from": "3353",
             "to": "4319"
@@ -10836,7 +13636,7 @@
             "to": "BLACKBANK-4318"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-17T14:11:31Z",
             "type": "walk",
             "from": "4318",
             "to": "4346"
@@ -10872,7 +13672,7 @@
             "to": "4342"
         },
         {
-            "timestamp": "2025-07-14T15:53:30Z",
+            "timestamp": "2025-07-17T13:55:42Z",
             "type": "walk",
             "from": "4328",
             "to": "4346"
@@ -10914,13 +13714,13 @@
             "to": "4347"
         },
         {
-            "timestamp": "2025-07-14T15:53:43Z",
+            "timestamp": "2025-07-28T22:53:12Z",
             "type": "walk",
             "from": "5002",
             "to": "5001"
         },
         {
-            "timestamp": "2025-07-14T15:53:38Z",
+            "timestamp": "2025-07-21T14:59:03Z",
             "type": "walk",
             "from": "5002",
             "to": "5000"
@@ -11136,7 +13936,7 @@
             "to": "DNG-KPR-02-MAIN-026"
         },
         {
-            "timestamp": "2025-07-14T15:53:40Z",
+            "timestamp": "2025-07-21T14:32:16Z",
             "type": "walk",
             "from": "2325",
             "to": "2353"
@@ -11178,7 +13978,7 @@
             "to": "5100"
         },
         {
-            "timestamp": "2025-07-14T15:53:43Z",
+            "timestamp": "2025-07-28T23:25:32Z",
             "type": "walk",
             "from": "5000",
             "to": "5001"
@@ -11430,7 +14230,7 @@
             "to": "3217"
         },
         {
-            "timestamp": "2025-07-14T15:54:06Z",
+            "timestamp": "2025-07-16T12:55:49Z",
             "type": "walk",
             "from": "2219",
             "to": "2220"
@@ -11472,7 +14272,7 @@
             "to": "4358"
         },
         {
-            "timestamp": "2025-07-14T15:53:50Z",
+            "timestamp": "2025-07-15T09:50:20Z",
             "type": "walk",
             "from": "1321",
             "to": "1348"
@@ -11664,7 +14464,7 @@
             "to": "DNG-MOR-01-MAIN-018"
         },
         {
-            "timestamp": "2025-07-14T15:54:05Z",
+            "timestamp": "2025-07-15T23:13:55Z",
             "type": "walk",
             "from": "0218",
             "to": "0219"
@@ -11754,7 +14554,7 @@
             "to": "DNG-UND-01-SUB-013"
         },
         {
-            "timestamp": "2025-07-14T15:54:25Z",
+            "timestamp": "2025-07-29T02:00:37Z",
             "type": "walk",
             "from": "DNG-UND-01-MAIN-015",
             "to": "DNG-UND-01-SUB-015"
@@ -11764,6 +14564,396 @@
             "type": "walk",
             "from": "5100",
             "to": "5101"
+        },
+        {
+            "timestamp": "2025-07-14T17:50:56Z",
+            "type": "teleportation",
+            "from": "5000",
+            "to": "5000"
+        },
+        {
+            "timestamp": "2025-07-21T14:59:15Z",
+            "type": "teleportation",
+            "from": "5000",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-20T13:09:35Z",
+            "type": "teleportation",
+            "from": "4000",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-14T19:36:56Z",
+            "type": "teleportation",
+            "from": "1301",
+            "to": "5000"
+        },
+        {
+            "timestamp": "2025-07-15T09:01:17Z",
+            "type": "teleportation",
+            "from": "0222",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-15T09:40:04Z",
+            "type": "teleportation",
+            "from": "0208",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-15T10:36:23Z",
+            "type": "teleportation",
+            "from": "0332",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-15T11:32:04Z",
+            "type": "teleportation",
+            "from": "0340",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-15T16:45:48Z",
+            "type": "teleportation",
+            "from": "0000",
+            "to": "0203"
+        },
+        {
+            "timestamp": "2025-07-15T18:47:56Z",
+            "type": "teleportation",
+            "from": "5002",
+            "to": "5001"
+        },
+        {
+            "timestamp": "2025-07-15T23:08:18Z",
+            "type": "teleportation",
+            "from": "4000",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-16T19:55:12Z",
+            "type": "teleportation",
+            "from": "5000",
+            "to": "4000"
+        },
+        {
+            "timestamp": "2025-07-15T23:34:13Z",
+            "type": "teleportation",
+            "from": "0204",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-16T17:38:00Z",
+            "type": "teleportation",
+            "from": "0301",
+            "to": "5000"
+        },
+        {
+            "timestamp": "2025-07-16T11:39:09Z",
+            "type": "teleportation",
+            "from": "4000",
+            "to": "0301"
+        },
+        {
+            "timestamp": "2025-07-16T12:05:54Z",
+            "type": "teleportation",
+            "from": "4000",
+            "to": "2000"
+        },
+        {
+            "timestamp": "2025-07-20T16:29:42Z",
+            "type": "teleportation",
+            "from": "2000",
+            "to": "3004"
+        },
+        {
+            "timestamp": "2025-07-16T13:09:24Z",
+            "type": "teleportation",
+            "from": "2219",
+            "to": "2000"
+        },
+        {
+            "timestamp": "2025-07-16T17:38:48Z",
+            "type": "walk",
+            "from": "5103",
+            "to": "5001"
+        },
+        {
+            "timestamp": "2025-07-16T19:58:24Z",
+            "type": "teleportation",
+            "from": "4007-HALL-01",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-16T20:23:06Z",
+            "type": "teleportation",
+            "from": "0354",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-25T20:08:21Z",
+            "type": "teleportation",
+            "from": "4301",
+            "to": "1000"
+        },
+        {
+            "timestamp": "2025-07-16T21:25:18Z",
+            "type": "teleportation",
+            "from": "4344",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T14:15:12Z",
+            "type": "teleportation",
+            "from": "1358",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T15:29:18Z",
+            "type": "teleportation",
+            "from": "3339",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T15:56:21Z",
+            "type": "teleportation",
+            "from": "0339",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T17:17:02Z",
+            "type": "teleportation",
+            "from": "4305",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T17:45:42Z",
+            "type": "walk",
+            "from": "4306",
+            "to": "4306"
+        },
+        {
+            "timestamp": "2025-07-17T17:46:05Z",
+            "type": "teleportation",
+            "from": "4306",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-18T07:15:16Z",
+            "type": "teleportation",
+            "from": "4301",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-17T21:03:05Z",
+            "type": "teleportation",
+            "from": "0332",
+            "to": "0008"
+        },
+        {
+            "timestamp": "2025-07-17T21:13:47Z",
+            "type": "teleportation",
+            "from": "0008",
+            "to": "0008"
+        },
+        {
+            "timestamp": "2025-07-19T15:11:10Z",
+            "type": "teleportation",
+            "from": "0008",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-19T12:50:57Z",
+            "type": "teleportation",
+            "from": "4326",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-19T13:07:53Z",
+            "type": "teleportation",
+            "from": "4355",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-19T15:52:42Z",
+            "type": "teleportation",
+            "from": "DNG-KPR-02-MAIN-08",
+            "to": "1000"
+        },
+        {
+            "timestamp": "2025-07-20T10:42:26Z",
+            "type": "teleportation",
+            "from": "1339",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-29T02:16:15Z",
+            "type": "teleportation",
+            "from": "4301",
+            "to": "3004"
+        },
+        {
+            "timestamp": "2025-07-20T16:28:09Z",
+            "type": "teleportation",
+            "from": "3004",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-20T10:48:12Z",
+            "type": "teleportation",
+            "from": "0000",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-20T12:16:01Z",
+            "type": "walk",
+            "from": "5001",
+            "to": "5001"
+        },
+        {
+            "timestamp": "2025-07-20T12:48:08Z",
+            "type": "teleportation",
+            "from": "4000-HellDen",
+            "to": "4000-HellDen"
+        },
+        {
+            "timestamp": "2025-07-20T13:43:28Z",
+            "type": "teleportation",
+            "from": "4000",
+            "to": "1000"
+        },
+        {
+            "timestamp": "2025-07-20T13:59:21Z",
+            "type": "walk",
+            "from": "1000-HellDen",
+            "to": "1000-HellDen"
+        },
+        {
+            "timestamp": "2025-07-20T14:20:33Z",
+            "type": "teleportation",
+            "from": "1000-HellDen",
+            "to": "1000-HellDen"
+        },
+        {
+            "timestamp": "2025-07-20T14:22:17Z",
+            "type": "teleportation",
+            "from": "1000",
+            "to": "2000"
+        },
+        {
+            "timestamp": "2025-07-20T14:41:10Z",
+            "type": "teleportation",
+            "from": "2000",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-20T16:24:26Z",
+            "type": "teleportation",
+            "from": "0000-HellDen",
+            "to": "0000-HellDen"
+        },
+        {
+            "timestamp": "2025-07-20T16:46:41Z",
+            "type": "teleportation",
+            "from": "2000",
+            "to": "5000"
+        },
+        {
+            "timestamp": "2025-07-20T16:53:37Z",
+            "type": "teleportation",
+            "from": "5000",
+            "to": "0000"
+        },
+        {
+            "timestamp": "2025-07-21T14:46:42Z",
+            "type": "teleportation",
+            "from": "4219",
+            "to": "5001"
+        },
+        {
+            "timestamp": "2025-07-22T11:08:15Z",
+            "type": "teleportation",
+            "from": "4337",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-25T17:39:51Z",
+            "type": "teleportation",
+            "from": "1209",
+            "to": "3003"
+        },
+        {
+            "timestamp": "2025-07-25T18:00:54Z",
+            "type": "teleportation",
+            "from": "3202",
+            "to": "3003"
+        },
+        {
+            "timestamp": "2025-07-25T18:41:42Z",
+            "type": "teleportation",
+            "from": "1213",
+            "to": "3003"
+        },
+        {
+            "timestamp": "2025-07-25T18:45:29Z",
+            "type": "teleportation",
+            "from": "2003",
+            "to": "2004"
+        },
+        {
+            "timestamp": "2025-07-25T18:54:47Z",
+            "type": "teleportation",
+            "from": "1210",
+            "to": "3003"
+        },
+        {
+            "timestamp": "2025-07-25T19:48:16Z",
+            "type": "teleportation",
+            "from": "3003",
+            "to": "1000"
+        },
+        {
+            "timestamp": "2025-07-25T19:06:37Z",
+            "type": "teleportation",
+            "from": "1000",
+            "to": "1000"
+        },
+        {
+            "timestamp": "2025-07-25T20:09:21Z",
+            "type": "teleportation",
+            "from": "1000",
+            "to": "5000"
+        },
+        {
+            "timestamp": "2025-07-25T19:59:35Z",
+            "type": "teleportation",
+            "from": "3003",
+            "to": "4301"
+        },
+        {
+            "timestamp": "2025-07-28T22:52:30Z",
+            "type": "teleportation",
+            "from": "1220",
+            "to": "5001"
+        },
+        {
+            "timestamp": "2025-07-29T02:11:02Z",
+            "type": "teleportation",
+            "from": "0354",
+            "to": "0008"
+        },
+        {
+            "timestamp": "2025-07-29T02:13:47Z",
+            "type": "teleportation",
+            "from": "0008",
+            "to": "3004"
+        },
+        {
+            "timestamp": "2025-07-31T02:04:47Z",
+            "type": "teleportation",
+            "from": "5000",
+            "to": "3003"
         }
     ]
 }

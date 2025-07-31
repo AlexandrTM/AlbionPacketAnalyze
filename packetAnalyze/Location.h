@@ -3,15 +3,15 @@
 
 struct Location
 {
-    std::string     _id              = "";
-    std::string     _name            = "";
-    std::string     _biome           = "";
-    std::string     _type            = "";
-    int32_t         _tier            = 0;
+    std::string     _id               = "";
+    std::string     _name             = "";
+    std::string     _biome            = "";
+    std::string     _type             = "";
+    int32_t         _tier             = 0;
 
-    glm::ivec2      _fromCenterOffset    = glm::ivec2(0, 0);
-    glm::ivec2      _size            = glm::ivec2(830, 830);
-    size_t          _halfSize        = 415;
+    glm::ivec2      _fromCenterOffset = glm::ivec2(0, 0);
+    glm::ivec2      _size             = glm::ivec2(830, 830);
+    size_t          _halfSize         = 415;
 
     HarvestableList _harvestableList = {};
     PlayerList      _playerList = {};

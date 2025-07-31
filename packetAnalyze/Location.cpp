@@ -8,10 +8,6 @@ Location::Location()
     _type = "";
     _tier = 0;
 
-    _fromCenterOffset = glm::ivec2(0, 0);
-    _size = glm::ivec2(830, 330);
-    _halfSize = 415;
-
     _harvestableList = {};
     _playerList = {};
     _mobList = {};

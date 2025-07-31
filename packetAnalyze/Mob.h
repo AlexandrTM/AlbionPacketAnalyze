@@ -17,7 +17,7 @@ struct Mob
 	float_t     _positionX;
 	float_t     _positionY;
 
-	uint32_t    _health;
+	int32_t     _health;
     float_t     _moveSpeed;
     float_t     _maxEnergy;
     float_t     _energyRegeneration;
@@ -30,7 +30,7 @@ struct Mob
 	Mob(
         uint64_t id, uint16_t uniqueValue,
         std::string uniqueName, std::string category, std::string typeCategory,
-        uint32_t health,
+        int32_t health,
         uint8_t  tier, uint8_t enchantment, uint8_t charges,
         float_t  positionX, float_t  positionY
     );

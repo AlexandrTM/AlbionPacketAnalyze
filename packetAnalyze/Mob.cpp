@@ -21,7 +21,7 @@ Mob::Mob()
 Mob::Mob(
 	uint64_t id, uint16_t uniqueValue,
 	std::string uniqueName, std::string category, std::string typeCategory,
-	uint32_t health,
+	int32_t health,
 	uint8_t  tier, uint8_t enchantment, uint8_t charges,
 	float_t  positionX, float_t  positionY
 )
@@ -63,6 +63,7 @@ Mob::Mob(NetworkCommand& rawMob)
 
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawMob);
+	//dataLayout.printInfo(rawMob);
 
     _id = net::read_integer(rawMob, dataLayout.findFragment(0));
 
@@ -93,6 +94,9 @@ Mob::Mob(NetworkCommand& rawMob)
 	/*if (_harvestableType == static_cast<int8_t>(HarvestableType::HIDE) and _tier == 5) {
 		this->printInfo();
 	}*/
+	if (_uniqueName == "") {
+		//dataLayout.printInfo(rawMob);
+	}
 	//dataLayout.printInfo(rawMob, true);
 	//dataLayout.printInfo(rawMob, 11, 21, true);
 
@@ -168,7 +172,7 @@ void MobList::update(HealthUpdateHandler healthUpdate)
 {
 	for (size_t i = 0; i < _mobs.size(); i++) {
 		if (_mobs[i]._id == healthUpdate._id) {
-			if (healthUpdate._health == 0) {
+			if (healthUpdate._health <= 0) {
 				_mobs.erase(_mobs.begin() + i);
 			}
 			else {

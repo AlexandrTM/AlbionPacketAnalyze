@@ -60,33 +60,34 @@ Player::Player(uint64_t id, uint32_t health, float_t positionX, float_t position
 }
 void Player::printInfo() const
 {
-	std::cout << "name: " << _name << " guild: " << _guild << " alliance: " << _alliance << "\n";
+	std::cout << "name: " << _name << " guild: " << _guild << " alliance: " << _alliance << 
+		" X: " << _positionX << " Y:" << _positionY << "\n";
 }
 Player::Player(NetworkCommand& rawPlayer) // find health
 {
 	_id        = 0;
 	_health    = 0;
-	_positionX = 0;
-	_positionY = 0;
+	_positionX = -100;
+	_positionY = 500;
 	_isVisible = true;
 
 	DataLayout dataLayout{};
 	dataLayout.findDataLayout(rawPlayer);
-	//dataLayout.printInfo(rawPlayer);
 
 	_id = net::read_integer(rawPlayer, dataLayout.findFragment(0));
 
-	DataFragment& playerNameFragment = dataLayout.findFragment(1);
-	DataFragment& playerGuildFragment = dataLayout.findFragment(8);
-	DataFragment& playerAllianceFragment = dataLayout.findFragment(51);
+	if (dataLayout.size() > 2) {
+		DataFragment& playerNameFragment = dataLayout.findFragment(1);
+		DataFragment& playerGuildFragment = dataLayout.findFragment(8);
+		DataFragment& playerAllianceFragment = dataLayout.findFragment(51);
 
-	_name = net::readString(rawPlayer, playerNameFragment);
-	_guild = net::readString(rawPlayer, playerGuildFragment);
-	_alliance = net::readString(rawPlayer, playerAllianceFragment);
+		_name = net::readString(rawPlayer, playerNameFragment);
+		_guild = net::readString(rawPlayer, playerGuildFragment);
+		_alliance = net::readString(rawPlayer, playerAllianceFragment);
+		//dataLayout.printInfo(rawPlayer);
+	}
 
-	/*if (!_name.empty()) {
-		std::cout << "name: " << _name << " guild: " << _guild << " alliance: " << _alliance << "\n";
-	}*/
+	//printInfo();
 	
 	// проверил пр€мые и обратные пары, проверил первое и второе число отрицательное
 	// 20 возможно какой-то коэффициент, у числа коротка€ дробна€ часть
@@ -95,10 +96,6 @@ Player::Player(NetworkCommand& rawPlayer) // find health
 
 	/*_positionX = -net::read_float32(rawPlayer, dataLayout.findFragment(19)._offset);
 	_positionY = net::read_float32(rawPlayer, dataLayout.findFragment(25)._offset);*/
-
-	_positionX = -100;
-	_positionY = 500;
-	//std::cout << "_positionX: " << _positionX << " _positionY: " << _positionY << "\n";
 }
 
 PlayerList::PlayerList()

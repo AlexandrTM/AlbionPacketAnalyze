@@ -222,7 +222,7 @@ std::string net::getLocationNameById(const nlohmann::json& locationNames, const 
     return {};
 }
 
-void net::removeTemporaryConnections(const std::string filePath)
+void net::removeOutdatedTemporaryConnections(const std::string filePath)
 {
     std::ifstream inFile(filePath);
     if (!inFile.is_open()) {
@@ -248,20 +248,38 @@ void net::removeTemporaryConnections(const std::string filePath)
     nlohmann::ordered_json& connections = rootJson["connections"];
     nlohmann::ordered_json filteredConnections = nlohmann::json::array();
 
-    for (const auto& entry : connections) {
-        if (!entry.contains("from") || !entry.contains("to")) continue;
+    auto now = std::chrono::system_clock::now();
 
-        std::string fromId = entry["from"].get<std::string>();
-        std::string toId = entry["to"].get<std::string>();
+    for (const auto& connection : connections) {
+        if (!connection.contains("from") || !connection.contains("to")) continue;
+        std::string fromId = connection["from"].get<std::string>();
+        std::string toId = connection["to"].get<std::string>();
 
         bool isTemporary =
             fromId.starts_with("TNL") || toId.starts_with("TNL") ||
             fromId.starts_with("@MISTS") || toId.starts_with("@MISTS") ||
             fromId.starts_with("@RANDOMDUNGEON") || toId.starts_with("@RANDOMDUNGEON");
 
-        if (isTemporary) continue;
+        if (isTemporary) {
+            if (!connection.contains("timestamp")) continue; // skip if no timestamp
 
-        filteredConnections.push_back(entry);
+            try {
+                const auto connectionTime = parse_utc_time_string(connection["timestamp"]);
+                const auto age_hours = std::chrono::duration_cast<std::chrono::hours>(now - connectionTime).count();
+
+                if (age_hours > 8) {
+                    std::cout << "removed connection: " << connection << "\n";
+                    std::cout << "age hours: " << age_hours << "\n";
+                    continue;  // Skip outdated connection
+                }
+            }
+            catch (const std::exception& ex) {
+                std::cerr << ex.what() << '\n';
+                continue;
+            }
+        }
+
+        filteredConnections.push_back(connection);
     }
 
     // Replace old connections with filtered ones
@@ -277,102 +295,6 @@ void net::removeTemporaryConnections(const std::string filePath)
     outFile.close();
 }
 
-void net::makeLocationsConnection(
-    Location& locationFrom, Location& locationTo, const bool& isChangingLocation
-)
-{
-    /*if (_currentLocation._id.find("TNL") == std::string::npos and
-        _previousLocation._id.find("TNL") == std::string::npos) {
-        return;
-    }*/
-
-    // temporary locations
-    if (locationFrom._name.empty() || locationTo._name.empty()) return;
-
-    const std::string filePath = "location_connections.json";
-    nlohmann::ordered_json rootJson;
-    
-    // Load existing file
-    {
-        std::ifstream inputFile(filePath);
-        if (inputFile.is_open()) {
-            try {
-                inputFile >> rootJson;
-                if (!rootJson.contains("locations") || !rootJson["locations"].is_array())
-                    rootJson["locations"] = nlohmann::json::array();
-                if (!rootJson.contains("connections") || !rootJson["connections"].is_array())
-                    rootJson["connections"] = nlohmann::json::array();
-            }
-            catch (...) {
-                rootJson["locations"] = nlohmann::json::array();
-                rootJson["connections"] = nlohmann::json::array();
-            }
-            inputFile.close();
-        }
-        else {
-            rootJson["locations"] = nlohmann::json::array();
-            rootJson["connections"] = nlohmann::json::array();
-        }
-    }
-
-    auto& locationsArray = rootJson["locations"];
-    auto& connectionsArray = rootJson["connections"];
-
-    // Helper to add location only once by id
-    auto addUniqueLocation = [&](const Location& location) {
-        for (const auto& existingLoc : locationsArray) {
-            if (existingLoc["id"] == location._id) return; // already exists
-        }
-
-        locationsArray.push_back({
-            { "id", location._id },
-            { "name", location._name },
-            { "type", location._type },
-            { "tier", location._tier },
-            { "biome", location._biome }
-        });
-    };
-
-    // Ensure both locations are added
-    addUniqueLocation(locationFrom);
-    addUniqueLocation(locationTo);
-
-    // Construct new connection entry
-    nlohmann::ordered_json newConnection = {
-        { "timestamp", get_utc_time() },
-        { "type", isChangingLocation ? "walk" : "teleportation" },
-        { "from", locationFrom._id },
-        { "to", locationTo._id }
-    };
-
-    // Check if this connection already exists (bidirectionally and same type)
-    bool alreadyExists = false;
-    for (auto& connection : connectionsArray) {
-        bool same = connection["from"] == newConnection["from"] && connection["to"] == newConnection["to"];
-        bool mirrored = connection["from"] == newConnection["to"] && connection["to"] == newConnection["from"];
-        bool sameType = connection["type"] == newConnection["type"];
-
-        if ((same || mirrored) && sameType) {
-            connection["timestamp"] = newConnection["timestamp"]; // update timestamp
-            alreadyExists = true;
-            break;
-        }
-    }
-
-    if (!alreadyExists) {
-        connectionsArray.push_back(newConnection);
-    }
-
-    // Save updated JSON
-    std::ofstream outFile(filePath);
-    if (outFile.is_open()) {
-        outFile << rootJson.dump(4);
-        outFile.close();
-    }
-    else {
-        std::cerr << "Failed to open " << filePath << " for writing\n";
-    }
-}
 void net::updatePlayerData(Location& currentLocation, const std::string& filePath)
 {
     nlohmann::ordered_json playerData;
@@ -469,7 +391,104 @@ void net::parseObjectsFromTemplate(const std::string& filePath)
         //std::cout << fishingZone.first << " " << fishingZone.second << "\n";
     }
 }
-void net::parseLocationsConnections(const std::string& xmlPath)
+void net::makeLocationsConnection(
+    Location& locationFrom, Location& locationTo, const bool& isChangingLocation
+)
+{
+    /*if (_currentLocation._id.find("TNL") == std::string::npos and
+        _previousLocation._id.find("TNL") == std::string::npos) {
+        return;
+    }*/
+
+    // temporary locations
+    if (locationFrom._name.empty() || locationTo._name.empty()) return;
+
+    const std::string filePath = "location_connections.json";
+    nlohmann::ordered_json rootJson;
+
+    // Load existing file
+    {
+        std::ifstream inputFile(filePath);
+        if (inputFile.is_open()) {
+            try {
+                inputFile >> rootJson;
+                if (!rootJson.contains("locations") || !rootJson["locations"].is_array())
+                    rootJson["locations"] = nlohmann::json::array();
+                if (!rootJson.contains("connections") || !rootJson["connections"].is_array())
+                    rootJson["connections"] = nlohmann::json::array();
+            }
+            catch (...) {
+                rootJson["locations"] = nlohmann::json::array();
+                rootJson["connections"] = nlohmann::json::array();
+            }
+            inputFile.close();
+        }
+        else {
+            rootJson["locations"] = nlohmann::json::array();
+            rootJson["connections"] = nlohmann::json::array();
+        }
+    }
+
+    auto& locationsArray = rootJson["locations"];
+    auto& connectionsArray = rootJson["connections"];
+
+    // Helper to add location only once by id
+    auto addUniqueLocation = [&](const Location& location) {
+        for (const auto& existingLoc : locationsArray) {
+            if (existingLoc["id"] == location._id) return; // already exists
+        }
+
+        locationsArray.push_back({
+            { "id", location._id },
+            { "name", location._name },
+            { "type", location._type },
+            { "tier", location._tier },
+            { "biome", location._biome }
+            });
+        };
+
+    // Ensure both locations are added
+    addUniqueLocation(locationFrom);
+    addUniqueLocation(locationTo);
+
+    // Construct new connection entry
+    nlohmann::ordered_json newConnection = {
+        { "timestamp", get_utc_time() },
+        { "type", isChangingLocation ? "walk" : "teleportation" },
+        { "from", locationFrom._id },
+        { "to", locationTo._id }
+    };
+
+    // Check if this connection already exists (bidirectionally and same type)
+    bool alreadyExists = false;
+    for (auto& connection : connectionsArray) {
+        bool same = connection["from"] == newConnection["from"] && connection["to"] == newConnection["to"];
+        bool mirrored = connection["from"] == newConnection["to"] && connection["to"] == newConnection["from"];
+        bool sameType = connection["type"] == newConnection["type"];
+
+        if ((same || mirrored) && sameType) {
+            connection["timestamp"] = newConnection["timestamp"]; // update timestamp
+            alreadyExists = true;
+            break;
+        }
+    }
+
+    if (!alreadyExists) {
+        connectionsArray.push_back(newConnection);
+    }
+
+    // Save updated JSON
+    std::ofstream outFile(filePath);
+    if (outFile.is_open()) {
+        outFile << rootJson.dump(4);
+        outFile.close();
+    }
+    else {
+        std::cerr << "Failed to open " << filePath << " for writing\n";
+    }
+}
+
+void net::parseLocationsAndConnections(const std::string& xmlPath)
 {
     tinyxml2::XMLDocument doc;
     if (doc.LoadFile(xmlPath.c_str()) != tinyxml2::XML_SUCCESS) {
@@ -477,7 +496,8 @@ void net::parseLocationsConnections(const std::string& xmlPath)
         return;
     }
 
-    std::regex idRegex("^(\\d{4}|DNG.*|PSG.*)$"); // Only IDs with exactly 4 digits
+    std::regex idRegex("^(\\d{4}|DNG.*|PSG.|TNL-\\d{3}*)$");
+
     std::unordered_map<std::string, tinyxml2::XMLElement*> validClusters;
 
     // Step 1: Collect all clusters with 4-digit numeric ids
@@ -494,8 +514,10 @@ void net::parseLocationsConnections(const std::string& xmlPath)
             validClusters[clusterId] = cluster;
         }
     }
-
+    
     std::regex targetIdRegex("@(.*)$");
+
+    Location locationFrom, locationTo;
 
     // Step 2: For each valid cluster, parse exits
     for (const auto& [clusterId, clusterElem] : validClusters) {
@@ -515,7 +537,6 @@ void net::parseLocationsConnections(const std::string& xmlPath)
             //if (validClusters.find(targetClusterId) == validClusters.end()) continue;
 
             // Prepare both location structures
-            Location locationFrom, locationTo;
             locationFrom._id = clusterId;
             locationTo._id = targetClusterId;
 
@@ -525,6 +546,69 @@ void net::parseLocationsConnections(const std::string& xmlPath)
             net::makeLocationsConnection(locationFrom, locationTo, true);
             std::cout << "made connection: " << locationFrom._name << " -> " << locationTo._name << "\n";
         }
+    }
+
+    // Step 3: add locations data even if no connections present
+    for (const auto& [clusterId, clusterElem] : validClusters) {
+        Location location;
+        location._id = clusterId;
+        Location::findLocationData(location);
+
+        // Add location only if it's valid
+        if (!location._name.empty()) {
+            addLocationIfMissing(location);
+        }
+    }
+}
+void net::addLocationIfMissing(const Location& location)
+{
+    const std::string filePath = "location_connections.json";
+    nlohmann::ordered_json rootJson;
+
+    // Load JSON
+    {
+        std::ifstream inputFile(filePath);
+        if (inputFile.is_open()) {
+            try {
+                inputFile >> rootJson;
+                if (!rootJson.contains("locations") || !rootJson["locations"].is_array())
+                    rootJson["locations"] = nlohmann::json::array();
+            }
+            catch (...) {
+                rootJson["locations"] = nlohmann::json::array();
+            }
+            inputFile.close();
+        }
+        else {
+            rootJson["locations"] = nlohmann::json::array();
+        }
+    }
+
+    auto& locationsArray = rootJson["locations"];
+
+    // Check if this location already exists
+    for (const auto& existingLoc : locationsArray) {
+        if (existingLoc["id"] == location._id) return; // already added
+    }
+
+    locationsArray.push_back({
+        { "id", location._id },
+        { "name", location._name },
+        { "type", location._type },
+        { "tier", location._tier },
+        { "biome", location._biome }
+    });
+
+
+    // Save
+    std::ofstream outFile(filePath);
+    if (outFile.is_open()) {
+        outFile << rootJson.dump(4);
+        outFile.close();
+        std::cout << "Added data for location: " << location._name << "\n";
+    }
+    else {
+        std::cerr << "Failed to open " << filePath << " for writing\n";
     }
 }
 void net::searchLocationsTemplates(int32_t x, int32_t y)
@@ -711,16 +795,34 @@ void net::formatItemsData()
     std::cout << "Formatting complete. Output saved to formatted_items.txt" << std::endl;
 }
 
+std::chrono::system_clock::time_point net::parse_utc_time_string(const std::string& utcString) {
+    std::string trimmed = utcString;
+
+    // Remove fractional seconds if present (e.g., .705Z -> Z)
+    auto dotPos = trimmed.find('.');
+    if (dotPos != std::string::npos) {
+        auto zPos = trimmed.find('Z', dotPos);
+        if (zPos != std::string::npos)
+            trimmed.erase(dotPos, zPos - dotPos); // remove .xxx part
+    }
+
+    std::tm tm = {};
+    std::istringstream ss(trimmed);
+    ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
+    if (ss.fail()) {
+        throw std::runtime_error("Failed to parse timestamp: " + trimmed);
+    }
+    return std::chrono::system_clock::from_time_t(_mkgmtime(&tm)); // UTC to time_point
+}
 std::string net::get_utc_time()
 {
     auto now = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(now);
 
     std::tm utc_tm = {};
-    gmtime_s(&utc_tm, &now_c);  // Use gmtime_s instead of gmtime
+    gmtime_s(&utc_tm, &now_c);
 
     std::stringstream ss;
     ss << std::put_time(&utc_tm, "%FT%TZ");  // ISO 8601 with 'Z' for UTC
-
     return ss.str();
 }

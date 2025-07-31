@@ -61,7 +61,7 @@ int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
-bool _isHikingMode = true;
+bool _isHikingMode = false;
 
 void PacketAnalyze::run()
 {
@@ -509,12 +509,12 @@ void PacketAnalyze::analyzeCommand(
 
     //std::vector<uint8_t>& raw = command.rawNetworkCommand();
     //std::string rawStr(raw.begin(), raw.end());
-    //if (command.size() != 67 and std::isElementInVector(nCodes, command.getEventCode()))
+    //if (command.size() != 67 and !std::isElementInVector(nnCodes, command.getEventCode()))
     //    /* and rawStr.find((char*)"425c0000c386bc29") != std::string::npos*/ {
     //    // 544e4c TNL
     //    dataLayout.findDataLayout(command);
-    //    //dataLayout.printInfo(command, 0, 255, true);
     //    dataLayout.printInfo(command);
+    //    //dataLayout.printInfo(command, 0, 255, true);
     //}
 
     if (command.getOperationType() == operationType::event) {
@@ -528,10 +528,13 @@ void PacketAnalyze::analyzeCommand(
 
             switch (command.getEventCode()) {
             case eventCode::HealthUpdate:
-                //_entityList._playerList.update(HealthUpdateHandler::HealthUpdateHandler(*this)); // need to add health handling
-                _entityList._currentLocation._mobList.update(HealthUpdateHandler::HealthUpdateHandler(command));
+                //_entityList._playerList.update(HealthUpdateHandler(*this)); // need to add health handling
+                _entityList._currentLocation._mobList.update(HealthUpdateHandler(command));
                 break;
             case eventCode::NewSimpleHarvestableObjectList:
+                /*dataLayout.findDataLayout(command);
+                dataLayout.printInfo(command);
+                command.printCommandInOneString();*/
                 _entityList._currentLocation._harvestableList.update(HarvestableList(command));
                 break;
             case eventCode::NewHarvestableObject:
@@ -545,7 +548,7 @@ void PacketAnalyze::analyzeCommand(
                 //_entityList._playerList.update(Player::playerMove(command)); 
                 break;
             case eventCode::NewMob:
-                _entityList._currentLocation._mobList.newMob(Mob::Mob(command));
+                _entityList._currentLocation._mobList.newMob(Mob(command));
                 break;
             case eventCode::NewFishingZoneObject:
                 _entityList._currentLocation._fishNodeList.update(FishNode(command));
@@ -585,7 +588,7 @@ void PacketAnalyze::analyzeCommand(
             }
             if (command.rawNetworkCommand().size() == 67/* and _networkCommand[66] & (2 << 0)*/) {
                 if (dataLayout.findNumOfFragments(command) == 2) {
-                    //EntityMove::updateEntityListMove(*this, _entityList._currentLocation._playerList);
+                    //EntityMove::updateEntityListMove(command, _entityList._currentLocation._playerList);
                     EntityMove::updateEntityListMove(command, _entityList._currentLocation._mobList);
                 }
                 else {
@@ -630,7 +633,7 @@ void PacketAnalyze::analyzeCommand(
                 _entityList.ChangeCluster(command);
                 break;*/
         case operationCode::AuctionSellOrders:
-            //Auction::auctionOrders(command, true, _entityList._currentLocation, true);
+            Auction::auctionOrders(command, true, _entityList._currentLocation, true);
             break;
         case operationCode::AuctionBuyOrders:
             //Auction::auctionOrders(command, false, _entityList._currentLocation, true);
@@ -648,7 +651,7 @@ void PacketAnalyze::analyzeCommand(
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
-            Auction::findAuctionAverageValues(command, itemData, ",");
+            //Auction::findAuctionAverageValues(command, itemData, ",");
             /*stop = std::chrono::high_resolution_clock::now();
             std::cout <<
                 "time to write acution average values: " <<
@@ -732,8 +735,8 @@ int main() {
     //net::formatItemsData();
     //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
-    //net::removeTemporaryConnections("location_connections.json");
-    //net::parseLocationsConnections("world_extended.xml");
+    net::removeOutdatedTemporaryConnections("location_connections.json");
+    //net::parseLocationsAndConnections("world_extended.xml");
     //net::findLocationsStatistics("cluster");
     packetAnalyze.run();
 

@@ -4,11 +4,11 @@
 struct HealthUpdateHandler
 {
 	uint64_t _id;
-	uint32_t _healthChange;
-	uint32_t _health;
+	int32_t _healthChange;
+	int32_t _health;
 
 	HealthUpdateHandler(NetworkCommand& rawHealthUpdate);
-	HealthUpdateHandler(uint64_t id, uint32_t healthChange, uint32_t health);
+	HealthUpdateHandler(uint64_t id, int32_t healthChange, int32_t health);
 
 };
 

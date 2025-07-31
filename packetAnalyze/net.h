@@ -150,7 +150,7 @@ namespace net
     }
 
     nlohmann::json readJsonFile(const std::string& filename);
-
+    
     void getMobData(
         const nlohmann::json& data, const uint16_t uniqueValue,
         uint8_t& tier, std::string& uniqueName,
@@ -175,18 +175,20 @@ namespace net
     );
     void parseObjectsFromTemplate(const std::string& filePath);
 
-    void removeTemporaryConnections(const std::string filePath);
+    void removeOutdatedTemporaryConnections(const std::string filePath);
     void makeLocationsConnection(
         Location& locationFrom, Location& locationTo, const bool& isChangingLocation
     );
+    void addLocationIfMissing(const Location& location);
     void updatePlayerData(Location& currentLocation, const std::string& filePath);
-    void parseLocationsConnections(const std::string& xmlPath);
+    void parseLocationsAndConnections(const std::string& xmlPath);
     std::string getLocationNameById(const nlohmann::json& locationNames, const std::string& id);
     void searchLocationsTemplates(int32_t x, int32_t y);
     void findLocationsStatistics(const std::string& filePath);
 
     void formatItemsData();
     std::string get_utc_time();
+    std::chrono::system_clock::time_point parse_utc_time_string(const std::string& utcString);
 
     const nlohmann::json locationNames = net::readJsonFile("world.json");
     const nlohmann::json mobsData = net::readJsonFile("mobs.json");
