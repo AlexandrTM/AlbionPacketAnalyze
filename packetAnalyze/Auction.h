@@ -2,6 +2,7 @@
 #define AUCTION_H
 
 #include "Location.h"
+#include "AuctionOrder.h"
 
 namespace Auction
 {
@@ -21,12 +22,9 @@ namespace Auction
 		Location& currentLocation, bool isFilterEnabled
 	);
 	void printAuctionOrders(
-		bool isFilterEnabled,
-		std::unordered_map
-			<std::string, // player name
-			std::unordered_map<std::string, std::pair<size_t, size_t>>> // item id | amount | total silver
-		auctionOrdersData
+		bool isSellOrders, bool isFilterEnabled, std::vector<AuctionOrder> auctionOrders
 	);
+	void printPlayersAuctionData();
 
 	void addEmptyEntries(std::vector<std::vector<std::string>>& auctionData);
 };

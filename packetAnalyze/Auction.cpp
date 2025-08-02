@@ -9,8 +9,7 @@ uint16_t numOfRows = 113;
 uint32_t previousCommandID = 0;
 std::string previousAuctionOrdersString = "";
 
-std::unordered_map<std::string, size_t> playersBuyTotal;
-std::unordered_map<std::string, size_t> playersSellTotal;
+std::unordered_set<uint64_t> seenOrderIds;
 
 void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& itemData, std::string dataSeparator)
 {
@@ -85,24 +84,24 @@ void Auction::findAuctionAverageValues(NetworkCommand& command, std::string& ite
 					return std::stoull(a.at(idOfSortingRow)) < std::stoull(b.at(idOfSortingRow));
 				});
 
-			for (size_t i = 0; i < 4; i++) {
-				for (size_t j = 0; j < auctionData.size(); j++) {
-					auctionAverageValues << auctionData[j][i] << dataSeparator;
-				}
-				auctionAverageValues << i << " " << itemData << "\n";
-				/*if (i == 3) {
-					auctionAverageValues << itemData;
-				}*/
-			}
-			//for (size_t i = 0; i < 2; i++) {
+			//for (size_t i = 0; i < 4; i++) {
 			//	for (size_t j = 0; j < auctionData.size(); j++) {
 			//		auctionAverageValues << auctionData[j][i] << dataSeparator;
 			//	}
 			//	auctionAverageValues << i << " " << itemData << "\n";
-			//	/*if (i == 1) {
+			//	/*if (i == 3) {
 			//		auctionAverageValues << itemData;
 			//	}*/
 			//}
+			for (size_t i = 0; i < 2; i++) {
+				for (size_t j = 0; j < auctionData.size(); j++) {
+					auctionAverageValues << auctionData[j][i] << dataSeparator;
+				}
+				auctionAverageValues << i << " " << itemData << "\n";
+				/*if (i == 1) {
+					auctionAverageValues << itemData;
+				}*/
+			}
 			auctionAverageValues.close();
 		}
 		else {
@@ -225,14 +224,58 @@ void Auction::auctionOrders(
 	previousAuctionOrdersString = auctionOrdersString;
 }
 
+struct PlayerAuctionData
+{
+	int64_t totalSilver = 0;
+	int64_t sellSilver = 0;
+	int64_t buySilver = 0;
+
+	std::vector<AuctionOrder> orders;
+
+	void addOrder(const AuctionOrder& order) {
+		orders.push_back(order);
+		totalSilver += order.totalSilver;
+
+		if (order.type == AuctionOrderType::BUY)
+			buySilver += order.totalSilver;
+		else
+			sellSilver += order.totalSilver;
+	}
+
+	std::string totalsToString() const {
+		std::ostringstream oss;
+		oss <<
+			std::right <<
+			std::setw(18) << totalSilver <<
+			std::setw(18) << sellSilver <<
+			std::setw(18) << buySilver << "\n";
+		return oss.str();
+	}
+
+	std::string ordersToString() const {
+		std::vector<AuctionOrder> sortedOrders = orders;
+		std::sort(sortedOrders.begin(), sortedOrders.end(),
+			[](const AuctionOrder& a, const AuctionOrder& b) {
+				return a.totalSilver > b.totalSilver;
+			}
+		);
+
+		std::ostringstream oss;
+		size_t count = std::min<size_t>(30, sortedOrders.size());
+		for (size_t i = 0; i < count; ++i) {
+			oss << " - " << sortedOrders[i].toString();
+		}
+		return oss.str();
+	}
+};
+
+std::unordered_map<std::string, PlayerAuctionData> playerAuctionMap;
+
 void Auction::processAuctionOrders(
 	const std::string& auctionSellOrdersString, bool isSellOrders,
 	Location& currentLocation, bool isFilterEnabled
 ) {
-	std::unordered_map
-		<std::string, // player name
-		std::unordered_map<std::string, std::pair<size_t, size_t>>> // item id | amount | total silver
-		auctionOrdersData;
+	std::vector<AuctionOrder> auctionOrders;
 
 	size_t pos = 0;
 	while (pos < auctionSellOrdersString.size()) {
@@ -247,24 +290,38 @@ void Auction::processAuctionOrders(
 
 		try {
 			nlohmann::json auctionOrder = nlohmann::json::parse(jsonStr);
-			std::string playerName = isSellOrders ? auctionOrder["SellerName"] : auctionOrder["BuyerName"];
-			std::string itemTypeId = auctionOrder["ItemTypeId"];
-			size_t amount = auctionOrder["Amount"];
-			size_t totalPriceSilver = static_cast<double>(auctionOrder["TotalPriceSilver"]) / 1e4;
+			AuctionOrder order;
 
-			auctionOrdersData[playerName][itemTypeId].first += amount;
-			auctionOrdersData[playerName][itemTypeId].second += totalPriceSilver;
+			//std::cout << auctionOrder << "\n";
 
-			if (isSellOrders)
-				playersSellTotal[playerName] += totalPriceSilver;
-			else
-				playersBuyTotal[playerName] += totalPriceSilver;
+			order.id = auctionOrder["Id"];
+			order.playerName = isSellOrders ? auctionOrder["SellerName"] : auctionOrder["BuyerName"];
+			order.itemTypeId = auctionOrder["ItemTypeId"];
+			order.amount = auctionOrder["Amount"];
+			order.totalSilver = static_cast<double>(auctionOrder["TotalPriceSilver"]) / 1e4;
+			order.type = isSellOrders ? AuctionOrderType::SELL : AuctionOrderType::BUY;
+			order.unitPrice = 
+				order.amount > 0 ? static_cast<double>(order.totalSilver) / order.amount : 0.0;
+
+			auctionOrders.push_back(order);
+
+			// only count if order ID is unique
+			if (seenOrderIds.insert(order.id).second) {
+				playerAuctionMap[order.playerName].addOrder(order);
+			}
 		}
 		catch (const std::exception& e) {
 			std::cerr << "JSON Parsing Error: " << e.what() << "\n";
 		}
 	}
 
+	//printAuctionOrders(isSellOrders, isFilterEnabled, auctionOrders);
+}
+
+void Auction::printAuctionOrders(
+	bool isSellOrders, bool isFilterEnabled, std::vector<AuctionOrder> auctionOrders
+)
+{
 	if (isSellOrders) {
 		std::cout << "sell orders\n";
 	}
@@ -272,78 +329,134 @@ void Auction::processAuctionOrders(
 		std::cout << "buy orders\n";
 	}
 
-	printAuctionOrders(isFilterEnabled, auctionOrdersData);
-}
-
-void Auction::printAuctionOrders(
-	bool isFilterEnabled, 
-	std::unordered_map
-		<std::string, // player name
-		std::unordered_map<std::string, std::pair<size_t, size_t>>> // item id | amount | total silver
-	auctionOrdersData
-)
-{
 	size_t totalAmount = 0;
 	size_t totalSilver = 0;
-	std::vector<std::tuple<size_t, size_t, std::string, std::string>> sortedData;
-	for (const auto& player : auctionOrdersData) {
-		for (const auto& item : player.second) {
-			size_t amount = item.second.first;
-			size_t totalSilverPrice = item.second.second;
-			sortedData.emplace_back(amount, totalSilverPrice, player.first, item.first);
 
-			totalAmount += amount;
-			totalSilver += totalSilverPrice;
-		}
+	for (const auto& order : auctionOrders) {
+		totalAmount += order.amount;
+		totalSilver += order.totalSilver;
 	}
 
-	// Sort by amount in descending order
-	std::sort(sortedData.rbegin(), sortedData.rend());
+	// Sort descending by amount
+	std::vector<AuctionOrder> sortedOrders = auctionOrders;
+	/*std::sort(sortedOrders.begin(), sortedOrders.end(), 
+		[](const AuctionOrder& a, const AuctionOrder& b) {
+			return a.amount > b.amount;
+		}
+	);*/
 
 	// Compute threshold
 	size_t thresholdAmount = static_cast<size_t>(1.0 * totalAmount);
 	size_t accumulatedAmount = 0;
 
-	std::ofstream auctionOrders;
-	auctionOrders.open("auction orders.txt", std::ofstream::app);
+	std::ofstream auctionOrdersFile;
+	auctionOrdersFile.open("auction orders.txt", std::ofstream::app);
 
-	if (auctionOrders.is_open()) {
+	if (auctionOrdersFile.is_open()) {
 		std::cout << "total amount: " << totalAmount << " totalSilver: " << totalSilver << "\n";
 		std::cout << std::left <<
-			std::setw(20) << "playerName" << " " <<
-			std::setw(30) << "itemTypeId" << " " <<
-			std::setw(12) << "totalSilver" << " " <<
-			std::setw(7)  << "amount" << " " <<
-			std::setw(10) << "price"
+			std::setw(20) << "playerName"  << " " <<
+			std::setw(30) << "itemTypeId"  << " " <<
+			std::setw(10) << "price"       << " " <<
+			std::setw(7)  << "amount"      << " " <<
+			std::setw(12) << "totalSilver"
 			<< "\n";
 
 		// Print the sorted result
-		for (const auto& [amount, totalSilverPrice, playerName, itemTypeId] : sortedData) {
+		for (const auto& order : sortedOrders) {
 			if (accumulatedAmount >= thresholdAmount) {
 				break; // Stop once we have reached threshold
 			}
-			accumulatedAmount += amount;
+			accumulatedAmount += order.amount;
 
-			if (!isFilterEnabled || (amount >= 100 || totalSilverPrice >= 2e5)) {
-				std::cout << std::left <<
-					std::setw(20) << playerName << " " <<
-					std::setw(30) << itemTypeId << " " <<
-					std::setw(12) << totalSilverPrice << " " <<
-					std::setw(7)  << amount << " " <<
-					totalSilverPrice / amount << " "
-					<< "\n";
-				/*auctionOrders <<
-					std::setw(16) << std::left << playerName << " "
-					<< itemTypeId << " "
-					<< std::setw(5) << amount << " "
-					<< totalSilverPrice / amount
-					<< "\n";*/
+			if (!isFilterEnabled || (order.amount >= 30 || order.totalSilver >= 5e5)) {
+				std::cout << order.toString() << "\n";
 			}
 		}
 		std::cout << "\n";
-		auctionOrders.close();
+		auctionOrdersFile.close();
 	}
 	else {
 		std::cout << "auction orders.txt is not opened" << "\n";
 	}
+}
+
+void Auction::printPlayersAuctionData() {
+	int64_t totalSilver = 0;
+	int64_t totalBuySilver = 0;
+	int64_t totalSellSilver = 0;
+
+	for (const auto& [name, playerAuctionData] : playerAuctionMap) {
+		totalBuySilver += playerAuctionData.buySilver;
+		totalSellSilver += playerAuctionData.sellSilver;
+	}
+
+	totalSilver = totalBuySilver + totalSellSilver;
+
+	if (totalSilver == 0) return;
+
+	// Create vector of pairs for sorting
+	std::vector<std::pair<std::string, PlayerAuctionData>> sortedPlayersAuctionData(
+		playerAuctionMap.begin(), playerAuctionMap.end()
+	);
+
+	// Sort by totalSilver descending
+	std::sort(sortedPlayersAuctionData.begin(), sortedPlayersAuctionData.end(),
+		[](const auto& a, const auto& b) {
+			return a.second.totalSilver > b.second.totalSilver;
+		}
+	);
+
+	// Print and save
+	std::string timestamp = net::sanitize_filename(net::get_utc_time());
+	std::string filename = "players_auction_data_" + timestamp + ".txt";
+	std::ofstream out(filename);
+
+	// Print grand totals
+	/*std::cout << 
+		"\nTotal Buy Silver:  " << std::setw(18) << totalBuySilver << 
+		"\nTotal Sell Silver: " << std::setw(18) << totalSellSilver << 
+		"\nTotat players:     " << std::setw(18) << totals.size() << "\n\n";*/
+
+	out << 
+		"Total Silver:      " << std::setw(18) << totalSilver << "\n" <<
+		"Total Buy Silver:  " << std::setw(18) << totalBuySilver << "\n" <<
+		"Total Sell Silver: " << std::setw(18) << totalSellSilver << "\n" <<
+		"Totat players:     " << std::setw(18) << playerAuctionMap.size() << "\n\n";
+
+	/*std::cout << 
+		std::left << 
+		std::setw(24) << "Player" << 
+		std::right <<
+		std::setw(18) << "Total Silver" <<
+		std::setw(18) << "Sell Silver" <<
+		std::setw(18) << "Buy Silver" << "\n";*/
+
+	out << 
+		std::left << 
+		std::setw(24) << "Player" <<
+		std::right <<
+		std::setw(18) << "Total Silver" <<
+		std::setw(18) << "Sell Silver" <<
+		std::setw(18) << "Buy Silver" << "\n";
+
+	for (const auto& [name, playerAuctionData] : sortedPlayersAuctionData) {
+		//std::cout << entry.toString();
+
+		if (playerAuctionData.totalSilver >= 10'000'000) {
+			out <<
+				std::left <<
+				std::setw(24) << name << 
+				playerAuctionData.totalsToString();
+			if (playerAuctionData.totalSilver >= 50'000'000) {
+				out << 
+					"total orders: " << 
+					std::right << std::setw(5) << playerAuctionData.orders.size() << "\n" << 
+					playerAuctionData.ordersToString();
+			}
+		}
+	}
+
+	out.close();
+	std::cout << "\nSaved to " << filename << "\n";
 }

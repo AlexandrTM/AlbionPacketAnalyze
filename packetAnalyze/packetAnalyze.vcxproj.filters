@@ -25,6 +25,9 @@
     <Filter Include="Header Files\global">
       <UniqueIdentifier>{21bcdb6b-ad6c-4c6b-82b1-63a0275dd03b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Auction">
+      <UniqueIdentifier>{1572352b-ab83-4aef-b5f0-87ae44682523}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PacketAnalyze.cpp">
@@ -48,9 +51,6 @@
     <ClCompile Include="DataLayout.cpp">
       <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
-    <ClCompile Include="Auction.cpp">
-      <Filter>Source Files\Deserialization</Filter>
-    </ClCompile>
     <ClCompile Include="FragmentedNetworkCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,9 +72,6 @@
     <ClCompile Include="Location.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enumerations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Header Files\global</Filter>
     </ClCompile>
@@ -92,6 +89,15 @@
     </ClCompile>
     <ClCompile Include="DataType.cpp">
       <Filter>Source Files\Deserialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Auction.cpp">
+      <Filter>Source Files\Auction</Filter>
+    </ClCompile>
+    <ClCompile Include="Enumerations.cpp">
+      <Filter>Header Files\global</Filter>
+    </ClCompile>
+    <ClCompile Include="AuctionOrder.cpp">
+      <Filter>Source Files\Auction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,9 +158,6 @@
     <ClInclude Include="net.h">
       <Filter>Header Files\global</Filter>
     </ClInclude>
-    <ClInclude Include="Auction.h">
-      <Filter>Source Files\Deserialization</Filter>
-    </ClInclude>
     <ClInclude Include="DataLayout.h">
       <Filter>Source Files\Deserialization</Filter>
     </ClInclude>
@@ -163,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="DataType.h">
       <Filter>Source Files\Deserialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Auction.h">
+      <Filter>Source Files\Auction</Filter>
+    </ClInclude>
+    <ClInclude Include="AuctionOrder.h">
+      <Filter>Source Files\Auction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

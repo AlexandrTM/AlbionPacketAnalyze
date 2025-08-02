@@ -61,23 +61,65 @@ int _windowPosX, _windowPosY;
 GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
+
+size_t visiblePlayers = 0;
 bool _isHikingMode = false;
 
 void PacketAnalyze::run()
 {
-    if (_isHikingMode) { initWindow(); }
+    //if (_isHikingMode) { initWindow(); }
+    initWindow();
     initSniffer();
     //sendPacket();
     mainLoop();
-    if (_isHikingMode) { cleanup(); }
+    cleanup();
+    //if (_isHikingMode) { cleanup(); }
 }
 
 void PacketAnalyze::mainLoop()
 {
+    float deltaTime = 0.0;
+    float timeSinceLaunch = 0.0;
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto previousTime = std::chrono::high_resolution_clock::now();
+
+    // Track the time for drawing entities
+    auto lastEntitiesDrawTime = std::chrono::high_resolution_clock::now();
+    // Track the time for printing visible players
+    auto lastPlayersPrintTime = std::chrono::high_resolution_clock::now();
+
     while (!glfwWindowShouldClose(_window)) {
+        currentTime = std::chrono::high_resolution_clock::now();
+        deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - previousTime).count();
+        previousTime = currentTime;
+        timeSinceLaunch += deltaTime;
+
         sniffPacket();
 
         glfwPollEvents();
+
+        if (_isHikingMode) {
+            // Rate limit drawing
+            if (std::chrono::duration<float>(currentTime - lastEntitiesDrawTime).count() >= (1.0f / 30.0f)) {
+                _entityList.draw(_window);
+                lastEntitiesDrawTime = currentTime;  // Update last draw time
+            }
+
+            // Rate limit printing visible players (every 3 seconds)
+            if (std::chrono::duration<float>(currentTime - lastPlayersPrintTime).count() >= 3.0f) {
+                visiblePlayers = 0;
+                for (auto& player : _entityList._currentLocation._playerList._playerList) {
+                    if (player._isVisible) {
+                        visiblePlayers += 1;
+                    }
+                }
+                if (visiblePlayers > 0) {
+                    std::cout << net::get_utc_time() << " visible players: " << visiblePlayers << "\n";
+                }
+
+                lastPlayersPrintTime = currentTime;  // Update last print time
+            }
+        }
     }
 }
 
@@ -248,7 +290,6 @@ void PacketAnalyze::cursorEnterCallback(GLFWwindow* window, int entered)
 void PacketAnalyze::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_RELEASE) {
-
         if (key == GLFW_KEY_RIGHT) {
             glfwGetWindowPos(window, &_windowPosX, &_windowPosY);
             glfwSetWindowPos(window, _windowPosX + _screenHeight / 6, _windowPosY);
@@ -278,6 +319,9 @@ void PacketAnalyze::keyCallback(GLFWwindow* window, int key, int scancode, int a
 
         if (key == GLFW_KEY_ESCAPE) {
             glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+        if (key == GLFW_KEY_P) {
+            Auction::printPlayersAuctionData();
         }
     }
 }
@@ -616,6 +660,7 @@ void PacketAnalyze::analyzeCommand(
             if (_entityList._previousLocation._tier == 0) {
                 Location::findLocationData(_entityList._previousLocation);
             }
+            //std::cout << "location type: " << _entityList._currentLocation._type << "\n";
             net::makeLocationsConnection(
                 _entityList._previousLocation, 
                 _entityList._currentLocation, 
@@ -636,7 +681,7 @@ void PacketAnalyze::analyzeCommand(
             Auction::auctionOrders(command, true, _entityList._currentLocation, true);
             break;
         case operationCode::AuctionBuyOrders:
-            //Auction::auctionOrders(command, false, _entityList._currentLocation, true);
+            Auction::auctionOrders(command, false, _entityList._currentLocation, true);
             break;
         case operationCode::RealEstateGetAuctionData:
             break;
@@ -688,38 +733,10 @@ void PacketAnalyze::analyzeCommand(
             break;
         }
     }
+
     if (command.getOperationType() == operationType::not_defined) {
     }
-    if (isHikingMode) {
-        _entityList.draw(window);
-    }
 }
-
-//static void sortMobDescriptions(std::vector<MobDescription>& mobDescriptions)
-//{
-//    std::sort(mobDescriptions.begin(), mobDescriptions.end(),
-//        [](const MobDescription& a, const MobDescription& b) {
-//            if (a._category == b._category) {
-//                return a._typeID < b._typeID;
-//            }
-//            return a._category < b._category;
-//        });
-//
-//    uint8_t previousCategory = 0;
-//    for (size_t i = 0; i < mobDescriptions.size(); i++) {
-//        if (previousCategory != mobDescriptions[i]._category) {
-//            std::cout << "\n";
-//            previousCategory = mobDescriptions[i]._category;
-//        }
-//
-//        std::cout <<
-//            "MobDescription(" << 
-//                    std::left << std::setw(3) << (unsigned)mobDescriptions[i]._typeID   <<
-//            ", " << std::left << std::setw(3) << (unsigned)mobDescriptions[i]._category <<                            
-//            ", "                              << (unsigned)mobDescriptions[i]._tier     <<
-//                                       ", \"" << mobDescriptions[i]._textType << "\"),"  << "\n";
-//    }
-//}
 
 int main() {
     PacketAnalyze packetAnalyze;

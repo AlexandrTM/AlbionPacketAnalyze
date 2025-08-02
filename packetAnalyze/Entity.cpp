@@ -8,11 +8,13 @@ void EntityList::draw(GLFWwindow* window)
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
-    drawPlayerSelf();
-    drawPlayers();
+    if (!(_currentLocation._type == "city" || _currentLocation._type == "island")) {
+        drawWindowFrame(scaleFactor);
+        drawPlayerSelf();
+        drawPlayers();
+    }
     //drawHarvestables();
     drawMobs();
-    drawWindowFrame(scaleFactor);
     
     glfwSwapBuffers(window);
 }
@@ -115,7 +117,7 @@ EntityList::EntityList()
 }
 void EntityList::drawWindowFrame(float scale) const
 {
-    if (/*_currentLocation._type == "avalon" || */_currentLocation._type == "city") return;
+    //if (_currentLocation._type == "avalon") return;
 
     glPointSize(1);
     glBegin(GL_LINES);
@@ -135,8 +137,6 @@ void EntityList::drawWindowFrame(float scale) const
 }
 void EntityList::drawPlayerSelf()
 {
-    if (_currentLocation._type == "city") return;
-
     std::vector<GLfloat> playerCoords = { _playerSelf._positionX, _playerSelf._positionY };
     std::vector<GLfloat> playerMapCoords = convertToMapCoordinates(_playerSelf._positionX, _playerSelf._positionY);
 
@@ -214,8 +214,6 @@ void EntityList::drawHarvestables()
 }
 void EntityList::drawPlayers()
 {
-    if (_currentLocation._type == "city") return;
-
     std::vector<GLfloat> playerSelfCoords = { _playerSelf._positionX, _playerSelf._positionY };
     //_playerSelf.printInfo();
     for (const Player& player : _currentLocation._playerList._playerList) {

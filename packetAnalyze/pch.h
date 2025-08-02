@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <fstream>
 #include <regex>
+#include <unordered_set>
 
 #include <GLFW/glfw3.h>
 #include <glm.hpp>

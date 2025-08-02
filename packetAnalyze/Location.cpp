@@ -38,6 +38,13 @@ const std::regex biomeRegex("_(SW|FR|HL|ST|MN)_");
 
 void Location::findLocationData(Location& location)
 {
+    if (location._id.starts_with("@ISLAND")) {
+        location._tier = 1;
+        location._biome = "other";
+        location._type = "island";
+        return;
+    }
+
     location._name = net::getLocationNameById(net::locationNames, location._id);
     if (location._name == "") return;
 

@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Auction.cpp" />
+    <ClCompile Include="AuctionOrder.cpp" />
     <ClCompile Include="DataFragment.cpp" />
     <ClCompile Include="DataType.cpp" />
     <ClCompile Include="DataLayout.cpp" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Auction.h" />
+    <ClInclude Include="AuctionOrder.h" />
     <ClInclude Include="DataFragment.h" />
     <ClInclude Include="DataType.h" />
     <ClInclude Include="DataLayout.h" />

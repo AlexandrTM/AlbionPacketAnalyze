@@ -188,6 +188,7 @@ namespace net
 
     void formatItemsData();
     std::string get_utc_time();
+    std::string sanitize_filename(const std::string& input);
     std::chrono::system_clock::time_point parse_utc_time_string(const std::string& utcString);
 
     const nlohmann::json locationNames = net::readJsonFile("world.json");

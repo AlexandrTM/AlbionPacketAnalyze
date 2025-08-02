@@ -826,3 +826,12 @@ std::string net::get_utc_time()
     ss << std::put_time(&utc_tm, "%FT%TZ");  // ISO 8601 with 'Z' for UTC
     return ss.str();
 }
+std::string net::sanitize_filename(const std::string& input) {
+    std::string output = input;
+    for (char& ch : output) {
+        if (ch == ':' || ch == '/' || ch == '\\' || ch == '?' || 
+            ch == '*' || ch == '"' || ch == '<' || ch == '>' || ch == '|')
+            ch = '_';
+    }
+    return output;
+}

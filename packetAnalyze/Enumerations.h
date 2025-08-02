@@ -195,7 +195,14 @@ enum class HarvestableType : int8_t
     ROCK = 1,
     FIBER = 2,
     HIDE = 3,
-    ORE = 4
+    ORE = 4,
+};
+
+enum class AuctionOrderType : uint8_t
+{
+    BUY = 0,
+    SELL = 1,
+    UNDEFINED = 2,
 };
 
 struct HarvestableRange
