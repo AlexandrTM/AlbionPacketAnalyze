@@ -385,7 +385,7 @@ void net::parseObjectsFromTemplate(const std::string& filePath)
 
     for (size_t i = 0; i < objectPositions.size(); i++) {
         const auto& fishingZone = objectPositions[i];
-        _entityList._currentLocation._fishNodeList.update(
+        entityList._currentLocation._fishNodeList.update(
             FishNode::FishNode(i, "fisn_node", 1, 1, 0, fishingZone.first, fishingZone.second, 1)
         );
         //std::cout << fishingZone.first << " " << fishingZone.second << "\n";

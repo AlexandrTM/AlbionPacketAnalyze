@@ -30,10 +30,20 @@ public:
 
     void printCommand();
     void printCommand(size_t regionStart, size_t regionEnd);
-    static void printCommandInOneString(std::vector<uint8_t>& rawCommand, bool lineBreak, bool isHex);
-    void printCommandInOneString(bool lineBreak = true, bool isHex = true);
-    void printCommandInOneString(size_t regionStart, size_t regionEnd, 
-        bool lineBreak = true, bool isHex = true);
+    static void printCommandInOneString(
+        std::vector<uint8_t>& rawCommand, 
+        size_t regionStart, size_t regionEnd,
+        bool lineBreak = true, bool isHex = true
+    );
+    static void printCommandInOneString(
+        std::vector<uint8_t>& rawCommand,
+        bool isLineBreak = true, bool isHex = true
+    );
+    void printCommandInOneString(bool isLineBreak = true, bool isHex = true);
+    void printCommandInOneString(
+        size_t regionStart, size_t regionEnd, 
+        bool isLineBreak = true, bool isHex = true
+    );
 
     void endFragmentedCommand();
     uint32_t findCommandID(std::vector<uint8_t>& rawCommand) const;

@@ -88,6 +88,10 @@ enum operationCode : uint16_t
     AuctionGetItemAverageStats = 89,
 
     GetCharacterEquipment = 136,
+    GetMailInfos = 167,
+    GetMailCount = 168,
+    ReadMail = 169,
+    SendNewMail = 170,
     GetClusterMapInfo = 190,
     GoldMarketGetAverageInfo = 242,
     RealEstateGetAuctionData = 256,
@@ -119,6 +123,8 @@ enum eventCode : uint16_t
     Mount = 192,
     MountCancel = 193,
     BuyJourney = 194,
+    NewUnreadMails = 200,
+    MailOperationPossible = 201,
     NewRandomDungeonExit = 307,
     FishingFinished = 352,
     NewFishingZoneObject = 355,
@@ -202,7 +208,8 @@ enum class AuctionOrderType : uint8_t
 {
     BUY = 0,
     SELL = 1,
-    UNDEFINED = 2,
+    FINISHED = 2,
+    UNDEFINED = 3,
 };
 
 struct HarvestableRange

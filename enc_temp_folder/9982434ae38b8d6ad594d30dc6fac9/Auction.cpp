@@ -514,12 +514,12 @@ void Auction::printPlayersAuctionData() {
 	for (const auto& [name, playerAuctionData] : sortedPlayersAuctionData) {
 		//std::cout << entry.toString();
 
-		if (playerAuctionData.totalSilver >= 5'000'000) {
+		//if (playerAuctionData.totalSilver >= 5'000'000) {
 			out <<
 				std::left <<
 				std::setw(24) << name << 
 				playerAuctionData.totalsToString();
-			if (playerAuctionData.totalSilver >= 20'000'000) {
+			//if (playerAuctionData.totalSilver >= 20'000'000) {
 				size_t totalAmount = 0;
 				for (const auto& order : playerAuctionData.orders) {
 					totalAmount += order.amount;
@@ -532,8 +532,8 @@ void Auction::printPlayersAuctionData() {
 					std::setw(8) << totalAmount <<
 					"\n" << 
 					playerAuctionData.ordersToString();
-			}
-		}
+			//}
+		//}
 	}
 
 	out.close();

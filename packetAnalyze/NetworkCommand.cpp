@@ -59,70 +59,46 @@ void NetworkCommand::printCommand(size_t regionStart, size_t regionEnd)
     }
     std::cout.unsetf(std::ios::hex);
 }
-void NetworkCommand::printCommandInOneString(std::vector<uint8_t>& rawCommand, bool lineBreak, bool isHex)
-{
-    if (isHex) {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-    }
-    for (size_t i = 0; i < rawCommand.size(); i++) {
-        if (rawCommand[i] < 16)
-            std::cout << "0";
-        std::cout << unsigned(rawCommand[i]);
-    }
-    if (lineBreak) {
-        std::cout << "\n";
-    }
-    else {}
-    if (isHex) {
-        std::cout.unsetf(std::ios::hex);
-    }
-}
-void NetworkCommand::printCommandInOneString(bool lineBreak, bool isHex)
-{
-    if (isHex) {
-        std::cout.setf(std::ios::hex, std::ios::basefield);
-    }
-    for (size_t i = 0; i < _networkCommand.size(); i++)
-    {
-        if (_networkCommand[i] < 16)
-            std::cout << "0";
-        std::cout << unsigned(_networkCommand[i]);
-    }
-    if (lineBreak) {
-        std::cout << "\n";
-    }
-    else {}
-    if (isHex) {
-        std::cout.unsetf(std::ios::hex);
-    }
-}
-void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd, bool lineBreak, bool isHex)
+void NetworkCommand::printCommandInOneString(
+    std::vector<uint8_t>& rawCommand, 
+    size_t regionStart, size_t regionEnd, 
+    bool isLineBreak, bool isHex
+)
 {
     if (isHex) {
         std::cout.setf(std::ios::hex, std::ios::basefield);
         for (size_t i = regionStart; i < regionEnd; i++)
         {
-            if (_networkCommand[i] < 16) {
+            if (rawCommand[i] < 16) {
                 std::cout << "0";
             }
-            std::cout << unsigned(_networkCommand[i]);
+            std::cout << unsigned(rawCommand[i]);
         }
-        if (lineBreak) {
-            std::cout << "\n";
-        }
-        else {}
+        if (isLineBreak) std::cout << "\n";
         std::cout.unsetf(std::ios::hex);
     }
     else {
         for (size_t i = regionStart; i < regionEnd; i++)
         {
-            std::cout << unsigned(_networkCommand[i]);
+            std::cout << unsigned(rawCommand[i]);
         }
-        if (lineBreak) {
-            std::cout << "\n";
-        }
-        else {}
+        if (isLineBreak) std::cout << "\n";
     }
+}
+void NetworkCommand::printCommandInOneString(
+    std::vector<uint8_t>& rawCommand,
+    bool isLineBreak, bool isHex
+)
+{
+    printCommandInOneString(rawCommand, 0, rawCommand.size(), isLineBreak, isHex);
+}
+void NetworkCommand::printCommandInOneString(bool isLineBreak, bool isHex)
+{
+    printCommandInOneString(_networkCommand, isLineBreak, isHex);
+}
+void NetworkCommand::printCommandInOneString(size_t regionStart, size_t regionEnd, bool isLineBreak, bool isHex)
+{
+    printCommandInOneString(_networkCommand, regionStart, regionEnd, isLineBreak, isHex);
 }
 
 void NetworkCommand::endFragmentedCommand()

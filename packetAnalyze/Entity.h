@@ -16,6 +16,8 @@ struct EntityList
     std::vector<Location> _locationList;
     bool                  _isChangingLocation = false;
 
+    size_t                _visiblePlayers = 0;
+
     EntityList();
 
     void drawPlayerSelf();
@@ -45,6 +47,7 @@ struct EntityList
     void clear();
 
     void printInfo();
+    void printVisiblePlayers();
 };
 
 #endif // !ENTITY_H

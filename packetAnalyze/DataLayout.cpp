@@ -40,11 +40,19 @@ void DataLayout::findDataLayout(NetworkCommand& command)
 {
     ptrdiff_t offset = DataFragment::findFragmentsNumOffset(command);
     uint8_t numOfFragments = command[offset];
-    /*std::cout << 
-        "event code: " << command.getEventCode() << " " <<
-        "size:" << (unsigned)command.size() << " " <<
-        "num of fragments: " << (unsigned)numOfFragments << " " << "\n";*/
-    //command.printCommandInOneString(offset, command.size());
+    if (command[offset - 2] == dataType::int8_string) {
+        offset += numOfFragments + 2;
+        numOfFragments = command[offset];
+    }
+
+    /*std::cout << "\nfindDataLayout\n" <<
+        "command type      " << (unsigned)command.getCommandType() << "\n" <<
+        "operation type    " << (unsigned)command.getOperationType() << "\n" <<
+        "event code:       " << command.getEventCode() << "\n" <<
+
+        "num of fragments: " << (unsigned)numOfFragments << "\n" <<
+        "size:             " << command.size() << "\n";
+    command.printCommandInOneString();*/
     offset += 1;
 
     uint8_t fragmentID = 0;
@@ -280,10 +288,31 @@ void DataLayout::printInfo(NetworkCommand& command, bool printPayload) const
     }
 
     uint16_t numOfFragmentsOffset = _dataLayout[0]._offset - _dataLayout[0]._dataType._headerSize - 2;
-    std::cout << 
-        "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << " " <<
-        "event code: " << command.getEventCode() << " " <<
-        "size: " << command.size() << "\n";
+    std::cout << "\ninfo\n" <<
+        "command type      " << (unsigned)command.getCommandType() << "\n" <<
+        "operation type    " << (unsigned)command.getOperationType() << "\n" <<
+        "event code:       " << command.getEventCode() << "\n" <<
+
+        "num of fragments: " << (unsigned)command[numOfFragmentsOffset] << "\n" <<
+        "size:             " << command.size() << "\n";
+
+
+    std::cout << "\n";
+    for (size_t i = 0; i <= 48; ++i) {
+        int color = 3 + (i % 2);
+        SetConsoleTextAttribute(consoleHandle, color);
+
+        if (i < 16) {
+            std::cout << "0";
+        }
+        std::cout << i;
+    }
+
+    // Reset to default color (usually 7)
+    SetConsoleTextAttribute(consoleHandle, 7);
+    std::cout << "\n";
+
+    command.printCommandInOneString(0, 100, true, true);
 
     size_t currentStringPosition = 0;
     for (size_t i = 0; i < _dataLayout.size(); i++) {

@@ -62,7 +62,6 @@ GLint _screenWidth, _screenHeight;
 
 uint8_t _mapState = mapState::fullscreenMap;
 
-size_t visiblePlayers = 0;
 bool _isHikingMode = false;
 
 void PacketAnalyze::run()
@@ -100,22 +99,14 @@ void PacketAnalyze::mainLoop()
 
         if (_isHikingMode) {
             // Rate limit drawing
-            if (std::chrono::duration<float>(currentTime - lastEntitiesDrawTime).count() >= (1.0f / 30.0f)) {
-                _entityList.draw(_window);
-                lastEntitiesDrawTime = currentTime;  // Update last draw time
-            }
+            //if (std::chrono::duration<float>(currentTime - lastEntitiesDrawTime).count() >= (1.0f / 60.0f)) {
+                entityList.draw(_window);
+                //lastEntitiesDrawTime = currentTime;  // Update last draw time
+            //}
 
             // Rate limit printing visible players (every 3 seconds)
             if (std::chrono::duration<float>(currentTime - lastPlayersPrintTime).count() >= 3.0f) {
-                visiblePlayers = 0;
-                for (auto& player : _entityList._currentLocation._playerList._playerList) {
-                    if (player._isVisible) {
-                        visiblePlayers += 1;
-                    }
-                }
-                if (visiblePlayers > 0) {
-                    std::cout << net::get_utc_time() << " visible players: " << visiblePlayers << "\n";
-                }
+                entityList.printVisiblePlayers();
 
                 lastPlayersPrintTime = currentTime;  // Update last print time
             }
@@ -203,12 +194,6 @@ void PacketAnalyze::findUniqueEventCodes(NetworkCommand& command)
     _amountOfSameCommands[std::findElementIndex(_eventCodes, command.getEventCode())] += 1;
 }
 
-void PacketAnalyze::cleanup()
-{
-    glfwDestroyWindow(_window);
-    glfwTerminate();
-}
-
 void PacketAnalyze::initWindow()
 {
     glfwInit();
@@ -226,7 +211,7 @@ void PacketAnalyze::initWindow()
     const GLFWvidmode* _videoMode = glfwGetVideoMode(_monitor);
 
     // big map
-    /*_window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715, 
+    /*_window = glfwCreateWindow(_videoMode->width / 1.715, _videoMode->width / 1.715,
                                 u8"Packet Analyze", nullptr, nullptr);
     glfwGetWindowSize(_window, &_screenWidth, &_screenHeight);
     glViewport(0, 0, _screenWidth, _screenHeight);*/
@@ -250,6 +235,12 @@ void PacketAnalyze::initWindow()
     glfwSetCursorEnterCallback(_window, cursorEnterCallback);
     glfwSetKeyCallback(_window, keyCallback);
     glfwMakeContextCurrent(_window);
+}
+
+void PacketAnalyze::cleanup()
+{
+    glfwDestroyWindow(_window);
+    glfwTerminate();
 }
 
 void PacketAnalyze::changeMapState(GLFWwindow*  window)
@@ -488,7 +479,9 @@ std::vector<uint16_t> nnCodes = {
     1, 8, 11, 18, 19, 21, 23, 24, 30, 35, 90, 103, 104, 154, 
     160, 163, 216, 221, 245, 266, 295, 296, 364, 591,  };
 std::vector<uint16_t> nCodes = { 
-    32
+    //167, 168, 169, 170, 200, 201 // mail
+    //190, 192, 166, 256, 257 // real estate
+    256, 257
 };
 std::vector<std::string> cityLocations = { "0000", "0301" };
 
@@ -551,19 +544,19 @@ void PacketAnalyze::analyzeCommand(
 {
     DataLayout dataLayout{};
 
-    //std::vector<uint8_t>& raw = command.rawNetworkCommand();
-    //std::string rawStr(raw.begin(), raw.end());
-    //if (command.size() != 67 and !std::isElementInVector(nnCodes, command.getEventCode()))
-    //    /* and rawStr.find((char*)"425c0000c386bc29") != std::string::npos*/ {
-    //    // 544e4c TNL
-    //    dataLayout.findDataLayout(command);
-    //    dataLayout.printInfo(command);
-    //    //dataLayout.printInfo(command, 0, 255, true);
-    //}
+    std::vector<uint8_t>& raw = command.rawNetworkCommand();
+    std::string rawStr(raw.begin(), raw.end());
+    if (command.size() != 67 and std::isElementInVector(nCodes, command.getEventCode()))
+        /* and rawStr.find((char*)"425c0000c386bc29") != std::string::npos*/ {
+        // 544e4c TNL
+        dataLayout.findDataLayout(command);
+        dataLayout.printInfo(command);
+        //dataLayout.printInfo(command, 0, 255, true);
+    }
 
     if (command.getOperationType() == operationType::event) {
         if (isHikingMode) {
-            if (_entityList._isChangingLocation) {
+            if (entityList._isChangingLocation) {
 
             }
             else {
@@ -572,30 +565,30 @@ void PacketAnalyze::analyzeCommand(
 
             switch (command.getEventCode()) {
             case eventCode::HealthUpdate:
-                //_entityList._playerList.update(HealthUpdateHandler(*this)); // need to add health handling
-                _entityList._currentLocation._mobList.update(HealthUpdateHandler(command));
+                //entityList._playerList.update(HealthUpdateHandler(*this)); // need to add health handling
+                entityList._currentLocation._mobList.update(HealthUpdateHandler(command));
                 break;
             case eventCode::NewSimpleHarvestableObjectList:
                 /*dataLayout.findDataLayout(command);
                 dataLayout.printInfo(command);
                 command.printCommandInOneString();*/
-                _entityList._currentLocation._harvestableList.update(HarvestableList(command));
+                entityList._currentLocation._harvestableList.update(HarvestableList(command));
                 break;
             case eventCode::NewHarvestableObject:
-                _entityList._currentLocation._harvestableList.update(Harvestable(command));
+                entityList._currentLocation._harvestableList.update(Harvestable(command));
                 break;
             case eventCode::HarvestableChangeState:
-                _entityList._currentLocation._harvestableList.updateState(command);
+                entityList._currentLocation._harvestableList.updateState(command);
                 break;
             case eventCode::MobChangeState:
-                _entityList._currentLocation._mobList.mobChangeState(command);
-                //_entityList._playerList.update(Player::playerMove(command)); 
+                entityList._currentLocation._mobList.mobChangeState(command);
+                //entityList._playerList.update(Player::playerMove(command)); 
                 break;
             case eventCode::NewMob:
-                _entityList._currentLocation._mobList.newMob(Mob(command));
+                entityList._currentLocation._mobList.newMob(Mob(command));
                 break;
             case eventCode::NewFishingZoneObject:
-                _entityList._currentLocation._fishNodeList.update(FishNode(command));
+                entityList._currentLocation._fishNodeList.update(FishNode(command));
                 break;
             case eventCode::HarvestStart:
                 //Harvestable::harvestStart(command);
@@ -606,15 +599,15 @@ void PacketAnalyze::analyzeCommand(
             case 66: // crafting finished on station
                 break;
             case eventCode::NewCharacter:
-                //if (_entityList._currentLocation._type != "city") {
-                    _entityList._currentLocation._playerList.newPlayer(Player(command));
+                //if (entityList._currentLocation._type != "city") {
+                    entityList._currentLocation._playerList.newPlayer(Player(command));
                 //}
                 break;
             case eventCode::Leave:
-                _entityList._currentLocation._playerList.playerLeave(Player(command));
+                entityList._currentLocation._playerList.playerLeave(Player(command));
                 break;
             case eventCode::PlayerMove:
-                //_entityList._currentLocation._playerList.update(Player::playerMove(command)); 
+                //entityList._currentLocation._playerList.update(Player::playerMove(command)); 
                 break;
             case eventCode::Teleport:
                 //dataLayout.findDataLayout(command);
@@ -632,8 +625,8 @@ void PacketAnalyze::analyzeCommand(
             }
             if (command.rawNetworkCommand().size() == 67/* and _networkCommand[66] & (2 << 0)*/) {
                 if (dataLayout.findNumOfFragments(command) == 2) {
-                    //EntityMove::updateEntityListMove(command, _entityList._currentLocation._playerList);
-                    EntityMove::updateEntityListMove(command, _entityList._currentLocation._mobList);
+                    //EntityMove::updateEntityListMove(command, entityList._currentLocation._playerList);
+                    EntityMove::updateEntityListMove(command, entityList._currentLocation._mobList);
                 }
                 else {
                     /*dataLayout.findDataLayout(command);
@@ -655,44 +648,43 @@ void PacketAnalyze::analyzeCommand(
                      "event code: " << command.getEventCode() << "\n";*/
         switch (command.getEventCode()) {
         case operationCode::Join:
-            _entityList.endChangeLocation(command, false);
-            Location::findLocationData(_entityList._currentLocation);
-            if (_entityList._previousLocation._tier == 0) {
-                Location::findLocationData(_entityList._previousLocation);
+            entityList.endChangeLocation(command, false);
+            Location::findLocationData(entityList._currentLocation);
+            if (entityList._previousLocation._tier == 0) {
+                Location::findLocationData(entityList._previousLocation);
             }
-            //std::cout << "location type: " << _entityList._currentLocation._type << "\n";
+            //std::cout << "location type: " << entityList._currentLocation._type << "\n";
             net::makeLocationsConnection(
-                _entityList._previousLocation, 
-                _entityList._currentLocation, 
-                _entityList._isChangingLocation
+                entityList._previousLocation, 
+                entityList._currentLocation, 
+                entityList._isChangingLocation
             );
-            net::updatePlayerData(_entityList._currentLocation, "player_data.json");
-            _entityList._isChangingLocation = false;
+            net::updatePlayerData(entityList._currentLocation, "player_data.json");
+            entityList._isChangingLocation = false;
             break;
         case operationCode::Move:
-            //if (_entityList._currentLocation._type != "city") {
-                _entityList._playerSelf.update(command);
+            //if (entityList._currentLocation._type != "city") {
+                entityList._playerSelf.update(command);
             //}
             break;
             /*case operationCode::ChangeCluster: // other player changing location not only me
-                _entityList.ChangeCluster(command);
+                entityList.ChangeCluster(command);
                 break;*/
         case operationCode::AuctionSellOrders:
-            Auction::auctionOrders(command, true, _entityList._currentLocation, true);
+            Auction::findAuctionOrders(command, entityList._currentLocation, true);
             break;
         case operationCode::AuctionBuyOrders:
-            Auction::auctionOrders(command, false, _entityList._currentLocation, true);
+            Auction::findAuctionOrders(command, entityList._currentLocation, true);
             break;
         case operationCode::RealEstateGetAuctionData:
             break;
         case operationCode::AuctionGetFinishedAuctions: // non standard format
-            /*dataLayout.findDataLayout(command);
-            dataLayout.printInfo(command);
-            this->printCommandInOneString();*/
+            Auction::findAuctionOrders(command, entityList._currentLocation, false);
             break;
         case operationCode::AuctionGetFinishedAuctionsCount: // non standard format
             break;
         case operationCode::AuctionGetMyOpenAuctions: // non standard format
+            Auction::findAuctionOrders(command, entityList._currentLocation, false);
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
@@ -715,17 +707,17 @@ void PacketAnalyze::analyzeCommand(
         case operationCode::AuctionGetItemAverageStats:
             // packetInfo.to_string();
             // NetworkCommand::printCommandInOneString(networkPacketHeader, false, true);
-            Auction::GetItemData(command, _entityList._currentLocation, itemData, false);
+            Auction::GetItemData(command, entityList._currentLocation, itemData, false);
             break;
         case operationCode::Move:
-            //if (_entityList._currentLocation._type != "city") {
-                _entityList._playerSelf.update(command);
+            //if (entityList._currentLocation._type != "city") {
+                entityList._playerSelf.update(command);
             //}
-            //std::cout << _entityList._playerSelf._positionX << " " << _entityList._playerSelf._positionY << "\n";
+            //std::cout << entityList._playerSelf._positionX << " " << entityList._playerSelf._positionY << "\n";
             break;
         case operationCode::ChangeCluster:
-            _entityList.beginChangeLocation(command, false);
-            _entityList._isChangingLocation = true;
+            entityList.beginChangeLocation(command, false);
+            entityList._isChangingLocation = true;
             break;
         case operationCode::AuctionBuyOrders:
             break;

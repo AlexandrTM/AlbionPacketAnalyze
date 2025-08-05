@@ -1,0 +1,57 @@
+Total Silver:                 3506626
+Total Buy Silver:             2983542
+Total Sell Silver:             523084
+
+Totat players:                      7
+Players < 5m:                       7
+Players [5m–20m):                   0
+Players >= 20m:                     0
+
+Player                        Total Silver       Sell Silver        Buy Silver
+Sliide                             3415410            431868           2983542
+total orders: 89       total amount: 533246  
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+ - Sliide               buy      T4_RUNE                        6          9999    59994       
+Marsik007                            89331             89331                 0
+total orders: 9        total amount: 8121    
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         999     10989       
+ - Marsik007            sell     T4_RUNE                        11         605     6655        
+ - Marsik007            sell     T4_RUNE                        11         523     5753        
+xDDD                                   861               861                 0
+total orders: 1        total amount: 123     
+ - xDDD                 sell     T4_RUNE                        7          123     861         
+HamsterJoe                             814               814                 0
+total orders: 1        total amount: 74      
+ - HamsterJoe           sell     T4_RUNE                        11         74      814         
+Try81                                  140               140                 0
+total orders: 1        total amount: 20      
+ - Try81                sell     T4_RUNE                        7          20      140         
+cAHTaa                                  56                56                 0
+total orders: 1        total amount: 8       
+ - cAHTaa               sell     T4_RUNE                        7          8       56          
+Kingtv1232                              14                14                 0
+total orders: 1        total amount: 2       
+ - Kingtv1232           sell     T4_RUNE                        7          2       14          

@@ -1,7 +1,7 @@
 #include "pch.h"
 
 float_t _pixelsInMeter = 45.5;
-float_t scaleFactor = 1.118f; // 1.145f
+float_t scaleFactor = 1.145f; // 1.145f // 1.118f
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -555,5 +555,18 @@ void EntityList::printInfo()
             location._harvestableList.printInfo(); // Print detailed info of the harvestables
             break;
         }
+    }
+}
+
+void EntityList::printVisiblePlayers()
+{
+    _visiblePlayers = 0;
+    for (auto& player : _currentLocation._playerList._playerList) {
+        if (player._isVisible) {
+            _visiblePlayers += 1;
+        }
+    }
+    if (_visiblePlayers > 0) {
+        std::cout << net::get_utc_time() << " visible players: " << _visiblePlayers << "\n";
     }
 }
