@@ -6,7 +6,7 @@ constexpr uint64_t sixHours = static_cast<uint64_t>(3600 * 6);
 constexpr uint64_t years1970offset = static_cast<uint64_t>(62135596800);
 uint16_t numOfColumns = 4;
 uint16_t numOfRows = 113;
-uint32_t previousCommandID = 0;
+static uint32_t previousCommandID = 0;
 std::string previousAuctionOrdersString = "";
 
 //std::unordered_set<uint64_t> seenOrderIds;
@@ -242,7 +242,7 @@ struct PlayerAuctionData
 		if (it != orders.end()) {
 			// If amount differs, replace the order
 			if (it->amount != newOrder.amount) {
-				std::cout << newOrder.toString() << "\n";
+				//std::cout << newOrder.toString() << "\n";
 				// Subtract old order
 				totalSilver -= it->totalSilver;
 				if (it->type == AuctionOrderType::BUY)
@@ -354,6 +354,11 @@ void Auction::processAuctionOrders(
 			else if (order.type == AuctionOrderType::FINISHED) {
 				order.playerName = auctionOrder["SellerName"];
 			}
+			order.timePlaced = 
+				net::parse_utc_time_string(auctionOrder["Expires"]) - 
+				std::chrono::days(order.type == AuctionOrderType::FINISHED ? 60 : 30);
+			//std::cout << order.timePlaced << "\n";
+
 			order.itemTypeId = auctionOrder["ItemTypeId"];
 			order.amount = auctionOrder["Amount"];
 			order.totalSilver = static_cast<double>(auctionOrder["TotalPriceSilver"]) / 1e4;
@@ -370,7 +375,7 @@ void Auction::processAuctionOrders(
 		}
 	}
 
-	//printAuctionOrders(isFilterEnabled, auctionOrders);
+	printAuctionOrders(isFilterEnabled, auctionOrders);
 }
 
 void Auction::printAuctionOrders(bool isFilterEnabled, std::vector<AuctionOrder> auctionOrders)

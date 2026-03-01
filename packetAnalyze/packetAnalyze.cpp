@@ -4,8 +4,17 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "Rankings.h"
 
 using namespace Tins;
+
+std::vector<NetworkPacket> text;
+int _windowPosX, _windowPosY;
+GLint _screenWidth, _screenHeight;
+
+uint8_t _mapState = mapState::fullscreenMap;
+
+bool _isHikingMode = false;
 
 std::vector<uint16_t> _eventCodes;
 
@@ -23,46 +32,46 @@ std::vector<size_t> PacketAnalyze::findCommandBordersInPacket(std::string packet
 
     return commandBorders;
 }
-bool PacketAnalyze::findStringInString(std::string packet, std::string string, size_t& stringPosition)
-{
-    for (size_t i = 0; i < packet.length() - string.length() + 1; i += 2) {
-        if (packet.substr(i, string.length()) == string) {
+bool PacketAnalyze::findStringInStringImpl(
+    const std::string& string_1,
+    const std::string& string_2,
+    size_t regionStart,
+    size_t regionEnd,
+    size_t* stringPosition
+) {
+    if (string_2.empty() || regionStart >= string_1.size()) {
+        return false;
+    }
+
+    for (size_t i = regionStart; i < regionEnd - string_2.length() + 1; i += 2) {
+        if (string_1.substr(i, string_2.length()) == string_2) {
+            if (stringPosition) {
+                *stringPosition = i;
+            }
             return true;
         }
     }
-
     return false;
 }
-bool PacketAnalyze::findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string)
+bool PacketAnalyze::findStringInString(std::string string_1, std::string string_2, size_t& stringPosition)
 {
-    for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-        if (packet.substr(i, string.length()) == string) {
-            return true;
-        }
-    }
-
-    return false;
+    return findStringInStringImpl(string_1, string_2, 0, string_1.size(), &stringPosition);
 }
-bool PacketAnalyze::findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string,
-    size_t& stringPosition)
+bool PacketAnalyze::findStringInString(
+    std::string string_1, std::string string_2, 
+    size_t regionStart, size_t regionEnd
+)
 {
-    for (size_t i = regionStart; i < regionEnd - string.length() + 1; i += 2) {
-        if (packet.substr(i, string.length()) == string) {
-            stringPosition = i;
-            return true;
-        }
-    }
-
-    return false;
+    return findStringInStringImpl(string_1, string_2, regionStart, regionEnd, nullptr);
 }
-
-std::vector<NetworkPacket> text;
-int _windowPosX, _windowPosY;
-GLint _screenWidth, _screenHeight;
-
-uint8_t _mapState = mapState::fullscreenMap;
-
-bool _isHikingMode = false;
+bool PacketAnalyze::findStringInString(
+    std::string string_1, std::string string_2, 
+    size_t regionStart, size_t regionEnd,
+    size_t& stringPosition
+)
+{
+    return findStringInStringImpl(string_1, string_2, regionStart, regionEnd, &stringPosition);
+}
 
 void PacketAnalyze::run()
 {
@@ -106,7 +115,7 @@ void PacketAnalyze::mainLoop()
 
             // Rate limit printing visible players (every 3 seconds)
             if (std::chrono::duration<float>(currentTime - lastPlayersPrintTime).count() >= 3.0f) {
-                entityList.printVisiblePlayers();
+                //entityList.printVisiblePlayers();
 
                 lastPlayersPrintTime = currentTime;  // Update last print time
             }
@@ -236,7 +245,6 @@ void PacketAnalyze::initWindow()
     glfwSetKeyCallback(_window, keyCallback);
     glfwMakeContextCurrent(_window);
 }
-
 void PacketAnalyze::cleanup()
 {
     glfwDestroyWindow(_window);
@@ -479,9 +487,9 @@ std::vector<uint16_t> nnCodes = {
     1, 8, 11, 18, 19, 21, 23, 24, 30, 35, 90, 103, 104, 154, 
     160, 163, 216, 221, 245, 266, 295, 296, 364, 591,  };
 std::vector<uint16_t> nCodes = { 
-    //167, 168, 169, 170, 200, 201 // mail
+    63, 366, 367, 154, 151, 216, 30, 323, 19, 11, 221, 254
     //190, 192, 166, 256, 257 // real estate
-    256, 257
+    //256, 257
 };
 std::vector<std::string> cityLocations = { "0000", "0301" };
 
@@ -533,7 +541,6 @@ std::vector<std::string> cityLocations = { "0000", "0301" };
  	NewMultiRewardObject = 615,
     */
 
-
 void PacketAnalyze::analyzeCommand(
     GLFWwindow* window,
     NetworkCommand& command,
@@ -544,16 +551,17 @@ void PacketAnalyze::analyzeCommand(
 {
     DataLayout dataLayout{};
 
-    std::vector<uint8_t>& raw = command.rawNetworkCommand();
-    std::string rawStr(raw.begin(), raw.end());
-    if (command.size() != 67 and std::isElementInVector(nCodes, command.getEventCode()))
-        /* and rawStr.find((char*)"425c0000c386bc29") != std::string::npos*/ {
-        // 544e4c TNL
-        dataLayout.findDataLayout(command);
-        dataLayout.printInfo(command);
-        //dataLayout.printInfo(command, 0, 255, true);
-    }
-
+    //std::vector<uint8_t>& raw = command.rawNetworkCommand();
+    //std::string rawStr(raw.begin(), raw.end());
+    //if (command.size() != 67 and !std::isElementInVector(nCodes, command.getEventCode())) {
+    //    //if (rawStr.find((char*)"5369676F75") != std::string::npos) {
+    //        dataLayout.findDataLayout(command);
+    //        dataLayout.printInfo(command);
+    //    //}
+    //    // 544e4c TNL
+    //    //dataLayout.printInfo(command, 0, 255, true);
+    //}
+    
     if (command.getOperationType() == operationType::event) {
         if (isHikingMode) {
             if (entityList._isChangingLocation) {
@@ -646,6 +654,7 @@ void PacketAnalyze::analyzeCommand(
         //dataLayout.printInfo(command);
         /*std::cout << "commandChainID: " << this->getCommandID() << " " <<
                      "event code: " << command.getEventCode() << "\n";*/
+        bool isSafePortal = false;
         switch (command.getEventCode()) {
         case operationCode::Join:
             entityList.endChangeLocation(command, false);
@@ -654,11 +663,15 @@ void PacketAnalyze::analyzeCommand(
                 Location::findLocationData(entityList._previousLocation);
             }
             //std::cout << "location type: " << entityList._currentLocation._type << "\n";
-            net::makeLocationsConnection(
-                entityList._previousLocation, 
-                entityList._currentLocation, 
-                entityList._isChangingLocation
-            );
+            // S.A.F.E portal
+            isSafePortal = (entityList._previousLocation._type == "city" || entityList._previousLocation._type == "world") && entityList._currentLocation._type == "world";
+            if (!isSafePortal) {
+                net::makeLocationsConnection(
+                    entityList._previousLocation,
+                    entityList._currentLocation,
+                    entityList._isChangingLocation
+                );
+            }
             net::updatePlayerData(entityList._currentLocation, "player_data.json");
             entityList._isChangingLocation = false;
             break;
@@ -688,12 +701,14 @@ void PacketAnalyze::analyzeCommand(
             break;
         case operationCode::AuctionGetItemAverageStats:
             //start = std::chrono::high_resolution_clock::now();
-            //Auction::findAuctionAverageValues(command, itemData, ",");
+            Auction::findAuctionAverageValues(command, itemData, ",");
             /*stop = std::chrono::high_resolution_clock::now();
             std::cout <<
                 "time to write acution average values: " <<
                 std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";*/
             break;
+        case operationCode::GetRankings:
+            //Rankings::getRankings(command);
         case operationCode::GetClusterMapInfo:
             //MapCluster::findClusterData(command);
             break;
@@ -744,10 +759,12 @@ int main() {
     //net::formatItemsData();
     //net::searchLocationsTemplates(-349.5, 122.5);
     //net::parseObjectsFromTemplate("templates/DEAD/618_L1_M3_S5.template.xml");
-    net::removeOutdatedTemporaryConnections("location_connections.json");
     //net::parseLocationsAndConnections("world_extended.xml");
-    //net::findLocationsStatistics("cluster");
-    packetAnalyze.run();
+    if (_isHikingMode) {
+        net::removeOutdatedTemporaryConnections("location_connections.json");
+    }
+    net::findLocationsStatistics("cluster");
+    //packetAnalyze.run();
 
     //packetAnalyze.outputColorizedNetworkPacket(text);
     

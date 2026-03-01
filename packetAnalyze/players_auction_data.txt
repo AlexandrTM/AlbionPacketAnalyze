@@ -1,57 +1,27 @@
-Total Silver:                 3506626
-Total Buy Silver:             2983542
-Total Sell Silver:             523084
+Total Silver:                54188912
+Total Buy Silver:            27478162
+Total Sell Silver:           26710750
 
-Totat players:                      7
-Players < 5m:                       7
+Totat players:                      1
+Players < 5m:                       0
 Players [5m–20m):                   0
-Players >= 20m:                     0
+Players >= 20m:                     1
 
 Player                        Total Silver       Sell Silver        Buy Silver
-Sliide                             3415410            431868           2983542
-total orders: 89       total amount: 533246  
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
- - Sliide               buy      T4_RUNE                        6          9999    59994       
-Marsik007                            89331             89331                 0
-total orders: 9        total amount: 8121    
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         999     10989       
- - Marsik007            sell     T4_RUNE                        11         605     6655        
- - Marsik007            sell     T4_RUNE                        11         523     5753        
-xDDD                                   861               861                 0
-total orders: 1        total amount: 123     
- - xDDD                 sell     T4_RUNE                        7          123     861         
-HamsterJoe                             814               814                 0
-total orders: 1        total amount: 74      
- - HamsterJoe           sell     T4_RUNE                        11         74      814         
-Try81                                  140               140                 0
-total orders: 1        total amount: 20      
- - Try81                sell     T4_RUNE                        7          20      140         
-cAHTaa                                  56                56                 0
-total orders: 1        total amount: 8       
- - cAHTaa               sell     T4_RUNE                        7          8       56          
-Kingtv1232                              14                14                 0
-total orders: 1        total amount: 2       
- - Kingtv1232           sell     T4_RUNE                        7          2       14          
+ElizavetaWise                     54188912          26710750          27478162
+total orders: 15       total amount: 13375   
+ - ElizavetaWise        buy      T4_SKILLBOOK_STANDARD          25600      1000    25600000     
+ - ElizavetaWise        sell     T6_LEATHER_LEVEL1@1            9775       872     8523800      
+ - ElizavetaWise        sell     T5_LEATHER_LEVEL2@2            5800       581     3369800      
+ - ElizavetaWise        sell     T4_LEATHER_LEVEL2@2            2100       999     2097900      
+ - ElizavetaWise        sell     T4_LEATHER_LEVEL2@2            2100       999     2097900      
+ - ElizavetaWise        sell     T5_LEATHER_LEVEL1@1            2050       999     2047950      
+ - ElizavetaWise        sell     T5_LEATHER_LEVEL1@1            2050       999     2047950      
+ - ElizavetaWise        sell     T5_LEATHER_LEVEL1@1            2050       999     2047950      
+ - ElizavetaWise        sell     T5_LEATHER                     1225       999     1223775      
+ - ElizavetaWise        sell     T5_LEATHER                     1225       999     1223775      
+ - ElizavetaWise        sell     T5_LEATHER                     1225       999     1223775      
+ - ElizavetaWise        buy      T7_HIDE                        3721       306     1138626      
+ - ElizavetaWise        buy      T5_HIDE_LEVEL1@1               651        1136    739536       
+ - ElizavetaWise        sell     T4_LEATHER_LEVEL1@1            550        999     549450       
+ - ElizavetaWise        sell     T4_LEATHER_LEVEL1@1            525        489     256725       

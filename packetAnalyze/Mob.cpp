@@ -65,6 +65,10 @@ Mob::Mob(NetworkCommand& rawMob)
 	dataLayout.findDataLayout(rawMob);
 	//dataLayout.printInfo(rawMob);
 
+	if (dataLayout.size() < 3) {
+		return;
+	}
+
     _id = net::read_integer(rawMob, dataLayout.findFragment(0));
 
 	DataFragment& uniqueValueFragment     = dataLayout.findFragment(1);
@@ -90,14 +94,13 @@ Mob::Mob(NetworkCommand& rawMob)
 
 	net::getMobData(net::mobsData, _uniqueValue, _tier, _uniqueName, _category, _typeCategory);
 	_harvestableType = findHarvestableType();
-	//std::cout << "typeCategory: " << _typeCategory << "\n";
-	/*if (_harvestableType == static_cast<int8_t>(HarvestableType::HIDE) and _tier == 5) {
-		this->printInfo();
-	}*/
+
 	if (_uniqueName == "") {
-		//dataLayout.printInfo(rawMob);
+		dataLayout.printInfo(rawMob);
 	}
-	//dataLayout.printInfo(rawMob, true);
+	/*else {
+		dataLayout.printInfo(rawMob);
+	}*/
 	//dataLayout.printInfo(rawMob, 11, 21, true);
 
 	if 
@@ -159,6 +162,10 @@ MobList::MobList()
 
 void MobList::newMob(Mob mob)
 {
+	if (mob._uniqueName == "") {
+		return;
+	}
+
 	for (size_t i = 0; i < _mobs.size(); i++) {
 		if (_mobs[i]._id == mob._id) {
 			_mobs[i] = mob;

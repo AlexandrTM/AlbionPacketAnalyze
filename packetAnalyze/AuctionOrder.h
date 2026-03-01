@@ -5,11 +5,14 @@ struct AuctionOrder
 	uint64_t id = 0;
 	std::string location = "";
 	std::string playerName;
+	AuctionOrderType type = AuctionOrderType::UNDEFINED;
+	std::chrono::system_clock::time_point timePlaced;
+
 	std::string itemTypeId;
 	double unitPrice = 0;
 	size_t amount = 0;
 	size_t totalSilver = 0;
-	AuctionOrderType type = AuctionOrderType::UNDEFINED;
+
 
 	std::string toString() const {
 		std::ostringstream oss;
@@ -24,7 +27,8 @@ struct AuctionOrder
 			std::fixed << std::setprecision(0) <<
 			std::setw(10) << unitPrice   << " " <<
 			std::setw(7)  << amount      << " " <<
-			std::setw(12) << totalSilver;
+			std::setw(12) << totalSilver << " "/* <<
+			std::format("{:%Y-%m-%d %H:%M:%S}", timePlaced)/* << " "*/;
 		return oss.str();
 	}
 };

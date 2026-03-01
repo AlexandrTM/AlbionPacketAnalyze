@@ -29,12 +29,24 @@ private:
     std::string itemData = "";
     size_t counter = 0;
 
-
     std::vector<size_t> findCommandBordersInPacket(std::string packet);
-    bool findStringInString(std::string packet, std::string string, size_t& stringPosition);
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string);
-    bool findStringInString(std::string packet, size_t regionStart, size_t regionEnd, std::string string,
-        size_t& stringPosition);
+    bool findStringInStringImpl(
+        const std::string& string_1,
+        const std::string& string_2,
+        size_t regionStart,
+        size_t regionEnd,
+        size_t* stringPosition
+    );
+    bool findStringInString(std::string string_1, std::string string_2, size_t& stringPosition);
+    bool findStringInString(
+        std::string string_1, std::string string_2,
+        size_t regionStart, size_t regionEnd
+    );
+    bool findStringInString(
+        std::string string_1, std::string string_2,
+        size_t regionStart, size_t regionEnd,
+        size_t& stringPosition
+    );
 
     void mainLoop();
 

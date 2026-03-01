@@ -1,7 +1,7 @@
 #include "pch.h"
 
 float_t _pixelsInMeter = 45.5;
-float_t scaleFactor = 1.145f; // 1.145f // 1.118f
+float_t scaleFactor = 1.118f; // 1.145f // 1.118f
 
 void EntityList::draw(GLFWwindow* window)
 {
@@ -13,7 +13,7 @@ void EntityList::draw(GLFWwindow* window)
         drawPlayerSelf();
         drawPlayers();
     }
-    //drawHarvestables();
+    drawHarvestables();
     drawMobs();
     
     glfwSwapBuffers(window);
@@ -290,13 +290,13 @@ void EntityList::drawMobs()
             glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
             glEnd();
         }
-        else if (mob._uniqueName == "") {
+        /*else if (mob._uniqueName == "") {
             glPointSize(6);
             glBegin(GL_POINTS);
             glColor3f(color[0], color[1], color[2]);
             glVertex3f(mobMapCoords[0], mobMapCoords[1], 0.0f);
             glEnd();
-        }
+        }*/
     }
 }
 

@@ -76,9 +76,9 @@ enum mapState : uint8_t
 
 enum operationCode : uint16_t
 {
-    Join = 2, // join location
+    Join = 2, // end change location
     Move = 21,
-    ChangeCluster = 35, // change location
+    ChangeCluster = 35, // begin change location
 
     AuctionSellOrders = 75,
     AuctionBuyOrders = 76,
@@ -88,6 +88,7 @@ enum operationCode : uint16_t
     AuctionGetItemAverageStats = 89,
 
     GetCharacterEquipment = 136,
+    GetRankings = 143,
     GetMailInfos = 167,
     GetMailCount = 168,
     ReadMail = 169,
@@ -118,16 +119,16 @@ enum eventCode : uint16_t
     HarvestStart = 59,
     HarvestFinished = 61,
     CraftItemFinished = 71,
-    EquipmentChanged = 85,
+    CharacterEquipmentChanged = 90,
     NewMob = 123,
-    Mount = 192,
-    MountCancel = 193,
-    BuyJourney = 194,
+    Mount = 193,
+    MountCancel = 194,
+    BuyJourney = 195,
     NewUnreadMails = 200,
     MailOperationPossible = 201,
-    NewRandomDungeonExit = 307,
-    FishingFinished = 352,
-    NewFishingZoneObject = 355,
+    NewRandomDungeonExit = 321,
+    FishingFinished = 354,
+    NewFishingZoneObject = 357,
 
 };
 

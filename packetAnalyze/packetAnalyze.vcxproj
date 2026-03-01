@@ -176,6 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Rankings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Auction.h" />
@@ -201,6 +202,7 @@
     <ClInclude Include="PacketAnalyze.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Rankings.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

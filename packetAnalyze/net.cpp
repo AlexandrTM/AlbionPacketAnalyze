@@ -475,6 +475,7 @@ void net::makeLocationsConnection(
 
     if (!alreadyExists) {
         connectionsArray.push_back(newConnection);
+        std::cout << "made connection: " << locationFrom._name << " -> " << locationTo._name << "\n";
     }
 
     // Save updated JSON
@@ -496,11 +497,11 @@ void net::parseLocationsAndConnections(const std::string& xmlPath)
         return;
     }
 
-    std::regex idRegex("^(\\d{4}|DNG.*|PSG.|TNL-\\d{3}*)$");
+    std::regex idRegex("^(\\d{4}|DNG.*|PSG.|TNL-\\d{3}.*)$");
 
     std::unordered_map<std::string, tinyxml2::XMLElement*> validClusters;
 
-    // Step 1: Collect all clusters with 4-digit numeric ids
+    // Collect all clusters with 4-digit numeric ids
     auto* clusters = doc.FirstChildElement("world")->FirstChildElement("clusters");
     if (!clusters) {
         std::cerr << "No <clusters> element found.\n";
@@ -519,7 +520,7 @@ void net::parseLocationsAndConnections(const std::string& xmlPath)
 
     Location locationFrom, locationTo;
 
-    // Step 2: For each valid cluster, parse exits
+    // For each valid cluster, parse exits
     for (const auto& [clusterId, clusterElem] : validClusters) {
         auto* exits = clusterElem->FirstChildElement("exits");
         if (!exits) continue;
@@ -544,11 +545,10 @@ void net::parseLocationsAndConnections(const std::string& xmlPath)
             Location::findLocationData(locationTo);
 
             net::makeLocationsConnection(locationFrom, locationTo, true);
-            std::cout << "made connection: " << locationFrom._name << " -> " << locationTo._name << "\n";
         }
     }
 
-    // Step 3: add locations data even if no connections present
+    // add locations data even if no connections present
     for (const auto& [clusterId, clusterElem] : validClusters) {
         Location location;
         location._id = clusterId;
@@ -797,13 +797,15 @@ void net::formatItemsData()
 
 std::chrono::system_clock::time_point net::parse_utc_time_string(const std::string& utcString) {
     std::string trimmed = utcString;
-
+    //std::cout << trimmed << "\n";
     // Remove fractional seconds if present (e.g., .705Z -> Z)
-    auto dotPos = trimmed.find('.');
+    auto dotPos = trimmed.find(".");
     if (dotPos != std::string::npos) {
-        auto zPos = trimmed.find('Z', dotPos);
-        if (zPos != std::string::npos)
-            trimmed.erase(dotPos, zPos - dotPos); // remove .xxx part
+        auto zPos = trimmed.find("Z", dotPos);
+        if (zPos == std::string::npos) {
+            trimmed.append("Z");
+        }
+        trimmed.erase(dotPos, zPos - dotPos); // remove .xxx part
     }
 
     std::tm tm = {};

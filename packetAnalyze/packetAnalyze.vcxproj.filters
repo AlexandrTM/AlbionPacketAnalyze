@@ -16,27 +16,21 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{d3de6990-c328-4b44-b142-5d87aed0aef1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Entities">
-      <UniqueIdentifier>{0dadbccb-5f12-4b36-a354-aaab2898fbb1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Deserialization">
       <UniqueIdentifier>{d7591eea-af46-4167-8be1-140bccc71243}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\global">
       <UniqueIdentifier>{21bcdb6b-ad6c-4c6b-82b1-63a0275dd03b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Auction">
+    <Filter Include="Source Files\Net">
+      <UniqueIdentifier>{a31b9ad0-c041-43b8-8022-a9b66a1730cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Operations">
       <UniqueIdentifier>{1572352b-ab83-4aef-b5f0-87ae44682523}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PacketAnalyze.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkPacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
@@ -51,15 +45,6 @@
     <ClCompile Include="DataLayout.cpp">
       <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
-    <ClCompile Include="FragmentedNetworkCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FragmentedCommandsBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapCluster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mob.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
@@ -68,9 +53,6 @@
     </ClCompile>
     <ClCompile Include="HealthUpdateHandler.cpp">
       <Filter>Source Files\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Location.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Header Files\global</Filter>
@@ -91,56 +73,38 @@
       <Filter>Source Files\Deserialization</Filter>
     </ClCompile>
     <ClCompile Include="Auction.cpp">
-      <Filter>Source Files\Auction</Filter>
+      <Filter>Source Files\Operations</Filter>
     </ClCompile>
     <ClCompile Include="Enumerations.cpp">
       <Filter>Header Files\global</Filter>
     </ClCompile>
     <ClCompile Include="AuctionOrder.cpp">
-      <Filter>Source Files\Auction</Filter>
+      <Filter>Source Files\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="FragmentedCommandsBuffer.cpp">
+      <Filter>Source Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="FragmentedNetworkCommand.cpp">
+      <Filter>Source Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCommand.cpp">
+      <Filter>Source Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkPacket.cpp">
+      <Filter>Source Files\Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="MapCluster.cpp">
+      <Filter>Source Files\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="Rankings.cpp">
+      <Filter>Source Files\Operations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NetworkCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Harvestable.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketAnalyze.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FragmentedNetworkCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FragmentedCommandsBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapCluster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityMove.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Mob.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthUpdateHandler.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Location.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enumerations.h">
@@ -168,10 +132,52 @@
       <Filter>Source Files\Deserialization</Filter>
     </ClInclude>
     <ClInclude Include="Auction.h">
-      <Filter>Source Files\Auction</Filter>
+      <Filter>Source Files\Operations</Filter>
     </ClInclude>
     <ClInclude Include="AuctionOrder.h">
-      <Filter>Source Files\Auction</Filter>
+      <Filter>Source Files\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityMove.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Harvestable.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthUpdateHandler.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Mob.h">
+      <Filter>Source Files\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketAnalyze.h">
+      <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentedCommandsBuffer.h">
+      <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentedNetworkCommand.h">
+      <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCommand.h">
+      <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkPacket.h">
+      <Filter>Source Files\Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Source Files\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCluster.h">
+      <Filter>Source Files\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="Rankings.h">
+      <Filter>Source Files\Operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
